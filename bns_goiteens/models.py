@@ -1,10 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Номер телефона має бути в форматі '+999999999'. До 15 цифр"
+)
+
+class User(AbstractUser):
+    bio = models.CharField(max_length=500, blank=True)
+    phone = models.CharField(validators=[phone_validator], max_length=15)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
