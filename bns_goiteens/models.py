@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 
-# Create your models here.
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(verbose_name="Активно")
@@ -15,7 +15,7 @@ class Category(models.Model):
         verbose_name_plural = "Категорії"
     
     def __str__(self):
-        return f"Categoty name - {self.name}, is active - {self.is_active}"
+        return f"Category name - {self.name}, is active - {self.is_active}"
     
         
 class Location(models.Model):
