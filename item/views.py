@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating
+from bns_goiteens.models import Item, Rating, Service
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
@@ -66,9 +66,6 @@ def delete_item(request, pk):
     item.delete()
     messages.success(request, 'Success')
     return redirect("item_list")
-
-from django.shortcuts import render
-from bns_goiteens.models import Item, Service
 
 
 def item_list(request):
