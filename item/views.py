@@ -66,3 +66,32 @@ def delete_item(request, pk):
     item.delete()
     messages.success(request, 'Success')
     return redirect("item_list")
+
+from django.shortcuts import render
+from bns_goiteens.models import Item, Service
+
+
+def item_list(request):
+    query = request.GET.get("q")
+    category = request.GET.get("category")
+    owner = request.GET.get("owner")
+
+    items = Item.objects.all()
+    services = Service.objects.all()
+
+    if query:
+        items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
+        services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
+
+    if category:
+        items = items.filter(category_id=category)
+        services = services.filter(category_id=category)
+
+    if owner:
+        items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
+        services = services.filter(owner__id=owner) | services.filter(owner__username__icontains=owner)
+
+    return render(request, "item_list.html", {
+        "items": items,
+        "services": services
+    })
