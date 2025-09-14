@@ -78,7 +78,8 @@ class Item(BaseOffer):
 
 
 class Service(BaseOffer):
-
+    service_type = models.CharField(choices=[("offer", "Надаю"), ("request", "Шукаю")])
+    
     class Meta:
         verbose_name = "Послуга"
         verbose_name_plural = "Послуги"
