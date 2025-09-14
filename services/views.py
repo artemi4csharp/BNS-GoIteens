@@ -6,8 +6,13 @@ from .forms import ServiceCreationForm, ServiceEditForm
 
 class ServiceListView(View):
     def get(self, request):
-        services = Service.objects.all()
+        service_type = request.GET.get("type")
+        if service_type in ["offer", "request"]:
+            services = Service.objects.filter(service_type=service_type)
+        else:
+            services = Service.objects.all()
         return render(request, "services/service_list.html", {"services": services})
+
 
 
 class ServiceDetailView(View):

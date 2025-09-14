@@ -15,7 +15,7 @@ class Category(models.Model):
         verbose_name_plural = "Категорії"
 
     def __str__(self):
-        return f"Category name - {self.name}, is active - {self.is_active}"
+        return f"{self.name}"
 
 
 class Location(models.Model):
@@ -27,7 +27,7 @@ class Location(models.Model):
         verbose_name = "Локація"
 
     def __str__(self):
-        return f"Location - {self.country}:{self.region or ''}:{self.city}"
+        return f"{self.country}:{self.region or 'Немає'}:{self.city}"
 
 
 class Comment(models.Model):
@@ -73,16 +73,18 @@ class Item(BaseOffer):
         verbose_name_plural = "Товари"
 
     def __str__(self):
-        return f'Item name - {self.name}, category - {self.category}'
+        return f'{self.name} - {self.category}'
 
 
 class Service(BaseOffer):
+    service_type = models.CharField(choices=[("offer", "Надаю"), ("request", "Шукаю")])
+
     class Meta:
         verbose_name = "Послуга"
         verbose_name_plural = "Послуги"
 
     def __str__(self):
-        return f"Service name - {self.name}, category - {self.category}"
+        return f"{self.name} - {self.category}"
 
 
 class Rating(models.Model):
@@ -98,7 +100,7 @@ class Rating(models.Model):
         verbose_name = "Рейтинг"
 
     def __str__(self):
-        return f"{self.content_object.name} - rating:{self.value}"
+        return f"{self.content_object.name} - рейтинг:{self.value}"
 
 
 class Promotion(models.Model):
@@ -126,7 +128,7 @@ class Discount(models.Model):
     category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"Promotion: {self.promotion}, type: {self.discount_type}, value: {self.value}"
+        return f"{self.promotion}, {self.discount_type}, {self.value}"
 
     def clean(self):
         if not self.item and not self.category:
@@ -147,7 +149,7 @@ class SavedItem(models.Model):
         ordering = ["-saved_at"]
 
     def __str__(self):
-        return f"Saved of {self.user.username}, {self.content_object}"
+        return f"{self.user.username}, {self.content_object}"
 
 
 class Message(models.Model):
@@ -162,4 +164,4 @@ class Message(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"From {self.sender} to {self.receiver}"
+        return f"Написав {self.sender} до {self.receiver}"
