@@ -131,5 +131,5 @@ EMAIL_HOST = 'smtp.ukr.net'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'rokstoa@ukr.net'
-EMAIL_HOST_PASSWORD = 'TJQ48Ckif0oGpyoG'  # Використовуйте IMAP-пароль
+EMAIL_HOST_PASSWORD = 'TJQ48Ckif0oGpyoG'
 DEFAULT_FROM_EMAIL = 'BNS GoIteens Support <rokstoa@ukr.net>'
