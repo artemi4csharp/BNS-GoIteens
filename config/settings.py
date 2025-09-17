@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bns_goiteens',
+    'chat',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +125,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'bns_goiteens.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.ukr.net'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'rokstoa@ukr.net'
+EMAIL_HOST_PASSWORD = 'TJQ48Ckif0oGpyoG'  # Використовуйте IMAP-пароль
+DEFAULT_FROM_EMAIL = 'BNS GoIteens Support <rokstoa@ukr.net>'

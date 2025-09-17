@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мої звернення до підтримки</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Мої звернення до підтримки</h2>
+            <a href="{% url 'chat:create_support_session' %}" class="btn btn-primary">Створити нове звернення</a>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if sessions %}
+            <div class="row">
+                {% for session in sessions %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ session.subject }}</h5>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Створено: {{ session.created_at|date:"d.m.Y H:i" }}<br>
+                                        Статус: 
+                                        {% if session.status == 'pending' %}
+                                            <span class="badge bg-warning">Очікує</span>
+                                        {% elif session.status == 'active' %}
+                                            <span class="badge bg-success">Активний</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Закритий</span>
+                                        {% endif %}
+                                    </small>
+                                </p>
+                                {% if session.status != 'closed' %}
+                                    <a href="{% url 'chat:support_session_detail' session.id %}" class="btn btn-primary btn-sm">Переглянути</a>
+                                {% else %}
+                                    <a href="{% url 'chat:support_session_detail' session.id %}" class="btn btn-outline-secondary btn-sm">Переглянути історію</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                У вас ще немає звернень до підтримки.
+            </div>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

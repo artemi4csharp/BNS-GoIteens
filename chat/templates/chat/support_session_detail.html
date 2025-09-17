@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Звернення до підтримки #{{ session.id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .message-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .message-bubble {
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+        }
+        .agent-message {
+            background-color: #f5f5f5;
+            margin-right: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Звернення до підтримки #{{ session.id }}</h2>
+            {% if session.status != 'closed' %}
+                <form method="post" action="{% url 'chat:close_session' session.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Ви впевнені, що хочете закрити це звернення?')">
+                        Закрити звернення
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>Тема:</strong> {{ session.subject }}<br>
+                <strong>Статус:</strong>
+                {% if session.status == 'pending' %}
+                    <span class="badge bg-warning">Очікує</span>
+                {% elif session.status == 'active' %}
+                    <span class="badge bg-success">Активний</span>
+                {% else %}
+                    <span class="badge bg-secondary">Закритий</span>
+                {% endif %}
+                {% if session.agent %}
+                    <br><strong>Працівник підтримки:</strong> {{ session.agent.username }}
+                {% endif %}
+            </div>
+        </div>
+        {% if messages_list %}
+            <div class="message-container mb-4">
+                {% for message in messages_list %}
+                    <div class="message-bubble {% if message.sender == request.user %}user-message{% else %}agent-message{% endif %}">
+                        <strong>{{ message.sender.username }}</strong>
+                        <small class="text-muted float-end">{{ message.created_at|date:"d.m.Y H:i" }}</small>
+                        <div>{{ message.content|linebreaks }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Поки що немає повідомлень.
+            </div>
+        {% endif %}
+        {% if session.status != 'closed' %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.content }}
+                </div>
+                <button type="submit" class="btn btn-primary">Відправити повідомлення</button>
+                <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">Назад до списку</a>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">
+                Це звернення закрито. Ви не можете надсилати нові повідомлення.
+            </div>
+            <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">Назад до списку</a>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% if session.status != 'closed' %}
+<script>
+    function shouldRefresh() {
+        const textarea = document.querySelector('textarea');
+        if (document.activeElement !== textarea) {
+            location.reload();
+        }
+    }
+    {% if session.status != 'closed' %}
+        setTimeout(shouldRefresh, 10000);
+    {% endif %}
+</script>
+    {% endif %}
+</body>
+</html>
