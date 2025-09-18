@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import modelform_factory, inlineformset_factory, modelformset_factory
 from bns_goiteens.models import Category, Location, Item, Service, Rating, Promotion, SavedItem, Message
+from .models import CategoryRequest, Category
 
 CategoryForm = modelform_factory(
     Category, 
@@ -66,3 +67,17 @@ MessageCreationForm = modelform_factory(
     fields = ['content', 'receiver', 'read'],
     labels = {'content': 'Вміст', 'receiver': 'отримувач', 'read': 'Прочитано'}
 )
+
+class CategoryRequestForm(forms.ModelForm):
+    class Meta:
+        model = CategoryRequest
+        fields = ['name', 'parent']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Нова категорія'}),
+            'parent': forms.Select()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['parent'].queryset = Category.objects.all()
+        self.fields['parent'].required = False
