@@ -16,13 +16,13 @@ LocationForm = modelform_factory(
 
 ItemCreationForm = modelform_factory(
     Item, 
-    fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
+    fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'image', 'is_active'],
+    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото', 'is_active': 'Чи активне оголошення'}, 
 )
 
 ItemEditForm = modelformset_factory(
     Item, 
-    fields = ['name', 'description', 'price', 'image'],
+    fields = ['name', 'description', 'price', 'is_active', 'image'],
     extra = 1, 
     can_delete = True
     )

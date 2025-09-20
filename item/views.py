@@ -5,6 +5,7 @@ from bns_goiteens.models import Item, Rating
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
+from django.views.decorators.http import require_POST
 
 
 def item_list(request):
@@ -66,3 +67,12 @@ def delete_item(request, pk):
     item.delete()
     messages.success(request, 'Success')
     return redirect("item_list")
+
+@require_POST
+@login_required
+def is_active_item(request, pk):
+    item = get_object_or_404(Item, pk=pk, owner = request.user)
+    item.is_active = not item.is_active
+    item.save()
+    messages.success('Товар не є активним')
+    return redirect('item_list') 

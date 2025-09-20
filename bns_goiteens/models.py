@@ -59,6 +59,7 @@ class BaseOffer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     location = models.ForeignKey("Location", on_delete=models.PROTECT)
     image = models.ImageField(upload_to="items_image/", blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
