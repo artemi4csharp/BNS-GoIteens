@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from .models import Message
+from django.core.mail import send_mail
 
 @login_required
 def send_message(request, user_id):
@@ -11,14 +12,25 @@ def send_message(request, user_id):
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
-            Message.objects.create(
+            msg = Message.objects.create(
                 content=content,
                 sender=request.user,
                 receiver=receiver
             )
+
+            if receiver.email:
+                send_mail(
+                    subject=f"Нове повідомлення від {request.user.username}",
+                    message=content,
+                    from_email=None,  
+                    recipient_list=[receiver.email],
+                    fail_silently=True,  
+                )
+
             return redirect("chat", user_id=receiver.id)
 
     return render(request, "chat/send_message.html", {"receiver": receiver})
+
 
 
 @login_required
