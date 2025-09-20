@@ -18,7 +18,7 @@ class CategoryRequestAdmin(admin.ModelAdmin):
         for req in queryset.filter(status=CategoryRequest.STATUS_PENDING):
             req.approve(processed_by=request.user)
         self.message_user(request, "Вибрані запити підтверджено і категорії створено.")
-    approve_requests.short_description = "Підтвердити вибрані запити (create Category)"
+    approve_requests.short_description = "Підтвердити вибрані запити"
 
     def reject_requests(self, request, queryset):
         for req in queryset.filter(status=CategoryRequest.STATUS_PENDING):

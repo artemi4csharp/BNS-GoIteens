@@ -9,6 +9,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from .models import Category
+from django.contrib.auth.models import User
 
 def item_list(request):
     items = Item.objects.all()
