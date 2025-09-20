@@ -7,9 +7,9 @@ from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
 
 
-def item_list(request):
-    items = Item.objects.all()
-    return render(request, 'items_list.html', {'items': items})
+# def item_list(request):
+#     items = Item.objects.all()
+#     return render(request, 'item_list.html', {'items': items})
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -30,7 +30,7 @@ def item_detail(request, pk):
             return redirect('item_list')
         else: 
             messages.error(request, 'Error')
-    return render(request, 'item_detail.html', {'form':form})
+    return render(request, 'item_detail.html', {'form': form})
 
 
 

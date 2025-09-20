@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Товари і послуги</title>
+</head>
+<body>
+    <h1>Пошук товарів і послуг</h1>
+
+    <form method="get">
+      <input type="text" name="q" placeholder="Назва або опис..." value="{{ request.GET.q }}">
+      <input type="number" name="category" placeholder="ID категорії" value="{{ request.GET.category }}">
+      <input type="text" name="owner" placeholder="ID або username продавця" value="{{ request.GET.owner }}">
+      <button type="submit">Шукати</button>
+    </form>
+
+    <hr>
+
+    <h2>Товари</h2>
+    <ul>
+      {% for item in items %}
+        <li>
+          {{ item.name }} — {{ item.price }} грн <br>
+          Категорія: {{ item.category.name }} <br>
+          Продавець: {{ item.owner.username }}
+        </li>
+      {% empty %}
+        <li>Немає товарів</li>
+      {% endfor %}
+    </ul>
+
+    <h2>Послуги</h2>
+    <ul>
+      {% for service in services %}
+        <li>
+          {{ service.name }} — {{ service.price }} грн <br>
+          Категорія: {{ service.category.name }} <br>
+          Надавач: {{ service.owner.username }}
+        </li>
+      {% empty %}
+        <li>Немає послуг</li>
+      {% endfor %}
+    </ul>
+</body>
+</html>
