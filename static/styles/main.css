@@ -152,12 +152,19 @@ footer {
   justify-content: space-between;
   background-color: #003B46;
   color: #C4DFE6;
-  padding: 0 50px;
+  padding: 0 50px 12px;
+}
+
+footer div {
+  display: flex;
+  flex-direction: column;
 }
 
 a {
   color: #C4DFE6;
   text-decoration: none;
+  width: fit-content;
+  
 }
 
 a:hover {
@@ -171,8 +178,8 @@ h5 {
 }
 
 h6 {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 
 footer div:last-child h6 {
@@ -181,15 +188,7 @@ footer div:last-child h6 {
   margin-left: 0;
 }
 
-footer div a {
-  display: block;   /* каждая ссылка занимает всю строку */
-  margin: 5px 0;    /* как у h6 было */
-  font-size: 14px;  /* под размер h6 */
-  font-weight: 500; /* или 600, как тебе нужно */
-  color: #C4DFE6;
-  text-decoration: none;
-}
-
-footer div a:hover {
-  color: #66A5AD;
+footer div:last-child {
+  display: inline-flex; 
+  flex-direction: row;
 }
