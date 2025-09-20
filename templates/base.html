@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base</title>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span>Лого</span>
+    <h2>Buy and Sell</h2>
+  </div>
+
+  <div class="header-right">
+  <div class="button-group">
+
+        <div class="button-item">
+            <img src="{% static 'icons/statistics.svg' %}" alt="statistics" style="margin-right: 5px;">
+            <span>Статистика</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="button-item">
+            <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
+            <span>Обране</span>
+        </div>
+
+        <div class="divider"></div>
+        
+        <div class="button-item">
+            <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
+            <span>Повідомлення</span>
+        </div>
+
+        <div class="divider"></div>
+        
+        <div class="button-item">
+            <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
+            <span>Кошик</span>
+        </div>
+
+        <div class="divider"></div>
+        
+        <div class="button-item">
+            <img src="{% static 'icons/to_compare.svg' %}" alt="to_compare" style="margin-right: 5px;">
+            <span>Порівняти</span>
+        </div>
+        
+        <button class="create-btn">+ Створити оголошення</button>
+    </div>
+
+    <button class="profile-btn">
+      <div class="profile-icon">
+        <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+      </div>
+      <p class="profile-name">Кощин<br>&nbsp&nbspМаксим</p>
+      <h3 class="profile-balance">1488 ₴</h3>
+      <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
+    </button>
+  </div>
+  </header>
+
+  <nav>
+    <a href="">Всі категорії</a>
+    <a href="">Категорія 1</a>
+    <a href="">Категорія 2</a>
+    <a href="">Категорія 3</a>
+    <a href="">Категорія 4</a>
+    <a href="">Категорія 5</a>
+  </nav>
+
+  <main>
+   
+  </main>
+
+  <footer>
+    <h6 style="margin-top: 11px;">© 2025 Company Name</h6>
+    <div>
+      <h5>About Us</h5>
+      <a href="#">Company History</a>
+      <a href="#">Our Team</a>
+    </div>
+    <div>
+      <h5>Helpful Links</h5>
+      <a href="#">FAQs</a>
+      <a href="#">Support</a>
+      <a href="#">Live Chat</a>
+    </div>
+    <div>
+      <h5>Contact Us</h5>
+      <a href="mailto:bns@gmail.com">bns@gmail.com</a>
+      <a href="tel:+3801234567899">+3801234567899</a>
+      <a href="#">Ukraine, Zhytomir, Neisnuvanivca</a>
+    </div>
+  </footer>
+</body>
+</html>
