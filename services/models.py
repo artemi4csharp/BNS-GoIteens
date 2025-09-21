@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 class Category(models.Model):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(verbose_name="Активно")
+    views = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Категорія"
@@ -165,3 +166,50 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Написав {self.sender} до {self.receiver}"
+
+
+class BlackList(models.Model):
+    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blocked_users")
+    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name="in_blacklist")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("blocker", "blocked")
+        verbose_name = "Чорний список"
+        verbose_name_plural = "Чорний список"
+
+    def __str__(self):
+        return f"{self.blocker} заблокував {self.blocked}"
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    content = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Повідомлення"
+        verbose_name_plural = "Повідомлення"
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.content}"
+
+
+class Complaint(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complaints")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Скарга"
+        verbose_name_plural = "Скарги"
+
+    def __str__(self):
+        return f"Скарга від {self.author.username} на {self.content_object}"
