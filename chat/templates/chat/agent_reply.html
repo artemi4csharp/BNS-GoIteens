@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Нова відповідь від підтримки</title>
+</head>
+<body>
+    <h2>Нова відповідь у чаті підтримки #{{ session.id }}</h2>
+
+    <p>Шановний(а) {{ user.get_full_name|default:user.username }},</p>
+
+    <p>Ви отримали нову відповідь від агента підтримки у вашому чаті з темою "{{ session.subject }}":</p>
+
+    <div style="margin: 20px 0; padding: 15px; border-radius: 5px; background-color: #f0f8ff;">
+        <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+        <span style="color: #666;">(Агент підтримки)</span>
+        <br>
+        <small style="color: #999;">{{ message.created_at|date:"d.m.Y H:i" }}</small>
+        <p style="margin-top: 10px;">{{ message.content|linebreaks }}</p>
+    </div>
+
+    <p>Щоб переглянути повну історію чату або відповісти, перейдіть за посиланням:</p>
+
+    <p><a href="http://{{ request.get_host }}{% url 'chat:support_session_detail' session.id %}"
+          style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">
+        Перейти до чату
+    </a></p>
+
+    <p>З повагою,<br>
+    Команда підтримки BNS GoIteens</p>
+</body>
+</html>
