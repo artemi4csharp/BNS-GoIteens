@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'item',
     'services',
     'browse',
+    'saved_item',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Kyiv"
+USE_TZ = True
 
 USE_I18N = True
 
@@ -222,9 +224,9 @@ UNFOLD = {
         "show_search": True,  # Search in applications and models names
         "command_search": True,  # Replace the sidebar search with the command search
 
+        
         "navigation" : [
             {
-            
                 "title": _("Navigation"),
                 "separator": True,  # Top border
                 "collapsible": False,  # Collapsible group of links
@@ -280,10 +282,33 @@ UNFOLD = {
                         "icon" : "send",
                         "link": reverse_lazy("admin:bns_goiteens_message_changelist")
                     },
+                    {
+                        "title" : _("Location"),
+                        "icon" : "location_on",
+                        "link": reverse_lazy("admin:bns_goiteens_location_changelist")
+                    },
                     ]
+            },
+            {         
+                "title": _("Chat"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                      "title" : "Support messages",
+                      "icon"  : "comment",
+                      "link" : reverse_lazy("admin:chat_supportmessage_changelist")
+                    },
+                    {
+                      "title" : "Support sessions",
+                      "icon"  : "call",
+                      "link" : reverse_lazy("admin:chat_supportsession_changelist")
+                    },
+                ]
             }
-        ] ,
-    "COMMANDS" : [
+        ],
+        
+    "commands" : [
         {
         "search_models": True,
         "search_callback": 'utils.search_callback',

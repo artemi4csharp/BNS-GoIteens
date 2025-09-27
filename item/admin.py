@@ -1,6 +1,8 @@
 from django.contrib import admin
 from unfold.admin  import ModelAdmin
 from bns_goiteens.models import Item
+from django.contrib.postgres.fields import ArrayField
+from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 
 @admin.register(Item)
 class CustomItemClass(ModelAdmin):
@@ -25,3 +27,18 @@ class CustomItemClass(ModelAdmin):
     compressed_fields = True
     list_fullwidth = True
     warn_unsaved_form = True
+    list_filter = ('owner', 'category',)
+    search_fields = (
+        "name",
+        "description",
+        "category__name",
+        "owner__username",
+        "owner__email",
+        "location__city", 
+    )
+    ordering = ('name',)
+    formfield_overrides = {
+        ArrayField: {
+            "widget": ArrayWidget,
+        }
+    }
