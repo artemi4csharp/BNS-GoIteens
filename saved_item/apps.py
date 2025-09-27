@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class ItemConfig(AppConfig):
+class SavedItemConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'item'
-    verbose_name = "Товари"
+    name = 'saved_item'
