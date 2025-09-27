@@ -1,5 +1,5 @@
-from django.forms import forms
-from django.forms import modelform_factory
+from django import forms
+from django.forms import modelform_factory, inlineformset_factory, modelformset_factory
 from bns_goiteens.models import Category, Location, Item, Service, Rating, Promotion, SavedItem, Message
 
 CategoryForm = modelform_factory(
@@ -17,13 +17,15 @@ LocationForm = modelform_factory(
 ItemCreationForm = modelform_factory(
     Item, 
     fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'image'],
-    labels = {'name': 'Назва', 'decription': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
+    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
 )
 
-class ItemEditForm(forms.ModelForm):
-    class Meta: 
-        model=Item
-        fields = ['name', 'description', 'price', 'is_active', 'image']
+ItemEditForm = modelformset_factory(
+    Item, 
+    fields = ['name', 'description', 'price', 'image'],
+    extra = 1, 
+    can_delete = True
+    )
 
 ServiceCreationForm = modelform_factory(
     Service, 
@@ -31,15 +33,18 @@ ServiceCreationForm = modelform_factory(
     labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
 )
 
-class ServciceEditForm(forms.ModelForm):
-    class Meta:
-        model = Service, 
-        fields = ['name', 'description', 'price', 'image']
+ServiceEditForm = modelformset_factory(
+    Service, 
+    fields = ['name', 'description', 'price', 'image'],
+    extra = 1, 
+    can_delete = True
+    )
+
 
 class RatingForm(forms.ModelForm):
     class Meta: 
         model = Rating
-        fields = ['value'],
+        fields = ['value']
         widgets = {
             'value': forms.RadioSelect(choices=[(i, '⭐' * i) for i in range(1, 6)])
         }
