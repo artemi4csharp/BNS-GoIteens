@@ -248,6 +248,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:bns_goiteens_item_changelist")
                     },
                     {
+                        "title": _("Category"),
+                        "icon": "category",
+                        "link": reverse_lazy("admin:bns_goiteens_category_changelist")
+                    },
+                    {
                         "title" : _("Services"),
                         "icon" : "service_toolbox",
                         "link": reverse_lazy("admin:bns_goiteens_service_changelist")

@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 
 @admin.register(Item)
-class CustomItemClass(ModelAdmin):
+class CustomItemClass(admin.ModelAdmin):
     model = Item
     list_display = ('name', 'price', 'category', 'owner', 'get_avg_rating','created_at', 'updated_at')
     fieldsets = (

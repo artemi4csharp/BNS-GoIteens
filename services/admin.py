@@ -33,3 +33,14 @@ class CustomServiceClass(ModelAdmin):
     compressed_fields = True
     list_fullwidth = True
     warn_unsaved_form = True
+    list_filter = ('price', 'category', 'owner', 'location', 'service_type',)
+    search_fields = (
+        "name",
+        "description",
+        "category__name",
+        "owner__username",
+        "owner__email",
+        "location__city", 
+        "service_type",
+    )
+    ordering = ('name',)
