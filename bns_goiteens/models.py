@@ -1,10 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Номер телефона має бути в форматі '+999999999'. До 15 цифр"
+)
+
+class User(AbstractUser):
+    bio = models.CharField(max_length=500, blank=True)
+    phone = models.CharField(validators=[phone_validator], max_length=15)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -15,7 +24,7 @@ class Category(models.Model):
         verbose_name_plural = "Категорії"
     
     def __str__(self):
-        return f"Category name - {self.name}, is active - {self.is_active}"
+        return f"{self.name}"
     
         
 class Location(models.Model):
@@ -28,7 +37,7 @@ class Location(models.Model):
         verbose_name = "Локація"
 
     def __str__(self):
-        return f"Location - {self.country}:{self.region or ''}:{self.city}"
+        return f"{self.country}:{self.region or 'Немає'}:{self.city}"
     
     
 class Comment(models.Model):
@@ -74,17 +83,20 @@ class Item(BaseOffer):
         verbose_name_plural = "Товари"
 
     def __str__(self):
-        return f'Item name - {self.name}, category - {self.category}'
+        return f'{self.name} - {self.category}'
 
 
 class Service(BaseOffer):
-
+    service_type = models.CharField(
+        choices=[("offer", "Надаю"), ("request", "Шукаю")],
+        default="offer"
+    )
     class Meta:
         verbose_name = "Послуга"
         verbose_name_plural = "Послуги"
 
     def __str__(self):
-        return f"Service name - {self.name}, category - {self.category}"
+        return f"{self.name} - {self.category}"
     
     
 class Rating(models.Model):
@@ -100,7 +112,7 @@ class Rating(models.Model):
         verbose_name = "Рейтинг"
         
     def __str__(self):
-        return f"{self.content_object.name} - rating:{self.value}"
+        return f"{self.content_object.name} - рейтинг:{self.value}"
 
 
 class Promotion(models.Model):
@@ -128,7 +140,7 @@ class Discount(models.Model):
     category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f"Promotion: {self.promotion}, type: {self.discount_type}, value: {self.value}"
+        return f"{self.promotion}, {self.discount_type}, {self.value}"
 
     def clean(self):
         if not self.item and not self.category:
@@ -149,7 +161,7 @@ class SavedItem(models.Model):
         ordering = ["-saved_at"]
         
     def __str__(self):
-        return f"Saved of {self.user.username}, {self.content_object}"
+        return f"{self.user.username}, {self.content_object}"
 
 class Message(models.Model):
     content = models.TextField()
@@ -163,4 +175,4 @@ class Message(models.Model):
         ordering = ["-created_at"]
         
     def __str__(self):
-        return f"From {self.sender} to {self.receiver}"
+        return f"Написав {self.sender} до {self.receiver}"
