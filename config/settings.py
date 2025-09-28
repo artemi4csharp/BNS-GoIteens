@@ -28,9 +28,22 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
+    "unfold.contrib.location_field",  # optional, if django-location-field package is used
+    "unfold.contrib.constance",  # optional, if django-constance package is used
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +54,10 @@ INSTALLED_APPS = [
     'item'
     'chat',
     'user',
+    'item',
+    'services',
+    'browse',
+    'saved_item',
 ]
 
 MIDDLEWARE = [
@@ -108,7 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Kyiv"
+USE_TZ = True
 
 USE_I18N = True
 
@@ -127,7 +145,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'bns_goiteens.User'
+AUTH_USER_MODEL = "bns_goiteens.User"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.ukr.net'
@@ -136,3 +154,186 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'rokstoa@ukr.net'
 EMAIL_HOST_PASSWORD = 'TJQ48Ckif0oGpyoG'
 DEFAULT_FROM_EMAIL = 'BNS GoIteens Support <rokstoa@ukr.net>'
+
+
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from config.utils import search_callback
+
+def permission_callback(request):
+    return request.user.has_perm("bns_goiteens.change_model")
+
+UNFOLD = {
+    "SITE_TITLE": "Buy and sell",
+    "SITE_HEADER": "Buy and sell",
+    "SITE_DROPDOWN": [
+        {
+            "icon" : "diamond",
+            "title" : _("My site"),
+            "link" : "http://127.0.0.1:8000/bns/home",
+
+        }
+    ],
+    "SHOW_HISTORY": True,
+    "SHOW_BACK_BUTTON": True,
+    "COLORS": {
+        "base": {
+            "50": "oklch(98.5% .002 247.839)",
+            "100": "oklch(96.7% .003 264.542)",
+            "200": "oklch(92.8% .006 264.531)",
+            "300": "oklch(87.2% .01 258.338)",
+            "400": "oklch(70.7% .022 261.325)",
+            "500": "oklch(55.1% .027 264.364)",
+            "600": "oklch(44.6% .03 256.802)",
+            "700": "oklch(37.3% .034 259.733)",
+            "800": "oklch(27.8% .033 256.848)",
+            "900": "oklch(21% .034 264.665)",
+            "950": "oklch(13% .028 261.692)",
+        },
+        "primary": {
+            "50": "#c4dfe6",
+            "100": "#a9cfd7",
+            "200": "#8fbec8",
+            "300": "#75adb9",
+            "400": "#66a5ad",
+            "500": "#4f8c94",
+            "600": "#39737b",
+            "700": "#07575b",
+            "800": "#044246",
+            "900": "#003b46",
+            "950": "#00262e",
+        },
+        "font": {
+            "subtle-light": "var(--color-base-500)",
+            "subtle-dark": "var(--color-base-400)",
+            "default-light": "var(--color-base-600)",
+            "default-dark": "var(--color-base-300)",
+            "important-light": "var(--color-base-900)",
+            "important-dark": "var(--color-base-100)",
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "ua": "🇺🇦",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,  # Search in applications and models names
+        "command_search": True,  # Replace the sidebar search with the command search
+
+        
+        "navigation" : [
+            {
+                "title": _("Navigation"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",  # Supported icon set: https://fonts.google.com/icons
+                        "link": reverse_lazy("admin:index"),
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Users"),
+                        "icon": "people",
+                        "link": reverse_lazy("admin:bns_goiteens_user_changelist"),
+                    },
+                    {
+                        "title" : _("Items"),
+                        "icon" : "inventory_2",
+                        "link": reverse_lazy("admin:bns_goiteens_item_changelist")
+                    },
+                    {
+                        "title": _("Category"),
+                        "icon": "category",
+                        "link": reverse_lazy("admin:bns_goiteens_category_changelist")
+                    },
+                    {
+                        "title" : _("Services"),
+                        "icon" : "service_toolbox",
+                        "link": reverse_lazy("admin:bns_goiteens_service_changelist")
+                    },
+                    {
+                        "title" : _("Rating"),
+                        "icon" : "star",
+                        "link": reverse_lazy("admin:bns_goiteens_rating_changelist")
+                    },
+                    {
+                        "title" : _("Comment"),
+                        "icon" : "comment",
+                        "link": reverse_lazy("admin:bns_goiteens_comment_changelist")
+                    },
+                    {
+                        "title" : _("Saved Item"),
+                        "icon" : "bookmarks",
+                        "link": reverse_lazy("admin:bns_goiteens_saveditem_changelist")
+                    },
+                    {
+                        "title" : _("Promotion"),
+                        "icon" : "sell",
+                        "link": reverse_lazy("admin:bns_goiteens_promotion_changelist")
+                    },
+                    {
+                        "title" : _("Discount"),
+                        "icon" : "percent",
+                        "link": reverse_lazy("admin:bns_goiteens_discount_changelist")
+                    },
+                    {
+                        "title" : _("Message"),
+                        "icon" : "send",
+                        "link": reverse_lazy("admin:bns_goiteens_message_changelist")
+                    },
+                    {
+                        "title" : _("Location"),
+                        "icon" : "location_on",
+                        "link": reverse_lazy("admin:bns_goiteens_location_changelist")
+                    },
+                    ]
+            },
+            {         
+                "title": _("Chat"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                      "title" : "Support messages",
+                      "icon"  : "comment",
+                      "link" : reverse_lazy("admin:chat_supportmessage_changelist")
+                    },
+                    {
+                      "title" : "Support sessions",
+                      "icon"  : "call",
+                      "link" : reverse_lazy("admin:chat_supportsession_changelist")
+                    },
+                ]
+            }
+        ],
+        
+    "commands" : [
+        {
+        "search_models": True,
+        "search_callback": 'utils.search_callback',
+        "show_history": True,
+    }
+    ],
+    
+    },
+    
+    "TABS": [
+        {
+            "models": ["bns_goiteens.user"],
+            "items": [
+                {
+                    "title": _("Users"),
+                    "link": reverse_lazy("admin:bns_goiteens_user_changelist"),
+                    "permission": permission_callback,  # <- callable, без кавычек
+                },
+            ],
+        },
+    ],
+}

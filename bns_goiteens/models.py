@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.db.models import Avg
 
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
@@ -35,6 +36,7 @@ class Location(models.Model):
     
     class Meta:
         verbose_name = "Локація"
+        verbose_name_plural = "Локації"
 
     def __str__(self):
         return f"{self.country}:{self.region or 'Немає'}:{self.city}"
@@ -76,7 +78,12 @@ class BaseOffer(models.Model):
 class Item(BaseOffer):
     
     def average_rating(self):
-        return round(self.ratings.aggregate(avg=models.Avg("value"))["avg"] or 0, 1)
+        content_type = ContentType.objects.get_for_model(self)
+        avg_value = Rating.objects.filter(
+            content_type=content_type,
+            object_id=self.id
+        ).aggregate(avg=Avg("value"))["avg"]
+        return round(avg_value or 0, 1)
     
     class Meta:
         verbose_name = "Товар"
@@ -110,6 +117,8 @@ class Rating(models.Model):
     class Meta:
         unique_together = ("user", "content_type", "object_id")
         verbose_name = "Рейтинг"
+        verbose_name_plural = "Рейтинг"
+        
         
     def __str__(self):
         return f"{self.content_object.name} - рейтинг:{self.value}"
