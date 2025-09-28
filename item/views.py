@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating
+from bns_goiteens.models import Item, Rating, Service
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
 
 
-def item_list(request):
-    items = Item.objects.all()
-    return render(request, 'items_list.html', {'items': items})
+# def item_list(request):
+#     items = Item.objects.all()
+#     return render(request, 'item_list.html', {'items': items})
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -30,7 +30,7 @@ def item_detail(request, pk):
             return redirect('item_list')
         else: 
             messages.error(request, 'Error')
-    return render(request, 'item_detail.html', {'form':form})
+    return render(request, 'item_detail.html', {'form': form})
 
 
 
@@ -66,3 +66,29 @@ def delete_item(request, pk):
     item.delete()
     messages.success(request, 'Success')
     return redirect("item_list")
+
+
+def item_list(request):
+    query = request.GET.get("q")
+    category = request.GET.get("category")
+    owner = request.GET.get("owner")
+
+    items = Item.objects.all()
+    services = Service.objects.all()
+
+    if query:
+        items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
+        services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
+
+    if category:
+        items = items.filter(category_id=category)
+        services = services.filter(category_id=category)
+
+    if owner:
+        items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
+        services = services.filter(owner__id=owner) | services.filter(owner__username__icontains=owner)
+
+    return render(request, "item_list.html", {
+        "items": items,
+        "services": services
+    })
