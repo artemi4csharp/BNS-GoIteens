@@ -4,8 +4,13 @@ from django.contrib.auth.decorators import login_required
 from bns_goiteens.models import Item, Rating, Service
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from .forms import ItemCreationForm, ItemEditForm, RatingForm
-
+from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from .models import Category
+from django.contrib.auth.models import User
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -92,3 +97,35 @@ def item_list(request):
         "items": items,
         "services": services
     })
+
+
+def categories_list(request):
+    categories = Category.objects.select_related('parent').all()
+    return render(request, 'categories/list.html', {'categories': categories})
+
+@login_required
+def request_category_create(request):
+    if request.method == 'POST':
+        form = CategoryRequestForm(request.POST)
+        if form.is_valid():
+            cat_req = form.save(commit=False)
+            cat_req.user = request.user
+            cat_req.save()
+
+            messages.success(request, "Дякуємо! Ваш запит на створення категорії надіслано адміністратору.")
+
+            # опційно: відправити адмінам лист
+            staff_emails = list(User.objects.filter(is_staff=True).exclude(email='').values_list('email', flat=True))
+            if staff_emails:
+                subject = f"Новий запит на категорію: {cat_req.name}"
+                url = request.build_absolute_uri(reverse('admin:app_categoryrequest_change', args=(cat_req.pk,)))
+                body = f"Користувач {request.user.get_username()} запропонував категорію '{cat_req.name}'.\n\nПереглянути в адмінці: {url}"
+                try:
+                    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, staff_emails, fail_silently=True)
+                except Exception:
+                    pass
+
+            return redirect('categories:list')
+    else:
+        form = CategoryRequestForm()
+    return render(request, 'categories/request_create.html', {'form': form})
