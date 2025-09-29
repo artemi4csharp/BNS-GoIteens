@@ -51,10 +51,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bns_goiteens',
-    'item'
+    'item',
     'chat',
     'user',
-    'item',
     'services',
     'browse',
     'saved_item',

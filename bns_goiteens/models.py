@@ -6,15 +6,39 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db.models import Avg
+import datetime
+from django.utils import timezone
 
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
     message="Номер телефона має бути в форматі '+999999999'. До 15 цифр"
 )
 
+
 class User(AbstractUser):
     bio = models.CharField(max_length=500, blank=True)
     phone = models.CharField(validators=[phone_validator], max_length=15)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")  # Додано дату народження
+
+    def add_balance(self, amount):
+        self.balance += amount
+        self.save()
+
+    def deduct_balance(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            self.save()
+            return True
+        return False
+
+    def is_birthday_today(self):
+        if self.birth_date:
+            today = timezone.now().date()
+            return (self.birth_date.month == today.month and
+                    self.birth_date.day == today.day)
+        return False
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -185,3 +209,92 @@ class Message(models.Model):
         
     def __str__(self):
         return f"Написав {self.sender} до {self.receiver}"
+
+
+class PromoCode(models.Model):
+    PROMO_TYPE_CHOICES = [
+        ('balance', 'Поповнення балансу'),
+        ('discount', 'Знижка на замовлення'),
+        ('free_item', 'Безкоштовний товар/велика знижка'),
+    ]
+
+    code = models.CharField(max_length=50, unique=True, verbose_name="Промокод")
+    promo_type = models.CharField(max_length=20, choices=PROMO_TYPE_CHOICES, verbose_name="Тип промокоду")
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Значення",
+                                help_text="Сума поповнення або відсоток знижки")
+    is_active = models.BooleanField(default=True, verbose_name="Активний")
+    max_uses = models.PositiveIntegerField(default=1, verbose_name="Максимум використань")
+    used_count = models.PositiveIntegerField(default=0, verbose_name="Використано разів")
+    valid_from = models.DateTimeField(verbose_name="Діє з")
+    valid_to = models.DateTimeField(verbose_name="Діє до")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Створено")
+
+    target_item = models.ForeignKey('Item', on_delete=models.SET_NULL, null=True, blank=True,
+                                    verbose_name="Цільовий товар",
+                                    help_text="Товар, на який діє промокод (для типу 'Безкоштовний товар')")
+    target_category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True,
+                                        verbose_name="Цільова категорія",
+                                        help_text="Категорія товарів, на які діє промокод (для типу 'Безкоштовний товар')")
+
+    class Meta:
+        verbose_name = "Промокод"
+        verbose_name_plural = "Промокоди"
+
+    def __str__(self):
+        return f"{self.code} ({self.get_promo_type_display()})"
+
+    def is_valid(self):
+        now = timezone.now()
+        return (self.is_active and
+                self.used_count < self.max_uses and
+                self.valid_from <= now <= self.valid_to)
+
+    def apply_promo(self, user, order_amount=None, item=None):
+        if not self.is_valid():
+            return {
+                'success': False,
+                'message': 'Промокод недійсний або закінчився'
+            }
+
+        result = {
+            'success': True,
+            'message': '',
+            'new_amount': order_amount,
+            'balance_added': 0,
+            'item_discount': 0
+        }
+
+        if self.promo_type == 'balance':
+            user.add_balance(self.value)
+            self.used_count += 1
+            self.save()
+            result['balance_added'] = self.value
+            result['message'] = f'Баланс поповнено на {self.value} грн'
+
+        elif self.promo_type == 'discount':
+            if order_amount:
+                discount_amount = order_amount * (self.value / 100)
+                result['new_amount'] = order_amount - discount_amount
+                self.used_count += 1
+                self.save()
+                result['message'] = f'Знижка {self.value}% застосована. Знижка складає {discount_amount:.2f} грн'
+            else:
+                result['success'] = False
+                result['message'] = 'Для цього типу промокоду потрібна сума замовлення'
+
+        elif self.promo_type == 'free_item':
+            if item and (self.target_item == item or
+                         (self.target_category and item.category == self.target_category)):
+                item_discount = item.price * Decimal('0.9')
+                result['item_discount'] = item_discount
+                self.used_count += 1
+                self.save()
+                result['message'] = f'Застосована знижка {item_discount:.2f} грн на товар {item.name}'
+            elif not item:
+                result['success'] = False
+                result['message'] = 'Для цього типу промокоду потрібно вказати товар'
+            else:
+                result['success'] = False
+                result['message'] = 'Промокод не дійсний для цього товару'
+
+        return result
