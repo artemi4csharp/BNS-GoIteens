@@ -8,6 +8,7 @@ from django.core.validators import RegexValidator
 from django.db.models import Avg
 import datetime
 from django.utils import timezone
+from decimal import Decimal
 
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
