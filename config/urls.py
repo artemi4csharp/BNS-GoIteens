@@ -24,6 +24,7 @@ urlpatterns = [
     path('item/', include('item.urls')),
     path('bns/', include("bns_goiteens.urls")),
     path('chat/', include('chat.urls')),
+    path('saved/', include("saved_item.urls"))
 ]
 
 

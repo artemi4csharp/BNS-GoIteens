@@ -6,7 +6,7 @@ from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 
 @admin.register(SavedItem)
 class CustomSavedItemClass(ModelAdmin):
-    list_disply = ('user', 'content_object')
+    list_display = ('user', 'content_object')
     fieldsets = ((
         None, {
             'classes' : ('wide',),

@@ -99,6 +99,8 @@ class BaseOffer(models.Model):
     class Meta:
         abstract = True
 
+    def get_content_type_id(self):
+        return ContentType.objects.get_for_model(self).id
 
 class Item(BaseOffer):
     

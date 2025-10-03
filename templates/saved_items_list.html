@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Мої збережені об'єкти</h2>
+
+    {% if saved_items %}
+        <ul class="list-group mt-3">
+            {% for saved in saved_items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <!-- Название объекта -->
+                        <strong>{{ saved.content_object }}</strong> <br>
+                        <small class="text-muted">Додано: {{ saved.saved_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+
+                    <button class="create-btn"><a href="{% url 'delete_saved' saved.pk %}">Delete</a></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted mt-3">У вас поки що немає збережених об'єктів.</p>
+    {% endif %}
+</div>
+{% endblock %}
