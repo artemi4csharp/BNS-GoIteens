@@ -58,8 +58,7 @@
         <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
       </div>
       <p class="profile-name">Кощин<br>&nbsp&nbspМаксим</p>
-      <h3 class="profile-balance">1488 ₴</h3>
-      <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
+   <h3 class="profile-balance">{{ user.balance|default:"0.00" }} ₴</h3>      <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
     </button>
   </div>
   </header>

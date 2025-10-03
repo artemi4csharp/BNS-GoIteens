@@ -1,9 +1,13 @@
 from re import M
 from django.contrib import admin
 from unfold.admin import ModelAdmin
-from .models import Category, Comment, Location, Message, Promotion, Discount, Rating, SavedItem
+from .models import Category, Comment, Location, Message, Promotion, Discount, Rating, SavedItem, PromoCode, Category, Item
 from django.contrib.postgres.fields import ArrayField
 from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
+import random
+import string
+from django import forms
+from django.utils import timezone
 
 @admin.register(Category)
 class CustomAdminClass(ModelAdmin):
@@ -206,3 +210,83 @@ class CustomMessageClass(ModelAdmin):
             "widget": ArrayWidget,
         }
     }
+
+
+class PromoCodeAdminForm(forms.ModelForm):
+    confirmation_code = forms.CharField(
+        max_length=10,
+        label="Код підтвердження",
+        help_text="Введіть код підтвердження для створення промокоду"
+    )
+
+    STATIC_CONFIRMATION_CODE = "ADMIN123"  # Статичний код підтвердження
+
+    class Meta:
+        model = PromoCode
+        fields = '__all__'
+        exclude = ['used_count', 'created_at']
+
+    def __init__(self, *args, **kwargs):
+        # Витягуємо request з kwargs перед викликом super()
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        # Встановлюємо статичний код як значення за замовчуванням
+        self.fields['confirmation_code'].initial = self.STATIC_CONFIRMATION_CODE
+        self.fields['confirmation_code'].widget.attrs['readonly'] = True
+
+    def clean_confirmation_code(self):
+        confirmation_code = self.cleaned_data.get('confirmation_code')
+        # Перевіряємо зі статичним кодом
+        if confirmation_code != self.STATIC_CONFIRMATION_CODE:
+            raise forms.ValidationError("Невірний код підтвердження")
+        return confirmation_code
+
+    def clean_code(self):
+        code = self.cleaned_data.get('code')
+        if PromoCode.objects.filter(code=code).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Промокод з таким кодом вже існує")
+        return code
+
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(ModelAdmin):
+    form = PromoCodeAdminForm
+    list_display = ('code', 'promo_type', 'value', 'is_active', 'used_count', 'max_uses', 'valid_to')
+    list_filter = ('promo_type', 'is_active', 'valid_from', 'valid_to')
+    search_fields = ('code',)
+    readonly_fields = ('used_count', 'created_at')
+
+    fieldsets = (
+        (None, {
+            'fields': ('code', 'promo_type', 'value', 'is_active', 'confirmation_code')
+        }),
+        ('Обмеження', {
+            'fields': ('max_uses', 'valid_from', 'valid_to')
+        }),
+        ('Додатково', {
+            'fields': ('target_item', 'target_category'),
+            'classes': ('collapse',)
+        }),
+        ('Статистика', {
+            'fields': ('used_count', 'created_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+
+    def get_form(self, request, obj=None, **kwargs):
+        # Передаємо request через kwargs для форми
+        Form = super().get_form(request, obj, **kwargs)
+
+        class FormWithRequest(Form):
+            def __init__(self, *args, **inner_kwargs):
+                inner_kwargs['request'] = request
+                super().__init__(*args, **inner_kwargs)
+
+        return FormWithRequest
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
