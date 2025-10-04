@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "unfold.contrib.location_field",  # optional, if django-location-field package is used
     "unfold.contrib.constance",  # optional, if django-constance package is used
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bns_goiteens',
+    'services',
     'item',
     'chat',
     'user',
-    'services',
     'browse',
     'saved_item',
 ]
@@ -224,7 +224,7 @@ UNFOLD = {
         "show_search": True,  # Search in applications and models names
         "command_search": True,  # Replace the sidebar search with the command search
 
-        
+
         "navigation" : [
             {
                 "title": _("Navigation"),
@@ -294,7 +294,7 @@ UNFOLD = {
                     },
                     ]
             },
-            {         
+            {
                 "title": _("Chat"),
                 "separator": True,  # Top border
                 "collapsible": False,  # Collapsible group of links
@@ -312,7 +312,7 @@ UNFOLD = {
                 ]
             }
         ],
-        
+
     "commands" : [
         {
         "search_models": True,
@@ -320,9 +320,9 @@ UNFOLD = {
         "show_history": True,
     }
     ],
-    
+
     },
-    
+
     "TABS": [
         {
             "models": ["bns_goiteens.user"],
