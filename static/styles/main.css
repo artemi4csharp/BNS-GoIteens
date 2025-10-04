@@ -15,19 +15,21 @@ header {
 .logo {
   display: flex;
   align-items: center;
-  gap: 20px;
-  
+  gap: 10px; /* немного меньше, чтобы текст был ближе */
 }
 
-.logo span {
-  background: #003B46;
-  color: #fff;
-  padding: 20px 20px;
-  border-radius: 10px;
+.logo img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
 }
 
 .logo h2 {
-  color: #003B46;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0; /* убираем лишние отступы заголовка */
+  color: #003B46; /* можно задать цвет под стиль сайта */
 }
 
 .header-right {

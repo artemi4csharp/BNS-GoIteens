@@ -21,7 +21,7 @@
                             {% if forloop.counter <= avg_rating|floatformat:0 %}
                                 <img src="{% static 'icons/star.svg' %}" alt="star" class="star_img">
                             {% else %}
-                                <img src="{% static 'icons/star_empty.svg' %}" alt="star" class="star_img">
+                                <img src="{% static 'icons/star.svg' %}" alt="star" class="star_img">
                             {% endif %}
                         {% endfor %}
                     </div>
