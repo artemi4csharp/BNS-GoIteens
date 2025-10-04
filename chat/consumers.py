@@ -85,3 +85,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 [receiver.email],
                 fail_silently=True,
             )
+

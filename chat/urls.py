@@ -12,5 +12,6 @@ urlpatterns = [
     path('agent/session/<int:session_id>/', views.agent_session_detail, name='agent_session_detail'),
     path('agent/session/<int:session_id>/assign/', views.assign_session, name='assign_session'),
     path('session/<int:session_id>/close/', views.close_session, name='close_session'),
+    
     path("room/", views.chat_view, name="chat_room"),
 ]

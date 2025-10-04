@@ -57,7 +57,17 @@ INSTALLED_APPS = [
     'services',
     'browse',
     'saved_item',
+    "channels",
 ]
+
+
+ASGI_APPLICATION = "BNS_GoIteens.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

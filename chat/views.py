@@ -154,6 +154,7 @@ def close_session(request, session_id):
 
 
 
+
 @login_required
 def chat_view(request):
     return render(request, "chat/chat.html")
