@@ -15,8 +15,7 @@
   </div>
 
   <div class="header-right">
-  <div class="button-group">
-
+    <div class="button-group">
         <div class="button-item">
             <img src="{% static 'icons/statistics.svg' %}" alt="statistics" style="margin-right: 5px;">
             <span>Статистика</span>
@@ -30,53 +29,62 @@
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
             <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
             <span>Повідомлення</span>
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
             <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
             <span>Кошик</span>
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
             <img src="{% static 'icons/to_compare.svg' %}" alt="to_compare" style="margin-right: 5px;">
             <span>Порівняти</span>
         </div>
-        
+
         <button class="create-btn">+ Створити оголошення</button>
     </div>
 
-    <button class="profile-btn">
-      <div class="profile-icon">
-        <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
-      </div>
-      <p class="profile-name">Кощин<br>&nbsp&nbspМаксим</p>
-   <h3 class="profile-balance">{{ user.balance|default:"0.00" }} ₴</h3>      <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
-    </button>
+    {% if user.is_authenticated %}
+        <button class="profile-btn" onclick="window.location.href='{% url 'admin:index' %}'">
+            <div class="profile-icon">
+                <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+            </div>
+            <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
+            <h3 class="profile-balance">{{ user.balance|floatformat:2 }} ₴</h3>
+            <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
+        </button>
+    {% else %}
+        <button class="profile-btn" onclick="window.location.href='{% url 'bns:login' %}'">
+            <div class="profile-icon">
+                <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+            </div>
+            <p class="profile-name">Увійти</p>
+        </button>
+    {% endif %}
   </div>
-  </header>
+</header>
 
-  <nav>
+<nav>
     <a href="">Всі категорії</a>
     <a href="">Категорія 1</a>
     <a href="">Категорія 2</a>
     <a href="">Категорія 3</a>
     <a href="">Категорія 4</a>
     <a href="">Категорія 5</a>
-  </nav>
+</nav>
 
-  <main>
-   
-  </main>
+<main>
+</main>
 
-  <footer>
+<footer>
     <h6 style="margin-top: 11px;">© 2025 Company Name</h6>
     <div>
       <h5>About Us</h5>
@@ -99,8 +107,8 @@
       <h6>All rights reserved.&nbsp</h6>
       <a href=""><h6 style="text-decoration-line: underline;">Terms & Conditions</h6></a>
       <h6>&nbsp•&nbsp</h6>
-      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a> 
+      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a>
     </div>
-  </footer>
+</footer>
 </body>
 </html>

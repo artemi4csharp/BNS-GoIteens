@@ -25,12 +25,17 @@ class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
         ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'bio', 'phone')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        ('Ролі', {'fields': ('role',)}),
     )
     readonly_fields = ('last_login', 'date_joined',)
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('username', 'email', 'phone', 'password1', 'password2'),
+        }),
+        ('Ролі', {
+            'classes': ('wide',),
+            'fields': ('role',),
         }),
     )
     compressed_fields = True

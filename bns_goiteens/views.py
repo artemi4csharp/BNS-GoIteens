@@ -1,13 +1,16 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from decimal import Decimal
-from .models import PromoCode, Item
+from .models import PromoCode, Item, User
 from .forms import PromoCodeForm
+from .decorators import promo_admin_required
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib import messages
+from .forms import CustomUserCreationForm
 
-# Create your views here.
 def home(request):
     return render(request, "base.html")
 
@@ -97,3 +100,26 @@ def checkout_with_promo(request, item_id):
         'final_price': final_price,
     }
     return render(request, 'promo/checkout.html', context)
+
+
+@promo_admin_required
+def create_promo_code(request):
+    if request.method == 'POST':
+        # Логіка створення промокоду
+        pass
+    else:
+        # Форма створення промокоду
+        pass
+    return render(request, 'promo/create_promo.html')
+
+def register_view(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Ваш акаунт успішно створено!')
+            return redirect('bns:home')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'register.html', {'form': form})
