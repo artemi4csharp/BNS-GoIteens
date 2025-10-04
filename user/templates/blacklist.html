@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Заблоковані користувачі</h2>
+    <ul>
+      {% for item in blocked_users %}
+        <li>
+          {{ item.blocked.username }}
+          <a href="{% url 'unblock_user' item.blocked.id %}">Розблокувати</a>
+        </li>
+      {% empty %}
+        <li>Список порожній</li>
+      {% endfor %}
+    </ul>
+</body>
+</html>

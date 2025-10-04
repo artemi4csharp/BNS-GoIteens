@@ -298,3 +298,14 @@ class PromoCode(models.Model):
                 result['message'] = 'Промокод не дійсний для цього товару'
 
         return result
+
+class Block(models.Model):
+    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocking_user')
+    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked_users')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blocker', 'blocked')
+
+    def __str__(self):
+        return f'{self.blocker} blocked {self.blocked}'
