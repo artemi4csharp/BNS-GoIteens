@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Чат підтримки закрито</title>
+</head>
+<body>
+    <h2>Ваш чат підтримки #{{ session.id }} було закрито</h2>
+    <p>Шановний(а) {{ user.get_full_name|default:user.username }},</p>
+    <p>Ваш чат підтримки з темою "{{ session.subject }}" було закрито. Нижче наведено повну історію вашого чату:</p>
+    <hr>
+    {% for msg in messages %}
+        <div style="margin-bottom: 15px; padding: 10px; border-radius: 5px; {% if msg.sender.is_staff %}background-color: #f0f8ff;{% else %}background-color: #f5f5f5;{% endif %}">
+            <strong>{{ msg.sender.get_full_name|default:msg.sender.username }}</strong>
+            <span style="color: #666;">({% if msg.sender.is_staff %}Агент підтримки{% else %}Ви{% endif %})</span>
+            <br>
+            <small style="color: #999;">{{ msg.created_at|date:"d.m.Y H:i" }}</small>
+            <p style="margin-top: 5px;">{{ msg.content|linebreaks }}</p>
+        </div>
+    {% endfor %}
+    <hr>
+    <p>Дякуємо за звернення!</p>
+    <p>З повагою,<br>
+    Команда підтримки BNS GoIteens</p>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Чат</title>
+</head>
+<body>
+<h1>Чат кімната</h1>
+<div id="chat-log" style="border:1px solid gray; height:300px; overflow:auto;"></div>
+<input id="chat-message-input" type="text" placeholder="Ваше повідомлення...">
+<button id="chat-message-submit">Надіслати</button>
+
+<script>
+const roomName = "{{ room_name }}";
+const chatSocket = new WebSocket(
+    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+);
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const log = document.querySelector('#chat-log');
+    log.innerHTML += `<p><b>${data.username}</b>: ${data.message}</p>`;
+    log.scrollTop = log.scrollHeight;
+};
+
+chatSocket.onclose = function(e) {
+    console.error('WebSocket закрито');
+};
+
+document.querySelector('#chat-message-submit').onclick = function() {
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value;
+    chatSocket.send(JSON.stringify({'message': message}));
+    input.value = '';
+};
+</script>
+</body>
+</html>
