@@ -22,7 +22,7 @@
             <span title="Порівняти">⚖️</span>
           </div>
           <div class="icons">
-            <span title="Поділитися">🔗</span>
+            <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}"><span title="До кошика">До кошика</span></a>
           </div>
         </div>
       </div>

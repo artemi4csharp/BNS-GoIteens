@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main>
+  <div class="cards-container">
+    {% for entry in items %}
+      <div class="card">
+        <div class="card-content">
+          <p>{{ entry.object.name }}</p>
+
+          <p>Кількість: {{ entry.quantity }}</p>
+          <a class="btn">Купити</a>
+          <a href="{% url 'delete_from_cart' entry.object.id entry.object.get_content_type_id %}"
+            class="btn btn-danger">
+            Видалити
+            </a>
+        </div>
+      </div>
+    {% empty %}
+      <p>Немає товарів</p>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}
