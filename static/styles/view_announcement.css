@@ -1,0 +1,276 @@
+main {
+  color: #003B46;
+  font-size: 20px;
+  padding: 17.5px 100px;
+  padding-bottom: 10px;
+}
+
+.main_div {
+    display: flex;
+    background-color: #C4DFE6;
+    border-radius: 10px;
+}
+
+.div_1th {
+    align-items: center;
+    width: 1685px;
+    height: 50px;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+
+.between {
+    display: flex;
+    justify-content: space-between;
+    height: 860px;
+}
+
+.div_2th {
+    height: 575px;
+    width: 540px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+#slides article{ /*все изображения справа друг от доруга*/
+	width: 20%;
+	float: left;
+}
+
+#slides .image{ /*устанавливает общий размер блока с изображениями*/
+	width: 500%;
+	line-height: 0;
+}
+
+#overflow{ /*сркывает все, что находится за пределами этого блока*/
+	width: 100%;
+	overflow: hidden;
+}
+
+article img{ /*размер изображений слайдера*/
+	width: 100%;
+}
+
+#desktop:checked ~ #slider{ /*размер всего слайдера*/
+	max-width: 100%; /*максимальнная длинна*/
+}
+
+/*настройка переключения и положения для левой стрелки*/
+/*если свич1-5 активны, то идет обращение к лейблу из блока с id контролс*/
+#switch1:checked ~ #controls label:nth-child(5), 
+#switch2:checked ~ #controls label:nth-child(1),
+#switch3:checked ~ #controls label:nth-child(2),
+#switch4:checked ~ #controls label:nth-child(3),
+#switch5:checked ~ #controls label:nth-child(4){
+	background: url('icons/prev.png') no-repeat; /*заливка фона картинкой без повторений*/
+	float: left;
+	margin: 0 0 0 10px;
+	display: block;
+	height: 68px;
+	width: 68px;
+}
+
+/*настройка переключения и положения для правой стрелки*/
+#switch1:checked ~ #controls label:nth-child(2), 
+#switch2:checked ~ #controls label:nth-child(3),
+#switch3:checked ~ #controls label:nth-child(4),
+#switch4:checked ~ #controls label:nth-child(5),
+#switch5:checked ~ #controls label:nth-child(1){
+	background: url('icons/next.png') no-repeat; /*заливка фона картинкой без повторений*/
+	float: right;
+	margin: 0 10px 0 0;
+	display: block;
+	height: 68px;
+	width: 68px;
+}
+
+label, a{
+	cursor: pointer;
+}
+
+.all input{
+	display: none;
+}
+
+/*позиция изображения при активации переключателя*/
+#switch1:checked ~ #slides .image{
+	margin-left: 0;
+}
+
+#switch2:checked ~ #slides .image{
+	margin-left: -100%;
+}
+
+#switch3:checked ~ #slides .image{
+	margin-left: -200%;
+}
+
+#switch4:checked ~ #slides .image{
+	margin-left: -300%;
+}
+
+#switch5:checked ~ #slides .image{
+	margin-left: -400%;
+}
+
+#controls{ /*положение блока всех управляющих элементов*/
+	margin: -46% 0 0 0;
+	width: 100%;
+	height: 100px;
+}
+
+#active label{ /*стиль отдельного переключателя*/
+	border-radius: 10px; /*скругление углов*/
+	display: inline-block; /*расположение в строку*/
+	width: 10px;
+	height: 10px;
+	background: #bbb;
+}
+
+#active{ /*расположение блока с переключателями*/
+	margin: 23% 0 0;
+	text-align: center;
+}
+
+#active label:hover{ /*поведение чекбокса при наведении*/
+	background: #76c8ff;
+	border-color: #777 !important; /*выполнение в любом случае*/
+	transition: 0.3s;
+}
+
+/*цвет активного лейбла при активации чекбокса*/
+#switch1:checked ~ #active label:nth-child(1),
+#switch2:checked ~ #active label:nth-child(2),
+#switch3:checked ~ #active label:nth-child(3),
+#switch4:checked ~ #active label:nth-child(4),
+#switch5:checked ~ #active label:nth-child(5){
+	background: #18a3dd;
+	border-color: #18a3dd !important;
+}
+
+#slides .image{ /*анимация пролистывания изображений*/
+	transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+}
+
+#controls label:hover{ /*прозрачность стрелок при наведении*/
+	opacity: 0.6;
+}
+
+#controls label{ /*прозрачность стрелок при отводе курсора*/
+	transition: opacity 0.2s ease-out;
+}
+
+.div_3th {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    height: 145px;
+    width: 535px;
+}
+
+.rating_div1 {
+    display: flex;
+    font-size: 35px;
+    margin-top: 40.5px;
+}
+
+.rating_div2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 20px;
+    padding-bottom: 5px;
+}
+
+.review {
+    margin: 0; 
+    padding-left: 3px; 
+    font-size: 15px;
+}
+
+.rating_div3 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.star_img {
+    height: 20px;
+    width: 20px;
+}
+
+.rating_div4 {
+    display: flex;
+    flex-direction: column;
+    font-size: 17.5px;
+    gap: 10px;
+}
+.rating_div4 img {
+    padding-bottom: 3px;
+}
+
+.rating_line {
+    display: flex;
+    background-color: #F1F1F1;
+    height: 15px;
+    width: 200px;
+}
+
+.rating_div5 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.div_4th {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 400px;
+    height: 50px;
+    padding: 3px 25px;
+    margin-bottom: 5px;
+}
+
+.button {
+  background-color: #003B46;
+  color: #C4DFE6;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}
+
+.div_5th {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 875px;
+}
+
+.div_5th p {
+    height: 607.5px;
+}
+
+.div_5th b:last-child {
+    display: flex;
+    align-self: flex-end;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.div_5th b:last-child:hover {
+    color: #66A5AD;
+    transition: 0.3s;
+}
+

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base</title>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
+    {% endblock %}
 </head>
 <body>
 <header>

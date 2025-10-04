@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .models import Category
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -19,23 +20,53 @@ from django.contrib.auth.models import User
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     content_type = ContentType.objects.get_for_model(Item)
-    
-    if request.user.is_authenticated:
-        user_rating = Rating.objects.filter(content_type=content_type, object_id = item.id, user=request.user).first()
 
+    # Все оценки этого товара
+    all_ratings = Rating.objects.filter(content_type=content_type, object_id=item.id)
+    avg_rating = all_ratings.aggregate(Avg('value'))['value__avg'] or 0
+    total_reviews = all_ratings.count()
+
+    # Для залогиненного пользователя — его оценка
+    user_rating = None
+    if request.user.is_authenticated:
+        user_rating = Rating.objects.filter(
+            content_type=content_type,
+            object_id=item.id,
+            user=request.user
+        ).first()
+
+    # История просмотров
+    last_seen_items = request.session.get('item_history', [])
+    if pk in last_seen_items:
+        last_seen_items.remove(pk)
+    last_seen_items.insert(0, pk)
+    last_seen_items = last_seen_items[:5]
+    request.session['item_history'] = last_seen_items
+    request.session.modified = True
+
+    # Обработка формы рейтинга
     if request.method == 'POST':
-        form = RatingForm(request.POST or None,  instance = user_rating)
-        # request.POST данні які користувач надіслав раніше 
+        form = RatingForm(request.POST, instance=user_rating)
         if form.is_valid() and request.user.is_authenticated:
             rating = form.save(commit=False)
             rating.user = request.user
-            rating.content_object = item 
+            rating.content_object = item
             rating.save()
-            messages.success(request, 'Success')
-            return redirect('item_list')
-        else: 
-            messages.error(request, 'Error')
-    return render(request, 'item_detail.html', {'form': form})
+            messages.success(request, 'Ваша оцінка збережена!')
+            return redirect('item:item_detail', pk=item.pk)
+        else:
+            messages.error(request, 'Помилка при збереженні оцінки.')
+    else:
+        form = RatingForm(instance=user_rating)
+
+    context = {
+        'item': item,
+        'form': form,
+        'avg_rating': round(avg_rating, 1),
+        'total_reviews': total_reviews,
+    }
+
+    return render(request, 'view_item.html', context)
 
 
 
@@ -80,7 +111,9 @@ def item_list(request):
 
     items = Item.objects.all()
     services = Service.objects.all()
-
+    last_seen_items = request.session.get("item_history", [])
+    items_in_history = Item.objects.filter(pk__in=last_seen_items)
+    
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
         services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
@@ -95,7 +128,8 @@ def item_list(request):
 
     return render(request, "item_list.html", {
         "items": items,
-        "services": services
+        "services": services,
+        "items_in_history" : items_in_history
     })
 
 

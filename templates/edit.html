@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="create_and_edit_announcement.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div id="header"></div>
+
+    <main>
+        <div>
+            Назва
+            <input type="text" class="capitalize-first input1">
+            Опис
+            <textarea class="capitalize-first input2"></textarea>
+            <div class="category_price">
+                <div class="flex_column">
+                    Категорія
+                    <input type="text" class="capitalize-first input3">
+                </div>
+                <div class="flex_column">
+                    Ціна
+                    <input type="number" class="input4">
+                </div>
+            </div>
+            Місто, Регіон, Країна
+            <input type="text" class="capitalize-first input1">
+            Тип послуги
+            <div style="align-items: center;" class="flex_row">
+                <input type="text" class="capitalize-first last_input">
+                    <label class="custom-checkbox">
+                        <input type="checkbox">
+                        <span></span> 
+                        Активно
+                    </label>
+            </div>
+            <div style="display: flex">
+                <button class="create_and_edit_btn">Створити</button>
+                <button class="create_and_edit_btn edit_btn">Змінити</button>
+            </div>
+        </div>
+        <div style="text-align: left">
+            Зображення товару
+            <div style="margin-top: 5px;" class="flex_row">
+                <div class="addPhoto_btn img_add1">
+                    <img src="icons/add.svg" alt="add_photo" class="img_add">
+                </div>
+                <div class="flex_column">
+                    <div class="addPhoto_btn img_add2">
+                        <img src="icons/add.svg" alt="add_photo" class="img_add">
+                    </div>
+                    <div class="flex_row">
+                        <div class="addPhoto_btn img_add3">
+                            <img src="icons/add.svg" alt="add_photo" class="img_add">
+                        </div>
+                        <div class="addPhoto_btn img_add4">
+                            <img src="icons/add.svg" alt="add_photo" class="img_add">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+</body>
+</html>

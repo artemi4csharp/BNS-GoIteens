@@ -1,11 +1,148 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-  <main>
+<main>
+  <style>
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      background-color: #f5f6fa;
+      min-height: 100vh;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-content p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .card-number {
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .card-content .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      text-align: center;
+      background-color: #2e86de;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.25s;
+      text-decoration: none;
+    }
+
+    .card-content .btn:hover {
+      background-color: #1e6fd1;
+    }
+
+    .card-footer {
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+    }
+
+    .icons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icons span,
+    .icons a {
+      color: #555;
+      font-size: 1.2rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.25s;
+    }
+
+    .icons span:hover,
+    .icons a:hover {
+      color: #2e86de;
+    }
+
+    main p {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #888;
+      margin-top: 20px;
+    }
+  </style>
+    <p>Item History</p>
     <div class="cards-container">
-      {% for item in items %}
-    <div class="cards-container">
-      {% for item in items %}
+      {% for item in items_in_history %}
+        <div class="card">
+          <img src="{{ item.image }}" alt="{{ item.name }}">
+          <div class="card-content">
+            <p>{{ item.name }}</p>
+            <div class="card-number">{{ item.id }}</div>
+            <a class="btn">Купити</a>
+          </div>
+          <div class="card-footer">
+            <div class="icons">
+              <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
+                <span title="Додати в обране">♡</span>
+              </a>
+              <span title="Коментарі">💬</span>
+              <span title="Порівняти">⚖️</span>
+            </div>
+            <div class="icons">
+              <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}">
+                <span title="До кошика">До кошика</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p>Немає товарів</p>
+      {% endfor %}
+    </div>
+
+    <p>All items</p>
+  <div class="cards-container">
+    {% for item in items %}
       <div class="card">
         <img src="{{ item.image }}" alt="{{ item.name }}">
         <div class="card-content">
@@ -16,21 +153,21 @@
         <div class="card-footer">
           <div class="icons">
             <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
-                <span title="Додати в обране">♡</span>
+              <span title="Додати в обране">♡</span>
             </a>
             <span title="Коментарі">💬</span>
             <span title="Порівняти">⚖️</span>
           </div>
           <div class="icons">
-            <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}"><span title="До кошика">До кошика</span></a>
+            <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}">
+              <span title="До кошика">До кошика</span>
+            </a>
           </div>
         </div>
       </div>
-      {% endfor %}
-    </div>
-      {% empty %}
-        <p>Немає товарів</p>
-      {% endfor %}
-    </div>
-  </main>
+    {% empty %}
+      <p>Немає товарів</p>
+    {% endfor %}
+  </div>
+</main>
 {% endblock %}

@@ -1,0 +1,202 @@
+main {
+  display: flex;
+  justify-content: space-between;
+  color: #003B46;
+  font-size: 25px;
+  padding: 17.5px 50px;
+}
+
+.category_price {
+  display: flex;
+  gap: 20px;
+}
+
+input, textarea {
+  display: flex;
+  color: #003B46;
+  background-color: #C4DFE6;
+  border: 1px solid #003B46;
+  border-radius: 15px;
+  font-size: 25px;
+  padding: 0 5px;
+  margin: 5px 0 20.5px 0;
+  resize: none
+}
+
+.input1 {
+  width: 750px;
+  height: 50px;
+}
+
+.input2 {
+  width: 750px;
+  height: 303.5px;
+}
+
+.input3 {
+  width: 465px;
+  height: 50px;
+}
+
+.input4 {
+  width: 250px;
+  height: 50px;
+}
+
+.last_input {
+  width: 250px;
+  height: 50px;
+  margin: 5px 100px 0 0;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.custom-checkbox {
+  display: flex; 
+  flex-direction: row; 
+  align-items: center;
+  cursor: pointer;
+}
+
+.custom-checkbox input {
+  display: none;
+}
+
+.custom-checkbox span {
+  width: 25px;
+  height: 25px;
+  margin-right: 25px;
+  background-color: #C4DFE6;
+  border: 1px solid #003B46;
+  border-radius: 7.5px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.custom-checkbox span::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid #003B46;
+  border-width: 0 2px 2px 0;
+  opacity: 0;
+  transform: rotate(45deg) scale(0.5);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.custom-checkbox input:checked + span {
+  background-color: #66A5AD;
+}
+
+.custom-checkbox input:checked + span::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+.create_and_edit_btn {
+  background-color: #003B46;
+  border: 0;
+  border-radius: 15px;
+  cursor: pointer;
+  color: #C4DFE6;
+  font-size: 25px;
+  margin: 20.5px 0 6px 0;
+  width: 400px;
+  height: 65px;
+}
+
+.create_and_edit_btn:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}
+
+.edit_btn {
+  background-color: #B20305;
+  margin-left: 35px;
+}
+
+.edit_btn:hover {
+  background-color: #e46f71;
+  transition: 0.3s;
+}
+
+div .addPhoto_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #C4DFE6;
+  border: 1px solid #003B46;
+  border-radius: 15px;
+}
+
+.flex_row {
+  display: flex; 
+  flex-direction: row;
+}
+
+.flex_column {
+  display: flex; 
+  flex-direction: column;
+}
+
+.img_add {
+  height: 35px;
+}
+
+.img_add1 {
+  cursor: pointer;
+  width: 370px; 
+  height: 630px; 
+  margin-right: 15px;
+}
+
+.img_add2 {
+  cursor: pointer;
+  width: 540px; 
+  height: 280px; 
+  margin-bottom: 22.5px;
+}
+
+.img_add3 {
+  cursor: pointer;
+  width: 320px; 
+  height: 325px; 
+  margin-right: 15px;
+}
+
+.img_add4 {
+  cursor: pointer;
+  width: 200px; 
+  height: 325px
+}
+
+.img_add1:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}
+
+.img_add2:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}
+
+.img_add3:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}
+
+.img_add4:hover {
+  background-color: #66A5AD;
+  transition: 0.3s;
+}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="main_div div_1th">
+    <p>{{ item.name }}</p>
+</div>
+
+<div class="between">
+    <div>
+        <div class="main_div div_2th">
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-width:100%;">
+        </div>
+
+        <div class="main_div div_3th">
+            <b>Оцінка</b>
+            <div class="rating_div1">
+                <b>{{ avg_rating }}</b>
+                <div class="rating_div2">
+                    <div class="rating_div3">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg_rating|floatformat:0 %}
+                                <img src="{% static 'icons/star.svg' %}" alt="star" class="star_img">
+                            {% else %}
+                                <img src="{% static 'icons/star_empty.svg' %}" alt="star" class="star_img">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="review">{{ total_reviews }} відгуків</p>
+                </div>
+            </div>
+
+            <!-- Форма рейтинга -->
+            {% if user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Залишити оцінку</button>
+                </form>
+            {% else %}
+                <p>Увійдіть, щоб залишити оцінку</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="main_div div_4th">
+            <b>{{ item.price }} ₴</b>
+            <button class="button">Купити</button>
+            <button class="button">До кошику</button>
+        </div>
+
+        <div class="main_div div_5th">
+            <b>Опис</b>
+            <p>{{ item.description }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
