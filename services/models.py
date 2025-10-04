@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -33,7 +34,8 @@ class Location(models.Model):
 
 class Comment(models.Model):
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_comments',
+    related_query_name='services_comment')
     created_at = models.DateTimeField(auto_now_add=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -54,7 +56,8 @@ class BaseOffer(models.Model):
     description = models.TextField(max_length=1000, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_%(class)ss',
+    related_query_name='services_%(class)s')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     location = models.ForeignKey("Location", on_delete=models.PROTECT)
@@ -89,7 +92,8 @@ class Service(BaseOffer):
 
 
 class Rating(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_ratings',
+    related_query_name='services_rating')
     value = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)], default=1)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="ratings")
@@ -137,7 +141,8 @@ class Discount(models.Model):
 
 
 class SavedItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="saved_items")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_saved_items',
+    related_query_name='services_saved_item')
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
@@ -155,8 +160,10 @@ class SavedItem(models.Model):
 
 class Message(models.Model):
     content = models.TextField()
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_sent_messages',
+    related_query_name='services_sent_message')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='services_received_messages',
+    related_query_name='services_received_message')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     read = models.BooleanField(default=False)
@@ -169,8 +176,8 @@ class Message(models.Model):
 
 
 class BlackList(models.Model):
-    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blocked_users")
-    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name="in_blacklist")
+    blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
+    blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="in_blacklist")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -183,7 +190,7 @@ class BlackList(models.Model):
 
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
     content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
@@ -198,7 +205,7 @@ class Notification(models.Model):
 
 
 class Complaint(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complaints")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="complaints")
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")

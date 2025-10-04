@@ -3,7 +3,6 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
 
-User = settings.AUTH_USER_MODEL
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
