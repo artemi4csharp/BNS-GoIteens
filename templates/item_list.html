@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  <main>
+    <div class="cards-container">
+      {% for item in items %}
+    <div class="cards-container">
+      {% for item in items %}
+      <div class="card">
+        <img src="{{ item.image }}" alt="{{ item.name }}">
+        <div class="card-content">
+          <p>{{ item.name }}</p>
+          <div class="card-number">{{ item.id }}</div>
+          <a class="btn">Купити</a>
+        </div>
+        <div class="card-footer">
+          <div class="icons">
+            <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
+                <span title="Додати в обране">♡</span>
+            </a>
+            <span title="Коментарі">💬</span>
+            <span title="Порівняти">⚖️</span>
+          </div>
+          <div class="icons">
+            <span title="Поділитися">🔗</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+      {% empty %}
+        <p>Немає товарів</p>
+      {% endfor %}
+    </div>
+  </main>
+{% endblock %}

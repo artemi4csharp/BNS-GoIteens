@@ -12,6 +12,7 @@ from django.contrib.auth import get_user_model
 from .models import Category
 from django.contrib.auth.models import User
 
+
 # def item_list(request):
 #     items = Item.objects.all()
 #     return render(request, 'item_list.html', {'items': items})
@@ -19,24 +20,46 @@ from django.contrib.auth.models import User
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     content_type = ContentType.objects.get_for_model(Item)
-    
+
+    viewed_items = request.COOKIES.get('viewed_items', '')
+    viewed_ids = viewed_items.split(',') if viewed_items else []
+
+    if str(pk) not in viewed_ids:
+        item.views += 1
+        item.save(update_fields=['views'])
+        viewed_ids.append(str(pk))
+
     if request.user.is_authenticated:
-        user_rating = Rating.objects.filter(content_type=content_type, object_id = item.id, user=request.user).first()
+        user_rating = Rating.objects.filter(
+            content_type=content_type,
+            object_id=item.id,
+            user=request.user
+        ).first()
+    else:
+        user_rating = None
+
+    form = RatingForm(request.POST or None, instance=user_rating)
 
     if request.method == 'POST':
-        form = RatingForm(request.POST or None,  instance = user_rating)
-        # request.POST данні які користувач надіслав раніше 
         if form.is_valid() and request.user.is_authenticated:
             rating = form.save(commit=False)
             rating.user = request.user
-            rating.content_object = item 
+            rating.content_object = item
             rating.save()
             messages.success(request, 'Success')
-            return redirect('item_list')
-        else: 
+            return redirect('item_detail', pk=item.pk)
+        else:
             messages.error(request, 'Error')
-    return render(request, 'item_detail.html', {'form': form})
 
+    response = render(request, 'item_detail.html', {
+        'item': item,
+        'form': form,
+    })
+
+    # Захист через кукі від накруток
+    response.set_cookie('viewed_items', ','.join(viewed_ids), max_age=60*60*24*10)
+
+    return response
 
 
 @login_required

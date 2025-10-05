@@ -1,0 +1,67 @@
+<!-- templates/promo/checkout.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Оформлення замовлення</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Оформлення замовлення</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Товар: {{ item.name }}</h4>
+            </div>
+            <div class="card-body">
+                <p>Ціна: {{ item.price }} грн</p>
+                <p>Фінальна ціна: {{ final_price }} грн</p>
+                <p>Ваш баланс: {{ user.balance }} грн</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Застосувати промокод на знижку</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="apply_promo" value="1">
+                    <div class="mb-3">
+                        <label for="{{ promo_form.code.id_for_label }}" class="form-label">Промокод</label>
+                        {{ promo_form.code }}
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Застосувати знижку</button>
+                </form>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="buy_item" value="1">
+            <button type="submit" class="btn btn-success"
+                    {% if user.balance < final_price %}disabled{% endif %}>
+                Купити за {{ final_price }} грн
+            </button>
+            <a href="{% url 'item:item_list' %}" class="btn btn-secondary">Назад</a>
+        </form>
+
+        {% if user.balance < final_price %}
+            <div class="alert alert-warning mt-3">
+                Недостатньо коштів на балансі. Поповніть баланс або застосуйте промокод.
+            </div>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
