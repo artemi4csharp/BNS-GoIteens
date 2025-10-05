@@ -9,9 +9,11 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "unfold.contrib.location_field",  # optional, if django-location-field package is used
     "unfold.contrib.constance",  # optional, if django-constance package is used
-
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bns_goiteens',
-    'services',
     'item',
     'chat',
     'user',
+    'services',
     'browse',
     'saved_item',
     'cart',
@@ -88,6 +90,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database
@@ -123,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uk'
 
 TIME_ZONE = "Europe/Kyiv"
 USE_TZ = True
@@ -148,12 +157,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "bns_goiteens.User"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.ukr.net'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'rokstoa@ukr.net'
-EMAIL_HOST_PASSWORD = 'TJQ48Ckif0oGpyoG'
-DEFAULT_FROM_EMAIL = 'BNS GoIteens Support <rokstoa@ukr.net>'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 465))
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 
 from django.templatetags.static import static
@@ -225,7 +234,7 @@ UNFOLD = {
         "show_search": True,  # Search in applications and models names
         "command_search": True,  # Replace the sidebar search with the command search
 
-
+        
         "navigation" : [
             {
                 "title": _("Navigation"),
@@ -295,7 +304,7 @@ UNFOLD = {
                     },
                     ]
             },
-            {
+            {         
                 "title": _("Chat"),
                 "separator": True,  # Top border
                 "collapsible": False,  # Collapsible group of links
@@ -313,7 +322,7 @@ UNFOLD = {
                 ]
             }
         ],
-
+        
     "commands" : [
         {
         "search_models": True,
@@ -321,9 +330,9 @@ UNFOLD = {
         "show_history": True,
     }
     ],
-
+    
     },
-
+    
     "TABS": [
         {
             "models": ["bns_goiteens.user"],

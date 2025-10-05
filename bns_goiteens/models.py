@@ -23,6 +23,24 @@ class User(AbstractUser):
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")  # Додано дату народження
 
+    ROLE_CHOICES = [
+        ('admin', 'Адміністратор'),
+        ('support', 'Служба підтримки'),
+        ('promo', 'Промо-адміністратор'),
+        ('user', 'Звичайний користувач'),
+    ]
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
+
+    def is_admin(self):
+        return self.role == 'admin'
+
+    def is_support(self):
+        return self.role in ['admin', 'support']
+
+    def is_promo_admin(self):
+        return self.role in ['admin', 'promo']
+
     def add_balance(self, amount):
         self.balance += amount
         self.save()

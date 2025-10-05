@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#C4DFE6',
+                            100: '#66A5AD',
+                            500: '#07575B',
+                            600: '#003B46',
+                            700: '#07575B',
+                            800: '#044246',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(to right, #003B46, #07575B);
+        }
+
+        .password-toggle {
+            cursor: pointer;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #07575B;
+            box-shadow: 0 0 0 3px rgba(7, 87, 91, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #07575B, #003B46);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #003B46, #07575B);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .error-container {
+            border: 2px solid #fecaca;
+            background-color: #fef2f2;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        .form-field {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-field:focus {
+            border-color: #07575B;
+            box-shadow: 0 0 0 3px rgba(7, 87, 91, 0.1);
+        }
+
+        .form-field.error {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-slate-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="gradient-bg px-8 py-10 text-white text-center">
+                <div class="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-plus text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Реєстрація</h1>
+                <p class="text-teal-100">Створіть свій акаунт на платформі</p>
+            </div>
+
+            <div class="p-8">
+                <div id="successMessage" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl">✓</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-green-800 mb-2">Реєстрація успішна!</h3>
+                    <p class="text-green-700">Перенаправлення на головну сторінку...</p>
+                </div>
+
+                <form id="registerForm" method="post" class="space-y-5">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Ім'я користувача
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-user w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="text"
+                                name="username"
+                                id="username"
+                                placeholder="Введіть ім'я користувача"
+                                class="form-field"
+                                required
+                                value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
+                            >
+                        </div>
+                        {% if form.username.errors %}
+                            <div id="usernameError" class="mt-1 text-sm text-red-600">
+                                {{ form.username.errors }}
+                            </div>
+                        {% else %}
+                            <div id="usernameError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Ім'я
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-user w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="text"
+                                name="first_name"
+                                id="first_name"
+                                placeholder="Введіть ваше ім'я"
+                                class="form-field"
+                                required
+                                value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Прізвище
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-user w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="text"
+                                name="last_name"
+                                id="last_name"
+                                placeholder="Введіть ваше прізвище"
+                                class="form-field"
+                                required
+                                value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-envelope w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                placeholder="your@email.com"
+                                class="form-field"
+                                required
+                                value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
+                            >
+                        </div>
+                        {% if form.email.errors %}
+                            <div id="emailError" class="mt-1 text-sm text-red-600">
+                                {{ form.email.errors }}
+                            </div>
+                        {% else %}
+                            <div id="emailError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Номер телефону
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-phone w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="tel"
+                                name="phone"
+                                id="phone"
+                                placeholder="+380XXXXXXXXX"
+                                class="form-field"
+                                required
+                                value="{% if form.phone.value %}{{ form.phone.value }}{% endif %}"
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Формат: +380XXXXXXXXX або 0XXXXXXXXX</p>
+                        {% if form.phone.errors %}
+                            <div id="phoneError" class="mt-1 text-sm text-red-600">
+                                {{ form.phone.errors }}
+                            </div>
+                        {% else %}
+                            <div id="phoneError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Пароль
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-lock w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="password"
+                                name="password1"
+                                id="password"
+                                placeholder="Мінімум 6 символів"
+                                class="form-field"
+                                required
+                            >
+                            <span class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" id="togglePassword">
+                                <i class="fas fa-eye w-5 h-5" id="eyeIcon"></i>
+                            </span>
+                        </div>
+                        {% if form.password1.errors %}
+                            <div id="passwordError" class="mt-1 text-sm text-red-600">
+                                {{ form.password1.errors }}
+                            </div>
+                        {% else %}
+                            <div id="passwordError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Підтвердження паролю
+                        </label>
+                        <div class="relative">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fas fa-lock w-5 h-5"></i>
+                            </div>
+                            <input
+                                type="password"
+                                name="password2"
+                                id="confirmPassword"
+                                placeholder="Повторіть пароль"
+                                class="form-field"
+                                required
+                            >
+                            <span class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" id="toggleConfirmPassword">
+                                <i class="fas fa-eye w-5 h-5" id="confirmEyeIcon"></i>
+                            </span>
+                        </div>
+                        {% if form.password2.errors %}
+                            <div id="confirmPasswordError" class="mt-1 text-sm text-red-600">
+                                {{ form.password2.errors }}
+                            </div>
+                        {% else %}
+                            <div id="confirmPasswordError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                            <p class="text-sm text-red-800 font-medium">{{ form.non_field_errors }}</p>
+                        </div>
+                    {% endif %}
+
+                    <button
+                        type="submit"
+                        id="registerButton"
+                        class="w-full btn-primary text-white py-3.5 rounded-xl font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    >
+                        <span id="buttonText">Зареєструватися</span>
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">
+                        Вже є акаунт?
+                        <a href="{% url 'bns:login' %}" class="text-teal-600 hover:text-teal-700 font-semibold transition-colors">
+                            Увійти
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const eyeIcon = document.querySelector('#eyeIcon');
+
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye');
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+
+        const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
+        const confirmPassword = document.querySelector('#confirmPassword');
+        const confirmEyeIcon = document.querySelector('#confirmEyeIcon');
+
+        toggleConfirmPassword.addEventListener('click', function () {
+            const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPassword.setAttribute('type', type);
+            confirmEyeIcon.classList.toggle('fa-eye');
+            confirmEyeIcon.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            let isValid = true;
+
+            document.querySelectorAll('.text-red-600').forEach(el => {
+                if(el.classList.contains('hidden')) return;
+                el.classList.add('hidden');
+            });
+            document.querySelectorAll('.form-field').forEach(field => field.classList.remove('error'));
+
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                showError('usernameError', "Будь ласка, введіть ім'я користувача");
+                isValid = false;
+            } else if (username.length < 3) {
+                showError('usernameError', "Ім'я користувача має містити щонайменше 3 символи");
+                isValid = false;
+            }
+
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showError('emailError', "Будь ласка, введіть email");
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showError('emailError', "Будь ласка, введіть коректний email");
+                isValid = false;
+            }
+
+            const phone = document.getElementById('phone').value.trim();
+            const phoneRegex = /^(\+380|380|0)\d{9}$/;
+            if (!phone) {
+                showError('phoneError', "Будь ласка, введіть номер телефону");
+                isValid = false;
+            } else if (!phoneRegex.test(phone.replace(/[\s-]/g, ''))) {
+                showError('phoneError', "Будь ласка, введіть коректний номер телефону (формат: +380XXXXXXXXX)");
+                isValid = false;
+            }
+
+            const passwordValue = document.getElementById('password').value;
+            if (!passwordValue) {
+                showError('passwordError', "Будь ласка, введіть пароль");
+                isValid = false;
+            } else if (passwordValue.length < 6) {
+                showError('passwordError', "Пароль має містити щонайменше 6 символів");
+                isValid = false;
+            }
+
+            const confirmPasswordValue = document.getElementById('confirmPassword').value;
+            if (passwordValue !== confirmPasswordValue) {
+                showError('confirmPasswordError', "Паролі не співпадають");
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            const fieldName = elementId.replace('Error', '');
+            let inputField;
+
+            if (fieldName === 'username') {
+                inputField = document.getElementById('username');
+            } else if (fieldName === 'email') {
+                inputField = document.getElementById('email');
+            } else if (fieldName === 'phone') {
+                inputField = document.getElementById('phone');
+            } else if (fieldName === 'password') {
+                inputField = document.getElementById('password');
+            } else if (fieldName === 'confirmPassword') {
+                inputField = document.getElementById('confirmPassword');
+            }
+
+            if (inputField) {
+                inputField.classList.add('error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+</html>
