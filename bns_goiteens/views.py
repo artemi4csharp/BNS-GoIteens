@@ -105,10 +105,8 @@ def checkout_with_promo(request, item_id):
 @promo_admin_required
 def create_promo_code(request):
     if request.method == 'POST':
-        # Логіка створення промокоду
         pass
     else:
-        # Форма створення промокоду
         pass
     return render(request, 'promo/create_promo.html')
 
