@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+        <div>
+            Назва
+            {{ form.name.errors }}
+            {{ form.name }}
+            Опис
+            {{ form.description.errors }}
+            {{ form.description }}
+            <div class="category_price">
+                <div class="flex_column">
+                    Категорія
+                    {{ form.category.errors }}
+                    {{ form.category }}
+                </div>
+                <div class="flex_column">
+                    Ціна
+                    {{ form.price.errors }}
+                    {{ form.price }}
+                </div>
+            </div>
+            Місто, Регіон, Країна
+            {{ form.location.errors }}
+            {{ form.location }}
+                Активно
+                {{ form.is_active }}
+        </div>
+        <div style="text-align: left">
+            Зображення товару
+            {{ form.image.errors }}
+            {{ form.image }}
+            </div>
+        </div>
+
+
+        <button type="submit" class="create_and_edit_btn">Створити</button>
+{%endblock%}

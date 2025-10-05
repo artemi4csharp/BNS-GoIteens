@@ -7,7 +7,7 @@ from decimal import Decimal
 from .models import PromoCode, Item
 from .forms import PromoCodeForm
 
-# Create your views here.
+
 def home(request):
     return render(request, "base.html")
 
