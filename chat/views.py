@@ -29,14 +29,10 @@ def create_support_session(request):
         form = SupportSessionForm()
 
     return render(request, 'chat/create_support_session.html', {'form': form})
-
-
 @login_required
 def user_support_sessions(request):
     sessions = SupportSession.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'chat/user_support_sessions.html', {'sessions': sessions})
-
-
 @login_required
 def support_session_detail(request, session_id):
     session = get_object_or_404(SupportSession, id=session_id)
@@ -192,3 +188,10 @@ def websocket_chat_test(request, session_id):
         'session': session,
         'messages_list': messages_list
     })
+
+
+
+
+@login_required
+def chat_view(request):
+    return render(request, "chat/chat.html")
