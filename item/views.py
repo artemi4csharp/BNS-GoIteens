@@ -12,6 +12,8 @@ from django.contrib.auth import get_user_model
 from .models import Category
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from .forms import ItemCreationForm, ItemEditForm, RatingForm
+from django.views.decorators.http import require_POST
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -194,3 +196,12 @@ def request_category_create(request):
     else:
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})
+
+@require_POST
+@login_required
+def is_active_item(request, pk):
+    item = get_object_or_404(Item, pk=pk, owner = request.user)
+    item.is_active = not item.is_active
+    item.save()
+    messages.success('Товар не є активним')
+    return redirect('item_list')
