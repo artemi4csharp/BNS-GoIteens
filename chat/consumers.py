@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Message, User
+from bns_goiteens.models import Message, User
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -85,4 +85,3 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 [receiver.email],
                 fail_silently=True,
             )
-
