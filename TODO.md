@@ -1,7 +1,0 @@
-- [x] Implement ChatConsumer in BNS-GoIteens/chat/consumers.py
-- [x] Add necessary imports for AsyncWebsocketConsumer, json, channels.layers
-- [x] Implement connect method to join room group
-- [x] Implement disconnect method to leave room group
-- [x] Implement receive method to parse message and broadcast to group with username
-- [x] Implement chat_message method to send message to WebSocket
-- [ ] Test the WebSocket functionality
