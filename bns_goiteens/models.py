@@ -179,6 +179,8 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) 
     read = models.BooleanField(default=False)
+    room_name = models.CharField(max_length=255)
+
 
     class Meta:
         ordering = ["-created_at"]

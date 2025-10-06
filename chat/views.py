@@ -156,6 +156,6 @@ def close_session(request, session_id):
 
 
 @login_required
-def chat_view(request, room_name):
-    return render(request, "chat/chat.html", {"room_name": room_name})
+def chat_view(request, other_user_id):
+    return render(request, "chat/chat.html", {"room_name": other_user_id})
 

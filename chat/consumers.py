@@ -10,13 +10,18 @@ from bns_goiteens.models import Message, User
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         """Підключення користувача до кімнати"""
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'chat_{self.room_name}'
-
+        self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
         user = self.scope.get("user")
         if user is None or isinstance(user, AnonymousUser):
             await self.close(code=4001)
             return
+
+        if str(user.id) == self.other_user_id:
+            await self.close(code=4002)
+            return
+
+        self.room_name = f"{min(user.id, int(self.other_user_id))}_{max(user.id, int(self.other_user_id))}"
+        self.room_group_name = f'chat_{self.room_name}'
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
@@ -60,20 +65,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, user, room, message):
-        return Message.objects.create(sender=user, room_name=room, text=message)
+        receiver = User.objects.get(id=int(self.other_user_id))
+        return Message.objects.create(sender=user, receiver=receiver, room_name=room, content=message)
 
     @database_sync_to_async
     def send_email_notification(self, message_obj):
         """Надсилання листа про нове повідомлення"""
         try:
-            receiver = User.objects.get(id=int(message_obj.room_name))
+            receiver = User.objects.get(id=int(self.other_user_id))
         except (User.DoesNotExist, ValueError):
             return
 
         subject = f"Нове повідомлення від {message_obj.sender.username}"
         body = (
             f"Ви отримали нове повідомлення від користувача {message_obj.sender.username}:\n\n"
-            f"{message_obj.text}\n\n"
+            f"{message_obj.content}\n\n"
             "Відповісти можна у вашому акаунті."
         )
 
