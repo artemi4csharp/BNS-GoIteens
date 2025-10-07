@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Чат</title>
+    <title>Чат з {{ other_user.username }}</title>
 </head>
 <body>
-<h1>Чат кімната</h1>
-<div id="chat-log" style="border:1px solid gray; height:300px; overflow:auto;"></div>
+<h1>Чат з {{ other_user.username }}</h1>
+<div id="chat-log" style="border:1px solid gray; height:300px; overflow:auto;">
+    {% for message in messages %}
+    <p><b>{{ message.sender.username }}</b>: {{ message.content }}</p>
+    {% endfor %}
+</div>
 <input id="chat-message-input" type="text" placeholder="Ваше повідомлення...">
 <button id="chat-message-submit">Надіслати</button>
 
@@ -32,6 +36,12 @@ document.querySelector('#chat-message-submit').onclick = function() {
     chatSocket.send(JSON.stringify({'message': message}));
     input.value = '';
 };
+
+// Scroll to bottom on load
+document.addEventListener('DOMContentLoaded', function() {
+    const log = document.querySelector('#chat-log');
+    log.scrollTop = log.scrollHeight;
+});
 </script>
 </body>
 </html>

@@ -8,6 +8,8 @@ from .forms import SupportSessionForm, SupportMessageForm
 from django.db.models import Q
 from django.utils import timezone
 from .utils import send_chat_closed_email, send_agent_reply_email
+from bns_goiteens.models import User, Message
+
 
 def is_support_agent(user):
     return user.is_staff
@@ -157,5 +159,11 @@ def close_session(request, session_id):
 
 @login_required
 def chat_view(request, other_user_id):
-    return render(request, "chat/chat.html", {"room_name": other_user_id})
+
+    other_user = get_object_or_404(User, id=other_user_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('created_at')
+    return render(request, "chat/chat.html", {"room_name": other_user_id, "messages": messages, "other_user": other_user})
 
