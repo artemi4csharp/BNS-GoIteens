@@ -112,15 +112,12 @@ def delete_item(request, pk):
 
 
 def item_list(request):
+    
     query = request.GET.get("q")
     category = request.GET.get("category")
     owner = request.GET.get("owner")
-
-    items = Item.objects.all()
-    services = Service.objects.all()
-    last_seen_items = request.session.get("item_history", [])
-    items_in_history = Item.objects.filter(pk__in=last_seen_items)
     
+# -------- Поиск айтемов --------------
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
         services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
@@ -132,6 +129,32 @@ def item_list(request):
     if owner:
         items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
         services = services.filter(owner__id=owner) | services.filter(owner__username__icontains=owner)
+# ------------------------------- 
+
+# Показывает ранее просмотренные товары 
+    items = Item.objects.all()
+    services = Service.objects.all()
+    last_seen_items = request.session.get("item_history", [])
+    items_in_history = Item.objects.filter(pk__in=last_seen_items)
+# --------------End----------
+
+# ---------- Сортировка айтемов --------------------
+    sort = request.GET.get('sort') or request.session.get('sort')
+    
+# -------------- Сохранение сортировки в сессии --------------    
+    if sort:
+        request.session['sort'] = sort
+        
+    if sort == 'price_asc':
+        items = items.order_by('price')
+    elif sort == 'price_desc':
+        items = items.order_by('-price')
+    elif sort == 'name':
+        items = items.order_by('name')
+# -------------------------------------
+
+
+
 
     return render(request, "item_list.html", {
         "items": items,
