@@ -13,20 +13,24 @@ from .models import Category
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
-# def item_list(request):
-#     items = Item.objects.all()
-#     return render(request, 'item_list.html', {'items': items})
-
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     content_type = ContentType.objects.get_for_model(Item)
 
-    # Все оценки этого товара
+    #Подсчёт просмотров через cookie
+    viewed_items = request.COOKIES.get('viewed_items', '')
+    viewed_ids = viewed_items.split(',') if viewed_items else []
+
+    if str(pk) not in viewed_ids:
+        item.views += 1
+        item.save(update_fields=['views'])
+        viewed_ids.append(str(pk))
+
+    #Рейтинг товара
     all_ratings = Rating.objects.filter(content_type=content_type, object_id=item.id)
     avg_rating = all_ratings.aggregate(Avg('value'))['value__avg'] or 0
     total_reviews = all_ratings.count()
 
-    # Для залогиненного пользователя — его оценка
     user_rating = None
     if request.user.is_authenticated:
         user_rating = Rating.objects.filter(
@@ -35,7 +39,7 @@ def item_detail(request, pk):
             user=request.user
         ).first()
 
-    # История просмотров
+    #История просмотров через сессию
     last_seen_items = request.session.get('item_history', [])
     if pk in last_seen_items:
         last_seen_items.remove(pk)
@@ -44,9 +48,10 @@ def item_detail(request, pk):
     request.session['item_history'] = last_seen_items
     request.session.modified = True
 
-    # Обработка формы рейтинга
+    #Форма рейтинга
+    form = RatingForm(request.POST or None, instance=user_rating)
+
     if request.method == 'POST':
-        form = RatingForm(request.POST, instance=user_rating)
         if form.is_valid() and request.user.is_authenticated:
             rating = form.save(commit=False)
             rating.user = request.user
@@ -56,8 +61,6 @@ def item_detail(request, pk):
             return redirect('item:item_detail', pk=item.pk)
         else:
             messages.error(request, 'Помилка при збереженні оцінки.')
-    else:
-        form = RatingForm(instance=user_rating)
 
     context = {
         'item': item,
@@ -66,8 +69,11 @@ def item_detail(request, pk):
         'total_reviews': total_reviews,
     }
 
-    return render(request, 'view_item.html', context)
+    #Рендер и установка cookie
+    response = render(request, 'view_item.html', context)
+    response.set_cookie('viewed_items', ','.join(viewed_ids), max_age=60*60*24*10)
 
+    return response
 
 
 @login_required
@@ -84,6 +90,7 @@ def create_item(request):
     else: 
         form = ItemCreationForm()
     return render(request, 'create_item.html', {'form': form})
+
 
 @login_required
 def edit_item(request, pk):
@@ -136,6 +143,7 @@ def item_list(request):
 def categories_list(request):
     categories = Category.objects.select_related('parent').all()
     return render(request, 'categories/list.html', {'categories': categories})
+
 
 @login_required
 def request_category_create(request):
