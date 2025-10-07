@@ -20,6 +20,7 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(verbose_name="Активно")
+    views = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Категорія"
@@ -67,7 +68,7 @@ class BaseOffer(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    views = models.IntegerField()
+    views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     location = models.ForeignKey("Location", on_delete=models.PROTECT)
