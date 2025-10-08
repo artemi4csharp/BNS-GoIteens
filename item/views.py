@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service
+from bns_goiteens.models import Item, Rating, Service, Category
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
@@ -9,7 +9,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Category
 from django.contrib.auth.models import User
 
 
@@ -96,6 +95,10 @@ def delete_item(request, pk):
     return redirect("item_list")
 
 
+def categories_list():
+    return Category.objects.select_related('parent').all()
+
+
 def item_list(request):
     query = request.GET.get("q")
     category = request.GET.get("category")
@@ -103,6 +106,7 @@ def item_list(request):
 
     items = Item.objects.all()
     services = Service.objects.all()
+    categories = Category.objects.order_by('-views').all()
 
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
@@ -118,13 +122,12 @@ def item_list(request):
 
     return render(request, "item_list.html", {
         "items": items,
-        "services": services
+        "services": services,
+        "categories": categories
     })
 
 
-def categories_list(request):
-    categories = Category.objects.select_related('parent').all()
-    return render(request, 'categories/list.html', {'categories': categories})
+
 
 @login_required
 def request_category_create(request):

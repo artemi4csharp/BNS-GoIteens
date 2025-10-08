@@ -66,17 +66,17 @@
   </header>
 
   <nav>
-    <a href="">Всі категорії</a>
-    <a href="">Категорія 1</a>
-    <a href="">Категорія 2</a>
-    <a href="">Категорія 3</a>
-    <a href="">Категорія 4</a>
-    <a href="">Категорія 5</a>
+    <a href="{% url 'bns:home' %}">Всі категорії</a>
+  {% for category in categories|slice:":7" %}
+    <p>{{ category.name }}</p>
+  {% empty %}
+    <p>Немає категорій</p>
+  {% endfor %}
   </nav>
 
-<main>
-  {% block content %}{% endblock %}
-</main>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 
   <footer>
     <h6 style="margin-top: 11px;">© 2025 Company Name</h6>

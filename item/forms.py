@@ -1,7 +1,6 @@
 from django import forms
 from django.forms import modelform_factory
-from bns_goiteens.models import Category, Location, Item, Service, Rating, Promotion, SavedItem, Message
-from .models import CategoryRequest, Category
+from bns_goiteens.models import Category,CategoryRequest, Location, Item, Service, Rating, Promotion, SavedItem, Message
 
 CategoryForm = modelform_factory(
     Category, 

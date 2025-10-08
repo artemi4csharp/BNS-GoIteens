@@ -9,10 +9,6 @@ import string
 from django import forms
 from django.utils import timezone
 
-@admin.register(Category)
-class CustomAdminClass(ModelAdmin):
-    pass
-
 
 @admin.register(Location)
 class CustomLocationClass(ModelAdmin):

@@ -1,15 +1,33 @@
 from django.contrib import admin
 from unfold.admin  import ModelAdmin
-from bns_goiteens.models import Item
+from bns_goiteens.models import Item, Category, CategoryRequest
 from django.contrib.postgres.fields import ArrayField
 from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
-from .models import Category, CategoryRequest
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent', 'created_by', 'created_at')
+class CategoryAdmin(ModelAdmin):
+    model = Category
+    list_display = ('name', 'parent', 'created_by', 'created_at', 'views')
     search_fields = ('name',)
-
+    fieldsets = (("Main", {
+        "classes" : ('wide',),
+        "fields" : ('name', 'parent', 'created_by', 'created_at', 'views')
+    }),
+    )
+    add_fieldsets = (("Main", {
+        "classes" : ('wide',),
+        "fields" : ('name', 'parent', 'created_by', 'created_at',)
+    }),
+    )
+    readonly_fields = ('created_by', 'created_at')
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+    formfield_overrides = {
+        ArrayField: {
+            "widget": ArrayWidget,
+        }
+    }
 
 @admin.register(CategoryRequest)
 class CategoryRequestAdmin(admin.ModelAdmin):
@@ -31,7 +49,7 @@ class CategoryRequestAdmin(admin.ModelAdmin):
     reject_requests.short_description = "Відхилити вибрані запити"
 
 @admin.register(Item)
-class CustomItemClass(admin.ModelAdmin):
+class CustomItemClass(ModelAdmin):
     model = Item
     list_display = ('name', 'price', 'category', 'owner', 'get_avg_rating','created_at', 'updated_at')
     fieldsets = (
