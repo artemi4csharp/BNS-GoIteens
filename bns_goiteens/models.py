@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db.models import Avg
+from django.conf import settings
 
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
@@ -15,7 +16,7 @@ phone_validator = RegexValidator(
 class User(AbstractUser):
     bio = models.CharField(max_length=500, blank=True)
     phone = models.CharField(validators=[phone_validator], max_length=15)
-    income = models.DecimalField(max_digits=10, deciminal_places=2)
+    income = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -218,12 +219,11 @@ class Notification(models.Model):
     def __str__(self):
         return f"Notification for {self.user.username}: {self.content}"
 
-
 class ItemComplaint(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complaints")
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    author = models.ForeignKey( User, on_delete=models.CASCADE, related_name="item_complaints")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="item_complaints_ct")
     object_id = models.PositiveIntegerField()
-    owner_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="object_owner")
+    owner = models.ForeignKey(User,on_delete=models.CASCADE, related_name='owner_items_complaints')
     content_object = GenericForeignKey("content_type", "object_id")
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
