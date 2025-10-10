@@ -1,9 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from django.db.models import Avg
+from django.conf import settings
+
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Номер телефона має бути в форматі '+999999999'. До 15 цифр"
+)
+
+
+class User(AbstractUser):
+    bio = models.CharField(max_length=500, blank=True)
+    phone = models.CharField(validators=[phone_validator], max_length=15)
+    income = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 class Category(models.Model):
@@ -26,6 +40,7 @@ class Location(models.Model):
 
     class Meta:
         verbose_name = "Локація"
+        verbose_name_plural = "Локації"
 
     def __str__(self):
         return f"{self.country}:{self.region or 'Немає'}:{self.city}"
@@ -55,6 +70,7 @@ class BaseOffer(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     location = models.ForeignKey("Location", on_delete=models.PROTECT)
@@ -67,7 +83,12 @@ class BaseOffer(models.Model):
 class Item(BaseOffer):
 
     def average_rating(self):
-        return round(self.ratings.aggregate(avg=models.Avg("value"))["avg"] or 0, 1)
+        content_type = ContentType.objects.get_for_model(self)
+        avg_value = Rating.objects.filter(
+            content_type=content_type,
+            object_id=self.id
+        ).aggregate(avg=Avg("value"))["avg"]
+        return round(avg_value or 0, 1)
 
     class Meta:
         verbose_name = "Товар"
@@ -78,7 +99,10 @@ class Item(BaseOffer):
 
 
 class Service(BaseOffer):
-    service_type = models.CharField(choices=[("offer", "Надаю"), ("request", "Шукаю")])
+    service_type = models.CharField(
+        choices=[("offer", "Надаю"), ("request", "Шукаю")],
+        default="offer"
+    )
 
     class Meta:
         verbose_name = "Послуга"
@@ -99,6 +123,7 @@ class Rating(models.Model):
     class Meta:
         unique_together = ("user", "content_type", "object_id")
         verbose_name = "Рейтинг"
+        verbose_name_plural = "Рейтинг"
 
     def __str__(self):
         return f"{self.content_object.name} - рейтинг:{self.value}"
@@ -197,10 +222,11 @@ class Notification(models.Model):
         return f"Notification for {self.user.username}: {self.content}"
 
 
-class Complaint(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complaints")
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+class ItemComplaint(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="item_complaints")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="item_complaints_ct")
     object_id = models.PositiveIntegerField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_items_complaints')
     content_object = GenericForeignKey("content_type", "object_id")
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -211,5 +237,35 @@ class Complaint(models.Model):
         verbose_name = "Скарга"
         verbose_name_plural = "Скарги"
 
+
+class Comparison(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comparisons")
+    items = models.ManyToManyField(Item, related_name="in_comparisons")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Порівняння"
+        verbose_name_plural = "Порівняння"
+
     def __str__(self):
-        return f"Скарга від {self.author.username} на {self.content_object}"
+        return f"Порівняння користувача {self.user.username}"
+
+
+class UserComplaint(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complaints")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_complaints")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Скарга на користувача"
+        verbose_name_plural = "Скарги на користувачів"
+
+    def clean(self):
+        if self.author == self.user:
+            raise ValidationError("Користувач не може подати скаргу сам на себе.")
+
+    def __str__(self):
+        return f"Скарга від {self.author.username} на {self.user.username}"
