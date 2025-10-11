@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from decimal import Decimal
-from .models import PromoCode, Item
+from .models import PromoCode, Item, OwnerAnalytics
 from .forms import PromoCodeForm
 
 # Create your views here.
@@ -97,3 +96,7 @@ def checkout_with_promo(request, item_id):
         'final_price': final_price,
     }
     return render(request, 'promo/checkout.html', context)
+
+def owner_analytics(request):
+    analytics, created = OwnerAnalytics.objects.get_or_create(owner=request.user)
+    return render(request, 'owner_analytics.html', {'analytics': analytics})
