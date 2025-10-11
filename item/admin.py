@@ -43,7 +43,7 @@ class CustomItemClass(ModelAdmin):
     add_fieldsets = (
         ("Main", {
         "classes" : ("wide",),
-        "fields" : ('name', 'price', 'category', 'owner', 'location', 'image'),
+        "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'views'),
         }),
     )
     readonly_fields = ("created_at", "updated_at", "get_avg_rating")

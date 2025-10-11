@@ -364,6 +364,10 @@ class ItemComplaint(models.Model):
         verbose_name = "Скарга"
         verbose_name_plural = "Скарги"
 
+    def clean(self):
+        if self.owner == self.author:
+            raise ValidationError("Користувач не може подати скаргу на свій товар.")
+
 class UserComplaint(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="complaints")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_complaints")
@@ -414,3 +418,7 @@ class OwnerAnalytics(models.Model):
     @property 
     def total_user_complains(self):
         return UserComplaint.objects.filter(user=self.owner).count()
+    
+    @property
+    def total_income(self):
+        return self.income

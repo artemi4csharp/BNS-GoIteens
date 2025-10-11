@@ -16,7 +16,7 @@ class CustomServiceClass(ModelAdmin):
     add_fieldsets = (
         ("Main", {
         "classes" : ("wide",),
-        "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'service_type'),
+        "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'service_type', 'views'),
         }),
     )
     readonly_fields = ("created_at", "updated_at", "get_avg_rating", "image_preview")
