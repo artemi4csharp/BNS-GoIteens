@@ -16,7 +16,7 @@ class CategoryAdmin(ModelAdmin):
     )
     add_fieldsets = (("Main", {
         "classes" : ('wide',),
-        "fields" : ('name', 'parent', 'created_by', 'created_at',)
+        "fields" : ('name', 'parent', 'created_by', 'created_at', 'views')
     }),
     )
     readonly_fields = ('created_by', 'created_at')

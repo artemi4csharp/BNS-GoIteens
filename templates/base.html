@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base</title>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <style>
+      nav {
+      text-align: center;}
+    </style>
 </head>
 <body>
 <header>
@@ -66,7 +70,7 @@
   </header>
 
   <nav>
-    <a href="{% url 'bns:home' %}">Всі категорії</a>
+    <p><a href="{% url 'bns:home' %}">Всі категорії</a></p>
   {% for category in categories|slice:":7" %}
     <p>{{ category.name }}</p>
   {% empty %}
