@@ -6,11 +6,11 @@ from django.utils.html import format_html
 @admin.register(Service)
 class CustomServiceClass(ModelAdmin):
     model = Service
-    list_display = ('name', 'price', 'category', 'owner','service_type', 'created_at', 'updated_at')
+    list_display = ('name', 'price', 'category', 'owner','service_type', 'created_at', 'updated_at', 'views')
     fieldsets = (
         ("Main", {
             "classes" : ("wide",),
-            "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'image_preview','get_avg_rating', 'service_type', 'created_at', 'updated_at', ),
+            "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'image_preview','get_avg_rating', 'service_type', 'created_at', 'updated_at', 'views' ),
             }),
     )
     add_fieldsets = (

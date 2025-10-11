@@ -6,13 +6,13 @@ from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 from .models import Category, CategoryRequest
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'parent', 'created_by', 'created_at')
     search_fields = ('name',)
 
 
 @admin.register(CategoryRequest)
-class CategoryRequestAdmin(admin.ModelAdmin):
+class CategoryRequestAdmin(ModelAdmin):
     list_display = ('name', 'user', 'status', 'created_at', 'processed_at', 'processed_by')
     list_filter = ('status', 'created_at')
     search_fields = ('name', 'user__username')
@@ -31,13 +31,13 @@ class CategoryRequestAdmin(admin.ModelAdmin):
     reject_requests.short_description = "Відхилити вибрані запити"
 
 @admin.register(Item)
-class CustomItemClass(admin.ModelAdmin):
+class CustomItemClass(ModelAdmin):
     model = Item
-    list_display = ('name', 'price', 'category', 'owner', 'get_avg_rating','created_at', 'updated_at')
+    list_display = ('name', 'price', 'category', 'owner', 'get_avg_rating','created_at', 'updated_at', 'views')
     fieldsets = (
         ("Main", {
             "classes" : ("wide",),
-            "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'created_at', 'updated_at', 'get_avg_rating'),
+            "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'created_at', 'updated_at', 'get_avg_rating', 'views'),
             }),
     )
     add_fieldsets = (

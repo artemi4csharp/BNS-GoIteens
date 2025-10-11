@@ -338,14 +338,14 @@ class NotificationAdmin(ModelAdmin):
     
 @admin.register(ItemComplaint)
 class ItemComplaintAdmin(ModelAdmin):
-    list_display = ('author', 'owner', 'content_type', 'object_id', 'resolved', 'created_at')
+    list_display = ('author', 'owner', 'content_type', 'object_id', 'content_object', 'resolved', 'created_at')
     list_filter = ('resolved', 'created_at', 'content_type')
     search_fields = ('author__username', 'owner__username', 'text')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'get_content_object')
     
     fieldsets = (
         (None, {
-            'fields': ('author', 'owner', 'content_type', 'object_id', 'text', 'resolved')
+            'fields': ('author', 'owner', 'content_type', 'object_id', 'get_content_object', 'text', 'resolved')
         }),
         ('Додатково', {
             'fields': ('created_at',),
@@ -356,6 +356,10 @@ class ItemComplaintAdmin(ModelAdmin):
     compressed_fields = True
     list_fullwidth = True
     warn_unsaved_form = True
+    
+    def get_content_object(self, obj):
+        return obj.content_object
+    get_content_object.short_description = "Content object"
     
 @admin.register(UserComplaint)
 class UserComplaintAdmin(ModelAdmin):
