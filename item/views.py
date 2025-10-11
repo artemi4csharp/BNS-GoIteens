@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.decorators import login_required
 from bns_goiteens.models import Item, Rating, Service
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -15,9 +15,11 @@ from django.db.models import Avg
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
 from django.views.decorators.http import require_POST
 
+
 # def item_list(request):
 #     items = Item.objects.all()
 #     return render(request, 'item_list.html', {'items': items})
+
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -31,7 +33,6 @@ def item_detail(request, pk):
         item.save(update_fields=['views'])
         viewed_ids.append(str(pk))
 
-
     # Все оценки этого товара
     all_ratings = Rating.objects.filter(content_type=content_type, object_id=item.id)
     avg_rating = all_ratings.aggregate(Avg('value'))['value__avg'] or 0
@@ -40,15 +41,6 @@ def item_detail(request, pk):
     # Для залогиненного пользователя — его оценка
     user_rating = None
     if request.user.is_authenticated:
-        user_rating = Rating.objects.filter(
-            content_type=content_type,
-            object_id=item.id,
-            user=request.user
-        ).first()
-    else:
-        user_rating = None
-
-    form = RatingForm(request.POST or None, instance=user_rating)
         user_rating = Rating.objects.filter(
             content_type=content_type,
             object_id=item.id,
@@ -65,22 +57,13 @@ def item_detail(request, pk):
     request.session.modified = True
 
     # Обработка формы рейтинга
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = RatingForm(request.POST, instance=user_rating)
-        if form.is_valid() and request.user.is_authenticated:
+        if form.is_valid():
             rating = form.save(commit=False)
             rating.user = request.user
             rating.content_object = item
             rating.save()
-            messages.success(request, 'Success')
-            return redirect('item_detail', pk=item.pk)
-        else:
-            messages.error(request, 'Error')
-
-    response = render(request, 'item_detail.html', {
-        'item': item,
-        'form': form,
-    })
             messages.success(request, 'Ваша оцінка збережена!')
             return redirect('item:item_detail', pk=item.pk)
         else:
@@ -95,10 +78,10 @@ def item_detail(request, pk):
         'total_reviews': total_reviews,
     }
 
-    return render(request, 'view_item.html', context)
+    response = render(request, 'view_item.html', context)
 
     # Захист через кукі від накруток
-    response.set_cookie('viewed_items', ','.join(viewed_ids), max_age=60*60*24*10)
+    response.set_cookie('viewed_items', ','.join(viewed_ids), max_age=60 * 60 * 24 * 10)
 
     return response
 
@@ -110,13 +93,14 @@ def create_item(request):
         if form.is_valid():
             item = form.save(commit=False)
             request.user = item.owner
-            item.save() 
+            item.save()
             messages.success(request, 'Success')
-        else: 
+        else:
             messages.error(request, 'Error')
-    else: 
+    else:
         form = ItemCreationForm()
     return render(request, 'create_item.html', {'form': form})
+
 
 @login_required
 def edit_item(request, pk):
@@ -162,13 +146,14 @@ def item_list(request):
     return render(request, "item_list.html", {
         "items": items,
         "services": services,
-        "items_in_history" : items_in_history
+        "items_in_history": items_in_history
     })
 
 
 def categories_list(request):
     categories = Category.objects.select_related('parent').all()
     return render(request, 'categories/list.html', {'categories': categories})
+
 
 @login_required
 def request_category_create(request):
@@ -197,10 +182,11 @@ def request_category_create(request):
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})
 
+
 @require_POST
 @login_required
 def is_active_item(request, pk):
-    item = get_object_or_404(Item, pk=pk, owner = request.user)
+    item = get_object_or_404(Item, pk=pk, owner=request.user)
     item.is_active = not item.is_active
     item.save()
     messages.success('Товар не є активним')

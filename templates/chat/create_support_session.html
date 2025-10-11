@@ -1,0 +1,361 @@
+<!-- chat/templates/chat/create_support_session.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-dark: #003B46;
+    --secondary-dark: #07575B;
+    --primary-light: #C4DFE6;
+    --secondary-light: #66A5AD;
+    --accent: #E8E8E8;
+    --white: #ffffff;
+    --gray: #F5F5F5;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F44336;
+}
+
+.gradient-bg {
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary-dark));
+}
+
+.form-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.support-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--secondary-light);
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary-dark));
+    padding: 24px;
+    color: var(--white);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-icon-container {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-button {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.card-body {
+    padding: 32px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--secondary-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--white);
+    color: var(--text-dark);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--secondary-dark);
+    box-shadow: 0 0 0 3px rgba(7, 87, 91, 0.1);
+}
+
+textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.character-count {
+    font-size: 0.875rem;
+    color: var(--secondary-light);
+    margin-top: 4px;
+}
+
+.info-box {
+    background: var(--primary-light);
+    border-left: 4px solid var(--secondary-dark);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 24px 0;
+}
+
+.info-title {
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.info-text {
+    font-size: 0.875rem;
+    color: var(--secondary-dark);
+    line-height: 1.5;
+}
+
+.button-group_1 {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    flex-direction: column;
+}
+
+.btn {
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--secondary-dark);
+    color: var(--white);
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary-dark);
+    border: 2px solid var(--secondary-light);
+    padding: 16px 32px;
+}
+
+.btn-secondary:hover {
+    background: var(--primary-light);
+}
+
+.emergency-contact {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--secondary-dark);
+}
+
+.emergency-link {
+    color: var(--primary-dark);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.emergency-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 20px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .btn-secondary {
+        padding: 16px 24px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="support-card">
+        <div class="card-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <div class="header-icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Новий запит до підтримки</h2>
+                        <p class="text-white/80">Опишіть вашу проблему, і ми допоможемо</p>
+                    </div>
+                </div>
+                <button onclick="window.history.back()" class="close-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <form method="post" class="card-body">
+            {% csrf_token %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="space-y-6">
+                <div class="form-group">
+                    <label class="form-label">Категорія запиту</label>
+                    <select name="category" class="form-control" required>
+                        <option value="">Оберіть категорію</option>
+                        <option value="payment">Проблема з оплатою</option>
+                        <option value="delivery">Питання щодо доставки</option>
+                        <option value="product">Проблема з товаром</option>
+                        <option value="technical">Технічна підтримка</option>
+                        <option value="return">Повернення товару</option>
+                        <option value="other">Інше</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.subject.id_for_label }}" class="form-label">Тема звернення</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <div class="text-danger mt-1">
+                            {{ form.subject.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.content.id_for_label }}" class="form-label">Детальний опис проблеми</label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <div class="text-danger mt-1">
+                            {{ form.content.errors }}
+                        </div>
+                    {% endif %}
+                    <p class="character-count" id="charCount">0 / 1000 символів</p>
+                </div>
+
+                <div class="info-box">
+                    <h4 class="info-title">Очікуваний час відповіді</h4>
+                    <p class="info-text">
+                        Наша служба підтримки відповідає протягом 24 годин у робочі дні.
+                        Ви отримаєте повідомлення, як тільки спеціаліст почне опрацьовувати ваш запит.
+                    </p>
+                </div>
+
+                <div class="button-group_1">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        Відправити запит
+                    </button>
+                    <button type="button" onclick="window.history.back()" class="btn btn-secondary">
+                        Скасувати
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="emergency-contact">
+        <p>
+            Потрібна термінова допомога?
+            <a href="tel:+3801234567899" class="emergency-link">Зателефонуйте нам</a>
+        </p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentField = document.querySelector('#{{ form.content.id_for_label }}');
+    const charCount = document.getElementById('charCount');
+
+    if (contentField && charCount) {
+        contentField.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length} / 1000 символів`;
+
+            if (length > 1000) {
+                charCount.style.color = '#F44336';
+            } else {
+                charCount.style.color = '#66A5AD';
+            }
+        });
+
+        // Ініціалізація лічильника
+        charCount.textContent = `${contentField.value.length} / 1000 символів`;
+    }
+});
+</script>
+{% endblock %}

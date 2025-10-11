@@ -21,7 +21,9 @@ class User(AbstractUser):
     bio = models.CharField(max_length=500, blank=True)
     phone = models.CharField(validators=[phone_validator], max_length=15)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")  # Додано дату народження
+    birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
 
     ROLE_CHOICES = [
         ('admin', 'Адміністратор'),
@@ -130,6 +132,7 @@ class BaseOffer(models.Model):
 
 
 class Item(BaseOffer):
+    is_active = models.BooleanField(default=True)  # ← Додати це поле
 
     def average_rating(self):
         content_type = ContentType.objects.get_for_model(self)
@@ -152,6 +155,7 @@ class Service(BaseOffer):
         choices=[("offer", "Надаю"), ("request", "Шукаю")],
         default="offer"
     )
+    is_active = models.BooleanField(default=True)  # ← Переконатися, що це поле є
 
     class Meta:
         verbose_name = "Послуга"

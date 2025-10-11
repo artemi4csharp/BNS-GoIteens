@@ -176,8 +176,8 @@ class Message(models.Model):
 
 
 class BlackList(models.Model):
-    blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
-    blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="in_blacklist")
+    blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blacklisted_users")
+    blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_by")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -187,7 +187,6 @@ class BlackList(models.Model):
 
     def __str__(self):
         return f"{self.blocker} заблокував {self.blocked}"
-
 
 class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")

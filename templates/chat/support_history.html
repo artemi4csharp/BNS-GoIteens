@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+:root {
+    --primary-dark: #003B46;
+    --secondary-dark: #07575B;
+    --primary-light: #C4DFE6;
+    --secondary-light: #66A5AD;
+    --accent: #E8E8E8;
+    --white: #ffffff;
+    --gray: #F5F5F5;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F44336;
+}
+
+.support-history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-content h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.header-content p {
+    color: var(--secondary-dark);
+    font-size: 1rem;
+}
+
+.create-ticket-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--secondary-dark);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.create-ticket-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tickets-grid {
+    display: grid;
+    gap: 24px;
+}
+
+.ticket-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    border: 2px solid var(--secondary-light);
+    transition: all 0.3s ease;
+}
+
+.ticket-card:hover {
+    border-color: var(--secondary-dark);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+.ticket-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.ticket-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.ticket-icon-container {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ticket-icon {
+    color: var(--primary-dark);
+    width: 24px;
+    height: 24px;
+}
+
+.ticket-details {
+    flex: 1;
+}
+
+.ticket-subject {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.ticket-message {
+    color: var(--secondary-dark);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.ticket-date {
+    font-size: 0.875rem;
+    color: var(--secondary-light);
+}
+
+.ticket-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    min-width: 150px;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.status-open {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-in-progress {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-closed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.chat-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--secondary-light);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.chat-link:hover {
+    background: var(--secondary-dark);
+    transform: translateX(4px);
+}
+
+.empty-state {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 64px 32px;
+    text-align: center;
+    border: 2px solid var(--secondary-light);
+}
+
+.empty-icon {
+    color: var(--secondary-light);
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.empty-description {
+    color: var(--secondary-dark);
+    margin-bottom: 24px;
+    font-size: 1rem;
+}
+
+.empty-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--secondary-dark);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.empty-create-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ticket-header {
+        flex-direction: column;
+    }
+    
+    .ticket-actions {
+        align-items: stretch;
+        width: 100%;
+    }
+    
+    .chat-link {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="support-history-container">
+    <div class="header-section">
+        <div class="header-content">
+            <h1>Історія звернень</h1>
+            <p>Всі ваші запити до служби підтримки</p>
+        </div>
+        <a href="{% url 'chat:create_support_session' %}" class="create-ticket-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Створити новий запит
+        </a>
+    </div>
+
+    <div class="tickets-grid">
+        {% for session in sessions %}
+        <div class="ticket-card">
+            <div class="ticket-header">
+                <div class="ticket-main">
+                    <div class="ticket-icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ticket-icon">
+                            <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                        </svg>
+                    </div>
+                    <div class="ticket-details">
+                        <h3 class="ticket-subject">{{ session.subject }}</h3>
+                        <p class="ticket-message">
+                            {% if session.messages.last %}
+                                {{ session.messages.last.content|truncatewords:15 }}
+                            {% else %}
+                                Немає повідомлень
+                            {% endif %}
+                        </p>
+                        <p class="ticket-date">{{ session.created_at|date:"d E Y, H:i" }}</p>
+                    </div>
+                </div>
+
+                <div class="ticket-actions">
+                    <div class="status-badge status-{{ session.status }}">
+                        {% if session.status == 'pending' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            Відкрито
+                        {% elif session.status == 'active' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            В обробці
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Закрито
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'chat:support_session_detail' session.id %}" class="chat-link">
+                        Відкрити чат
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+            </svg>
+            <h3 class="empty-title">Поки що немає звернень</h3>
+            <p class="empty-description">Створіть свій перший запит до служби підтримки</p>
+            <a href="{% url 'chat:create_support_session' %}" class="empty-create-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Створити запит
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

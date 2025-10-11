@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import *
+from .models import User, PromoCode
 
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True)
@@ -14,7 +14,7 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone']
+        fields = ['username', 'email', 'phone', 'avatar', 'address', 'first_name', 'last_name']
 
 class PromoCodeForm(forms.Form):
     code = forms.CharField(max_length=50, label="Промокод")
@@ -28,3 +28,8 @@ class PromoCodeForm(forms.Form):
         except PromoCode.DoesNotExist:
             raise forms.ValidationError("Промокод не знайдено")
         return code
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'avatar', 'birth_date']

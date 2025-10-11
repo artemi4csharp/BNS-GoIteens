@@ -4,38 +4,32 @@ from bns_goiteens.models import Category, Location, Item, Service, Rating, Promo
 from .models import CategoryRequest, Category
 
 CategoryForm = modelform_factory(
-    Category, 
+    Category,
     fields = ['name', 'is_active'],
     labels = {'name':'Назва товару', 'is_active': 'Чи активна категорія'}
 )
 
 LocationForm = modelform_factory(
-    Location, 
+    Location,
     fields = ['city', 'region', 'country'],
     labels = {'city':'Місто', 'region':'Область', 'country': 'Країна'}
 )
 
 ItemCreationForm = modelform_factory(
-    Item, 
+    Item,
     fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'image', 'is_active'],
     labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото', 'is_active': 'Чи активне оголошення'},
 )
 
-ItemEditForm = modelformset_factory(
-    Item, 
-    fields = ['name', 'description', 'price', 'is_active', 'image'],
-    extra = 1, 
-    can_delete = True
-    )
 class ItemEditForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['name', 'description', 'price', 'image']
+        fields = ['name', 'description', 'price', 'image', 'is_active']
 
 ServiceCreationForm = modelform_factory(
-    Service, 
+    Service,
     fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'service_type', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
+    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'},
 )
 
 class ServiceEditForm(forms.ModelForm):

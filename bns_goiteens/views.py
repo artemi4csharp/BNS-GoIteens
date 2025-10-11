@@ -1,16 +1,14 @@
-from django.shortcuts import render
+from decimal import Decimal
+from .models import PromoCode, Item, User
+from .decorators import promo_admin_required
+from django.contrib.auth import login
+from .forms import CustomUserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.utils import timezone
-from decimal import Decimal
-from .models import PromoCode, Item, User
-from .forms import PromoCodeForm
-from .decorators import promo_admin_required
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib import messages
-from .forms import CustomUserCreationForm
+from django.contrib.auth import logout
+from .models import PromoCode, User
+from .forms import PromoCodeForm, ProfileUpdateForm
 
 # Create your views here.
 def home(request):
@@ -140,3 +138,49 @@ def register_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        # Обробка форми промокоду
+        if 'activate_promo' in request.POST:
+            promo_form = PromoCodeForm(request.POST)
+            if promo_form.is_valid():
+                code = promo_form.cleaned_data['code']
+                try:
+                    promo = PromoCode.objects.get(code=code)
+                    result = promo.apply_promo(request.user)
+                    if result['success']:
+                        messages.success(request, result['message'])
+                    else:
+                        messages.error(request, result['message'])
+                except PromoCode.DoesNotExist:
+                    messages.error(request, 'Промокод не знайдено')
+            return redirect('bns:profile')
+
+        # Обробка форми редагування профілю
+        elif 'update_profile' in request.POST:
+            profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Профіль успішно оновлено!')
+                return redirect('bns:profile')
+            else:
+                messages.error(request, 'Помилка при оновленні профілю!')
+
+    promo_form = PromoCodeForm()
+    profile_form = ProfileUpdateForm(instance=request.user)
+
+    context = {
+        'promo_form': promo_form,
+        'profile_form': profile_form,
+    }
+    return render(request, 'profile.html', context)
+
+
+
+# Додай вьюху для логауту
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Ви успішно вийшли з акаунту.')
+    return redirect('bns:home')

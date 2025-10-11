@@ -68,9 +68,3 @@ class CustomItemClass(admin.ModelAdmin):
             "widget": ArrayWidget,
         }
     }
-admin.site.register(Item)
-admin.site.register(Rating)
-admin.site.register(Service)
-admin.site.register(Category)
-admin.site.register(Location)
-

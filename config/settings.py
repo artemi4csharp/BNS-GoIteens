@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'browse',
     'saved_item',
     'cart',
-    "channels",
 ]
 
 

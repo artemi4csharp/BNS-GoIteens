@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base</title>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
     {% endblock %}
@@ -58,23 +59,24 @@
         <button  class="create-btn">+ Створити оголошення</button>
     </div>
 
-    {% if user.is_authenticated %}
-        <button class="profile-btn" onclick="window.location.href='{% url 'admin:index' %}'">
-            <div class="profile-icon">
-                <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
-            </div>
-            <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
-            <h3 class="profile-balance">{{ user.balance|floatformat:2 }} ₴</h3>
-            <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
-        </button>
-    {% else %}
-        <button class="profile-btn" onclick="window.location.href='{% url 'bns:login' %}'">
-            <div class="profile-icon">
-                <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
-            </div>
-            <p class="profile-name">Увійти</p>
-        </button>
-    {% endif %}
+{% if user.is_authenticated %}
+    <button class="profile-btn" onclick="window.location.href='{% url 'bns:profile' %}'">
+        <div class="profile-icon">
+            <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+        </div>
+        <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
+        <h3 class="profile-balance">{{ user.balance|floatformat:2 }} ₴</h3>
+        <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
+    </button>
+{% else %}
+    <button class="profile-btn" onclick="window.location.href='{% url 'bns:login' %}'">
+        <div class="profile-icon">
+            <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+        </div>
+        <p class="profile-name">Увійти</p>
+    </button>
+{% endif %}
+
   </div>
   </header>
 

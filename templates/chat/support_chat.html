@@ -1,0 +1,490 @@
+<!-- templates/chat/support_chat.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-dark: #003B46;
+    --secondary-dark: #07575B;
+    --primary-light: #C4DFE6;
+    --secondary-light: #66A5AD;
+    --accent: #E8E8E8;
+    --white: #ffffff;
+    --gray: #F5F5F5;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F44336;
+}
+
+.chat-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.chat-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--secondary-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+}
+
+.chat-header {
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary-dark));
+    padding: 24px;
+    color: var(--white);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.ticket-info h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.ticket-info p {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.status-open {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-in-progress {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-closed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background: rgba(196, 223, 230, 0.2);
+}
+
+.message-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.message-container.user {
+    justify-content: flex-end;
+}
+
+.message-container.support {
+    justify-content: flex-start;
+}
+
+.message-bubble {
+    max-width: 70%;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.message-bubble.support {
+    background: var(--white);
+    border: 2px solid var(--secondary-light);
+    order: 1;
+}
+
+.message-bubble.user {
+    background: var(--secondary-dark);
+    color: var(--white);
+    order: 2;
+}
+
+.support-name {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 4px;
+}
+
+.message-text {
+    line-height: 1.5;
+}
+
+.message-text.user {
+    color: var(--white);
+}
+
+.message-text.support {
+    color: var(--primary-dark);
+}
+
+.message-time {
+    font-size: 0.75rem;
+    margin-top: 8px;
+}
+
+.message-time.support {
+    color: var(--secondary-light);
+    text-align: left;
+}
+
+.message-time.user {
+    color: rgba(255, 255, 255, 0.8);
+    text-align: right;
+}
+
+.chat-input-container {
+    padding: 24px;
+    background: var(--white);
+    border-top: 2px solid var(--secondary-light);
+}
+
+.chat-input-container.closed {
+    background: var(--primary-light);
+    border-top: 2px solid var(--secondary-light);
+    text-align: center;
+}
+
+.closed-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--primary-dark);
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.new-ticket-button {
+    width: 100%;
+    background: var(--secondary-dark);
+    color: var(--white);
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.new-ticket-button:hover {
+    background: var(--primary-dark);
+}
+
+.input-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.message-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    border: 2px solid var(--secondary-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: border-color 0.3s;
+}
+
+.message-input:focus {
+    outline: none;
+    border-color: var(--secondary-dark);
+}
+
+.send-button {
+    background: var(--secondary-dark);
+    color: var(--white);
+    border: none;
+    padding: 0 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.send-button:hover {
+    background: var(--primary-dark);
+}
+
+.send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-hint {
+    font-size: 0.75rem;
+    color: var(--secondary-light);
+    margin-top: 8px;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.back-history-button {
+    padding: 8px 24px;
+    border: 2px solid var(--secondary-light);
+    background: var(--white);
+    color: var(--primary-dark);
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-history-button:hover {
+    background: var(--primary-light);
+}
+
+.close-ticket-button {
+    padding: 8px 24px;
+    background: var(--danger);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.close-ticket-button:hover {
+    background: #d32f2f;
+}
+
+@media (max-width: 768px) {
+    .chat-container {
+        padding: 10px;
+    }
+
+    .chat-card {
+        height: 80vh;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .message-bubble {
+        max-width: 85%;
+    }
+
+    .input-form {
+        flex-direction: column;
+    }
+
+    .send-button {
+        padding: 12px;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-card">
+        <div class="chat-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <button class="back-button" onclick="window.location.href='{% url 'chat:support_history' %}'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                    </button>
+                    <div class="ticket-info">
+                        <h2>{{ session.subject }}</h2>
+                        <p>Запит #{{ session.id }}</p>
+                    </div>
+                </div>
+                <div class="status-badge status-{{ session.status }}">
+                    {% if session.status == 'pending' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Відкрито
+                    {% elif session.status == 'active' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        В обробці
+                    {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Закрито
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            {% for message in messages_list %}
+            <div class="message-container {% if message.sender == request.user %}user{% else %}support{% endif %}">
+                <div class="message-bubble {% if message.sender == request.user %}user{% else %}support{% endif %}">
+                    {% if message.sender != request.user %}
+                        <p class="support-name">Служба підтримки</p>
+                    {% endif %}
+                    <p class="message-text {% if message.sender == request.user %}user{% else %}support{% endif %}">{{ message.content }}</p>
+                </div>
+                <p class="message-time {% if message.sender == request.user %}user{% else %}support{% endif %}">
+                    {{ message.created_at|date:"H:i" }}
+                </p>
+            </div>
+            {% endfor %}
+            <div id="messages-end"></div>
+        </div>
+
+        {% if session.status == 'closed' %}
+            <div class="chat-input-container closed">
+                <div class="closed-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Цей чат закрито. Ви не можете відправляти нові повідомлення.</span>
+                </div>
+                <button class="new-ticket-button" onclick="window.location.href='{% url 'chat:create_support_session' %}'">
+                    Створити новий запит
+                </button>
+            </div>
+        {% else %}
+            <form method="post" class="chat-input-container">
+                {% csrf_token %}
+                <div class="input-form">
+                    {{ form.content }}
+                    <button type="submit" class="send-button" id="send-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        Відправити
+                    </button>
+                </div>
+                <p class="input-hint">Наша команда відповідає протягом 24 годин у робочі дні</p>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="action-buttons">
+        <button class="back-history-button" onclick="window.location.href='{% url 'chat:support_history' %}'">
+            Повернутися до історії
+        </button>
+        {% if session.status != 'closed' %}
+            <form method="post" action="{% url 'chat:close_session' session.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="close-ticket-button"
+                        onclick="return confirm('Ви впевнені, що хочете закрити це звернення?')">
+                    Закрити запит
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Автоматично прокручуємо до останнього повідомлення
+document.addEventListener('DOMContentLoaded', function() {
+    const messagesContainer = document.getElementById('chat-messages');
+    const messagesEnd = document.getElementById('messages-end');
+
+    if (messagesEnd) {
+        messagesEnd.scrollIntoView();
+    }
+
+    // Оновлюємо CSRF токен для AJAX запитів
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Перевірка наявності тексту в полі вводу для активації кнопки
+    const messageInput = document.querySelector('textarea[name="content"]');
+    const sendButton = document.getElementById('send-button');
+
+    if (messageInput && sendButton) {
+        messageInput.addEventListener('input', function() {
+            sendButton.disabled = !this.value.trim();
+        });
+
+        // Ініціалізуємо стан кнопки
+        sendButton.disabled = !messageInput.value.trim();
+    }
+});
+</script>
+{% endblock %}

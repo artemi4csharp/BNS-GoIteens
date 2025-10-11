@@ -10,4 +10,6 @@ urlpatterns = [
     path("checkout/<int:item_id>/", views.checkout_with_promo, name="checkout"),
     path("register/", views.register_view, name="register"),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('profile/', views.profile_view, name='profile'),
 ]
