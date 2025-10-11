@@ -1,38 +1,57 @@
 {% extends "base.html" %}
 {% load static %}
+{% load form_tags %}
 {% block content %}
-        <div>
-            Назва
-            {{ form.name.errors }}
-            {{ form.name }}
-            Опис
-            {{ form.description.errors }}
-            {{ form.description }}
-            <div class="category_price">
-                <div class="flex_column">
-                    Категорія
-                    {{ form.category.errors }}
-                    {{ form.category }}
-                </div>
-                <div class="flex_column">
-                    Ціна
-                    {{ form.price.errors }}
-                    {{ form.price }}
-                </div>
-            </div>
-            Місто, Регіон, Країна
-            {{ form.location.errors }}
-            {{ form.location }}
-                Активно
-                {{ form.is_active }}
-        </div>
-        <div style="text-align: left">
-            Зображення товару
-            {{ form.image.errors }}
-            {{ form.image }}
-            </div>
+
+<h2>Створити товар</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div>
+        <label for="{{ form.name.id_for_label }}">Назва</label>
+        {{ form.name|add_class:"capitalize-first input1" }}
+    </div>
+
+    <div>
+        <label for="{{ form.description.id_for_label }}">Опис</label>
+        {{ form.description|add_class:"capitalize-first input2" }}
+    </div>
+
+    <div class="category_price">
+        <div class="flex_column">
+            <label for="{{ form.category.id_for_label }}">Категорія</label>
+            {{ form.category|add_class:"capitalize-first input3" }}
         </div>
 
+        <div class="flex_column">
+            <label for="{{ form.price.id_for_label }}">Ціна</label>
+            {{ form.price|add_class:"input4" }}
+        </div>
+    </div>
 
-        <button type="submit" class="create_and_edit_btn">Створити</button>
-{%endblock%}
+    <div>
+        <label for="{{ form.location.id_for_label }}">Місто, Регіон, Країна</label>
+        {{ form.location|add_class:"capitalize-first input1" }}
+    </div>
+
+    <div style="text-align: left">
+        <label for="{{ form.image.id_for_label }}">Фото товару</label>
+        <div class="addPhoto_btn">
+            {{ form.image|add_class:"img-input" }}
+            <img src="{% static 'icons/add.svg' %}" alt="add_photo" class="img_add">
+        </div>
+    </div>
+
+    <button type="submit" class="create_and_edit_btn">Створити</button>
+</form>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

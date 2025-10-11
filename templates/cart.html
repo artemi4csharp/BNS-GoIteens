@@ -7,13 +7,46 @@
       <div class="card">
         <div class="card-content">
           <p>{{ entry.object.name }}</p>
-
           <p>Кількість: {{ entry.quantity }}</p>
           <a class="btn">Купити</a>
           <a href="{% url 'delete_from_cart' entry.object.id entry.object.get_content_type_id %}"
-            class="btn btn-danger">
-            Видалити
-            </a>
+             class="btn btn-danger">
+             Видалити
+          </a>
+        </div>
+      </div>
+
+      <div class="div_card">
+        {% if entry.object.image %}
+          <img src="{{ entry.object.image.url }}" alt="{{ entry.object.name }}">
+        {% else %}
+          <img src="/media/items_image/default.png" alt="Default image">
+        {% endif %}
+        <div class="div_content">
+          <p style="margin: 0;">{{ entry.object.name }}</p>
+          <b>{{ entry.object.price }} ₴</b>
+          <div class="between">
+            <div style="height: fit-content;" class="row between">
+              <a href="{% url 'item:item_detail' entry.object.pk %}" class="buy_button">Купити</a>
+              <div class="between card_buttons1">
+                <div style="gap: 5px;" class="row">
+                  <a href="{% url 'save_item' entry.object.pk entry.object.get_content_type_id %}">
+                    <img src="{% static 'icons/like.svg' %}" alt="like" class="card_buttons2">
+                  </a>
+                  <a href="{% url 'item:item_detail' entry.object.pk %}">
+                    <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2">
+                  </a>
+
+                  <a href="{% url 'item:item_detail' entry.object.pk %}">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                      <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                      <p style="margin: 0;">{{ entry.object.views }}</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     {% empty %}

@@ -1,71 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="create_and_edit_announcement.css">
-    <script src="app.js" defer></script>
-</head>
-<body>
-    <div id="header"></div>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
 
-    <main>
-        <div>
-            Назва
-            <input type="text" class="capitalize-first input1">
-            Опис
-            <textarea class="capitalize-first input2"></textarea>
-            <div class="category_price">
-                <div class="flex_column">
-                    Категорія
-                    <input type="text" class="capitalize-first input3">
-                </div>
-                <div class="flex_column">
-                    Ціна
-                    <input type="number" class="input4">
-                </div>
-            </div>
-            Місто, Регіон, Країна
-            <input type="text" class="capitalize-first input1">
-            Тип послуги
-            <div style="align-items: center;" class="flex_row">
-                <input type="text" class="capitalize-first last_input">
-                    <label class="custom-checkbox">
-                        <input type="checkbox">
-                        <span></span> 
-                        Активно
-                    </label>
-            </div>
-            <div style="display: flex">
-                <button class="create_and_edit_btn">Створити</button>
-                <button class="create_and_edit_btn edit_btn">Змінити</button>
+
+    <div>
+        Назва
+        {{ form.name }}
+    </div>
+
+
+    <div>
+        Опис
+        {{ form.description }}
+    </div>
+
+
+    <div class="flex_column" style="margin-top: 6px;">
+        Категорія
+        {{ form.category }}
+    </div>
+
+
+    <div style="display:flex; align-items:center; gap:12px; margin-top: 6px;">
+        <label for="{{ form.price.id_for_label }}" style="font-size:25px; color:#003B46;">Ціна</label>
+        {{ form.price }}
+    </div>
+
+
+    <div style="margin-top: 6px;">
+        Місто, Регіон, Країна
+        {{ form.location }}
+    </div>
+
+    <div class="type" style="margin-top: 10px;">
+        <label class="custom-checkbox">
+            <input type="checkbox" name="is_active" {% if form.instance and form.instance.is_active %}checked{% endif %}>
+            <span></span>
+            Активно
+        </label>
+    </div>
+
+
+    <div style="text-align: left; margin-top: 40px;">
+        Зображення товару
+        <div style="margin-top: 5px;" class="flex_row">
+
+            <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                <img id="preview_image"
+                     src="{% if form.instance and form.instance.image %}{{ form.instance.image.url }}{% else %}{% static 'icons/add.svg' %}{% endif %}"
+                     alt="preview"
+                     class="img_add"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:15px;">
             </div>
         </div>
-        <div style="text-align: left">
-            Зображення товару
-            <div style="margin-top: 5px;" class="flex_row">
-                <div class="addPhoto_btn img_add1">
-                    <img src="icons/add.svg" alt="add_photo" class="img_add">
-                </div>
-                <div class="flex_column">
-                    <div class="addPhoto_btn img_add2">
-                        <img src="icons/add.svg" alt="add_photo" class="img_add">
-                    </div>
-                    <div class="flex_row">
-                        <div class="addPhoto_btn img_add3">
-                            <img src="icons/add.svg" alt="add_photo" class="img_add">
-                        </div>
-                        <div class="addPhoto_btn img_add4">
-                            <img src="icons/add.svg" alt="add_photo" class="img_add">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
 
-    <div id="footer"></div>
-</body>
-</html>
+
+        {{ form.image }}
+    </div>
+
+
+    <div style="display:flex; justify-content:center; margin-top:20px; margin-bottom:40px;">
+        <button type="submit" class="create_and_edit_btn edit_btn">Змінити</button>
+    </div>
+</form>
+
+<script>
+    const input = document.getElementById('id_image_input');
+    const preview = document.getElementById('preview_image');
+    if (input && preview) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                preview.src = URL.createObjectURL(this.files[0]);
+            }
+        });
+    }
+</script>
+{% endblock %}

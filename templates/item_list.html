@@ -1,175 +1,103 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<main>
-  <style>
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
-      background-color: #f5f6fa;
-      min-height: 100vh;
-    }
-
-    .cards-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-      max-width: 1200px;
-      width: 100%;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .card-content p {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .card-number {
-      font-size: 0.9rem;
-      color: #777;
-    }
-
-    .card-content .btn {
-      display: inline-block;
-      padding: 10px 16px;
-      text-align: center;
-      background-color: #2e86de;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.25s;
-      text-decoration: none;
-    }
-
-    .card-content .btn:hover {
-      background-color: #1e6fd1;
-    }
-
-    .card-footer {
-      border-top: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 16px;
-    }
-
-    .icons {
-      display: flex;
-      gap: 12px;
-    }
-
-    .icons span,
-    .icons a {
-      color: #555;
-      font-size: 1.2rem;
-      text-decoration: none;
-      cursor: pointer;
-      transition: color 0.25s;
-    }
-
-    .icons span:hover,
-    .icons a:hover {
-      color: #2e86de;
-    }
-
-    main p {
-      text-align: center;
-      font-size: 1.1rem;
-      color: #888;
-      margin-top: 20px;
-    }
-  </style>
-    <p>Item History</p>
-    <div class="cards-container">
-      {% for item in items_in_history %}
-        <div class="card">
-          <img src="{{ item.image }}" alt="{{ item.name }}">
-          <div class="card-content">
-            <p>{{ item.name }}</p>
-            <p>{{item.price}}</p>
-            <div class="card-number">{{ item.id }}</div>
-            <a class="btn">Купити</a>
-          </div>
-          <div class="card-footer">
-            <div class="icons">
-              <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
-                <span title="Додати в обране">♡</span>
-              </a>
-              <span title="Коментарі">💬</span>
-              <span title="Порівняти">⚖️</span>
-            </div>
-            <div class="icons">
-              <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}">
-                <span title="До кошика">До кошика</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      {% empty %}
-        <p>Немає товарів</p>
-      {% endfor %}
+<div class="between">
+    <div class="group1">
+        <img src="{% static 'icons/search.svg' %}" alt="search">
+        <input type="text" placeholder="Пошук товару та послуг...">
+        <button class="group_button">Знайти</button>
     </div>
+    <div class="group2">
+        <input type="text" placeholder="Тут активні фільтри">
+        <button class="group_button">Знайти</button>
+    </div>
+</div>
 
-    <p>All items</p>
-  <div class="cards-container">
-    {% for item in items %}
-      <div class="card">
-        <img src="{{ item.image }}" alt="{{ item.name }}">
-        <div class="card-content">
-          <p>{{ item.name }}</p>
-          <p>{{item.price}}</p>
-          <div class="card-number">{{ item.id }}</div>
-          <a class="btn">Купити</a>
-        </div>
-        <div class="card-footer">
-          <div class="icons">
-            <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
-              <span title="Додати в обране">♡</span>
-            </a>
-            <span title="Коментарі">💬</span>
-            <span title="Порівняти">⚖️</span>
-          </div>
-          <div class="icons">
-            <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}">
-              <span title="До кошика">До кошика</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    {% empty %}
-      <p>Немає товарів</p>
-    {% endfor %}
-  </div>
-</main>
+<section style="margin-top: 30px;">
+    <div class="between" style="align-items: center; margin-bottom: 10px;">
+        <b style="font-size: 18px;">Раніше переглянуті товари</b>
+    </div>
+    <div style="gap: 12px;" class="row">
+        {% for item in items_in_history|slice:":5" %}
+            <div class="div_card">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                {% else %}
+                    <img src="/media/items_image/default.png" alt="Default image">
+                {% endif %}
+                <div class="div_content">
+                    <p style="margin: 0;">{{ item.name }}</p>
+                    <b>{{ item.price }} ₴</b>
+                    <div class="between">
+                        <div style="height: fit-content;" class="row between">
+                            <a href="{% url 'item:item_detail' item.pk %}" class="buy_button">Купити</a>
+                            <div class="between card_buttons1">
+                                <div style="gap: 5px;" class="row">
+                                    <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
+                                        <img src="{% static 'icons/like.svg' %}" alt="like" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2">
+                                    </a>
+
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                                            <p style="margin: 0;">{{ item.views }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>Немає переглянутих товарів</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="margin-top: 40px;">
+    <div class="between" style="align-items: center; margin-bottom: 10px;">
+        <b style="font-size: 18px;">Основні товари</b>
+    </div>
+    <div style="gap: 12px;" class="row">
+        {% for item in items %}
+            <div class="div_card">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                {% else %}
+                    <img src="/media/items_image/default.png" alt="Default image">
+                {% endif %}
+                <div class="div_content">
+                    <p style="margin: 0;">{{ item.name }}</p>
+                    <b>{{ item.price }} ₴</b>
+                    <div class="between">
+                        <div style="height: fit-content;" class="row between">
+                            <a href="{% url 'item:item_detail' item.pk %}" class="buy_button">Купити</a>
+                            <div class="between card_buttons1">
+                                <div style="gap: 5px;" class="row">
+                                    <a href="{% url 'save_item' item.pk item.get_content_type_id %}">
+                                        <img src="{% static 'icons/like.svg' %}" alt="like" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2">
+                                    </a>
+
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                                            <p style="margin: 0;">{{ item.views }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

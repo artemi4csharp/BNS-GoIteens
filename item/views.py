@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from bns_goiteens.models import Item, Rating, Service
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
+from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm, CommentForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
@@ -12,24 +12,51 @@ from django.contrib.auth import get_user_model
 from .models import Category
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.db.models import Count
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     content_type = ContentType.objects.get_for_model(Item)
 
-    #Подсчёт просмотров через cookie
-    viewed_items = request.COOKIES.get('viewed_items', '')
-    viewed_ids = viewed_items.split(',') if viewed_items else []
+    # -------- обновляем просмотры --------
+    item.views += 1
+    item.save(update_fields=['views'])
 
-    if str(pk) not in viewed_ids:
-        item.views += 1
-        item.save(update_fields=['views'])
-        viewed_ids.append(str(pk))
+    # -------- обновляем историю просмотров в сессии --------
+    item_history = request.session.get('item_history', [])
 
-    #Рейтинг товара
+    # если товара нет в списке — добавляем его в конец
+    if pk not in item_history:
+        item_history.append(pk)
+        # ограничиваем историю максимум 10 товарами
+        if len(item_history) > 10:
+            item_history = item_history[-10:]
+        request.session['item_history'] = item_history
+        request.session.modified = True
+    # -------------------------------------
+
+    # -------- рейтинг и комментарии --------
     all_ratings = Rating.objects.filter(content_type=content_type, object_id=item.id)
     avg_rating = all_ratings.aggregate(Avg('value'))['value__avg'] or 0
     total_reviews = all_ratings.count()
+
+    rating_distribution = (
+        all_ratings
+        .values('value')
+        .annotate(count=Count('id'))
+        .order_by('-value')
+    )
+
+    rating_counts = {i: 0 for i in range(1, 6)}
+    for entry in rating_distribution:
+        rating_counts[int(entry['value'])] = entry['count']
+
+    if total_reviews > 0:
+        rating_percentages = {
+            i: (rating_counts[i] / total_reviews) * 100 for i in range(1, 6)
+        }
+    else:
+        rating_percentages = {i: 0 for i in range(1, 6)}
 
     user_rating = None
     if request.user.is_authenticated:
@@ -39,18 +66,7 @@ def item_detail(request, pk):
             user=request.user
         ).first()
 
-    #История просмотров через сессию
-    last_seen_items = request.session.get('item_history', [])
-    if pk in last_seen_items:
-        last_seen_items.remove(pk)
-    last_seen_items.insert(0, pk)
-    last_seen_items = last_seen_items[:5]
-    request.session['item_history'] = last_seen_items
-    request.session.modified = True
-
-    #Форма рейтинга
     form = RatingForm(request.POST or None, instance=user_rating)
-
     if request.method == 'POST':
         if form.is_valid() and request.user.is_authenticated:
             rating = form.save(commit=False)
@@ -62,18 +78,32 @@ def item_detail(request, pk):
         else:
             messages.error(request, 'Помилка при збереженні оцінки.')
 
+    form_comment = CommentForm(request.POST or None)
+    if request.method == "POST" and 'text' in request.POST:
+        if form_comment.is_valid() and request.user.is_authenticated:
+            comment = form_comment.save(commit=False)
+            comment.author = request.user
+            comment.content_type = content_type
+            comment.object_id = item.id
+            comment.save()
+            messages.success(request, "Коментар успішно додано!")
+            return redirect('item:item_detail', pk=item.pk)
+        else:
+            messages.error(request, "Помилка: потрібно увійти в акаунт або заповнити поле тексту.")
+
     context = {
         'item': item,
         'form': form,
         'avg_rating': round(avg_rating, 1),
         'total_reviews': total_reviews,
+        'rating_counts': rating_counts,
+        'rating_percentages': rating_percentages,
+        'form_comment': form_comment,
+        'rating_stars': [5,4,3,2,1], 
     }
 
-    #Рендер и установка cookie
-    response = render(request, 'view_item.html', context)
-    response.set_cookie('viewed_items', ','.join(viewed_ids), max_age=60*60*24*10)
+    return render(request, 'view_item.html', context)
 
-    return response
 
 
 @login_required
@@ -82,7 +112,7 @@ def create_item(request):
         form = ItemCreationForm(request.POST, request.FILES)
         if form.is_valid():
             item = form.save(commit=False)
-            request.user = item.owner
+            item.owner = request.user
             item.save() 
             messages.success(request, 'Success')
         else: 
@@ -99,8 +129,8 @@ def edit_item(request, pk):
     if form.is_valid():
         form.save()
         messages.success(request, 'Success')
-        return redirect('item_list')
-    return render(request, 'edit_item.html', {'form': form})
+        return redirect('item:item_list')
+    return render(request, 'edit.html', {'form': form})
 
 
 @login_required
@@ -152,9 +182,6 @@ def item_list(request):
     elif sort == 'name':
         items = items.order_by('name')
 # -------------------------------------
-
-
-
 
     return render(request, "item_list.html", {
         "items": items,

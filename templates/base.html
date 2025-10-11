@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/item_list.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/create_and_edit_announcement.css' %}">
+
     {% endblock %}
 </head>
 <body>
@@ -31,8 +34,10 @@
         <div class="divider"></div>
 
         <div class="button-item">
+          <a href="{% url 'saved_list' %}">            
             <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
-            <span>Обране</span>
+          </a>
+          <span>Обране</span>
         </div>
 
         <div class="divider"></div>
@@ -45,8 +50,10 @@
         <div class="divider"></div>
         
         <div class="button-item">
-            <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
-            <span>Кошик</span>
+          <a href="{% url 'cart' %}">            
+            <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
+          </a>
+          <span>Кошик</span>
         </div>
 
         <div class="divider"></div>
@@ -56,7 +63,8 @@
             <span>Порівняти</span>
         </div>
         
-        <button  class="create-btn">+ Створити оголошення</button>
+        <a class="create-btn" href="{% url 'item:create_item' %}">+ Створити оголошення</a>
+
     </div>
 
     <button class="profile-btn">
