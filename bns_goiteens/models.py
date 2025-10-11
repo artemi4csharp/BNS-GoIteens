@@ -23,7 +23,7 @@ class User(AbstractUser):
     phone = models.CharField(validators=[phone_validator], max_length=15)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")  # Додано дату народження
-    income = models.DecimalField(null = True, max_digits=10, decimal_places=2)
+    income = models.DecimalField(null = True, max_digits=10, decimal_places=2, default=0.00)
 
     def add_balance(self, amount):
         self.balance += amount

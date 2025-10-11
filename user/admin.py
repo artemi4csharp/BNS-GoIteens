@@ -16,21 +16,21 @@ class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
     
-    list_display = ('username', 'email', 'phone', 'is_staff')
+    list_display = ('username', 'email', 'phone', 'is_staff', 'balance')
     list_filter = ('is_staff', 'is_superuser', 'groups')
     search_fields = ('username', 'email', 'phone')
     ordering = ('username',)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'bio', 'phone')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'bio', 'phone', 'balance', 'income')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    readonly_fields = ('last_login', 'date_joined',)
+    readonly_fields = ('last_login', 'date_joined', 'balance', 'income')
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'phone', 'password1', 'password2'),
+            'fields': ('username', 'email', 'phone', 'password1', 'password2', 'balance', 'income'),
         }),
     )
     compressed_fields = True
