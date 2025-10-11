@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="chat-container">
+  <div class="chat-header">
+    <a href="{% url 'home' %}" class="back-btn">← Назад</a>
+    <h3>Мої діалоги</h3>
+  </div>
+  <div class="chat-main">
+    <div class="chat-sidebar">
+      <ul id="chat-list">
+        {% for chat in chat_data %}
+        <li>
+          <a href="{% url 'chat:chat_room' chat.user.id %}">
+            <strong class="timestamp">{{ chat.user.username }}</strong><br>
+            <small class="timestamp">{{ chat.last_message.content|truncatechars:40 }}</small><br>
+          </a>
+        </li>
+        {% empty %}
+        <li class="no-chats">Немає активних чатів</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="chat-empty">
+      <p>Виберіть чат, щоб почати розмову</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: -350px;
+}
+
+.chat-header {
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-list {
+  list-style: none;
+  align-items: center;
+  margin: 0;
+}
+
+.back-btn {
+  text-decoration: none;
+  color: #003B46;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.chat-main {
+  display: flex;
+  flex: 1;
+}
+.chat-sidebar {
+  width: 30%;
+  background: #f9f9f9;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+  overflow-y: auto;
+}
+.chat-sidebar ul { list-style: none; padding: 0; }
+.chat-sidebar li {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background: white;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: background 0.3s;
+}
+.chat-sidebar li:hover {
+  background: #f0f8ff;
+  transform: translateX(5px);
+}
+
+.no-chats {
+  text-align: center;
+  padding: 40px 10px;
+  color: #666;
+  font-size: 18px;
+  list-style: none;
+}
+.chat-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  text-align: center;
+  font-size: 18px;
+  padding: 20px;
+}
+
+.timestamp {
+  color: #0159b7;
+  font-size: 15px;
+}
+</style>
+{% endblock %}
