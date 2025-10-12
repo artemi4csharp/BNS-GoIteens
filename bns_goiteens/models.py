@@ -421,4 +421,4 @@ class OwnerAnalytics(models.Model):
     
     @property
     def total_income(self):
-        return self.income
+        return self.owner.income
