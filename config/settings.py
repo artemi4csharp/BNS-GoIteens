@@ -311,6 +311,26 @@ UNFOLD = {
                         "icon" : "location_on",
                         "link": reverse_lazy("admin:bns_goiteens_location_changelist")
                     },
+                    {
+                        "title" : _("Black List"),
+                        "icon" : "block",
+                        "link": reverse_lazy("admin:bns_goiteens_blacklist_changelist")
+                    },
+                    {
+                        "title" : _("Notification"),
+                        "icon" : "notification_important",
+                        "link": reverse_lazy("admin:bns_goiteens_notification_changelist")
+                    },
+                    {
+                        "title" : _("Item Complaint"),
+                        "icon" : "report",
+                        "link": reverse_lazy("admin:bns_goiteens_itemcomplaint_changelist")
+                    },
+                    {
+                        "title" : _("User Complaint"),
+                        "icon" : "report",
+                        "link": reverse_lazy("admin:bns_goiteens_usercomplaint_changelist")
+                    },
                     ]
             },
             {         

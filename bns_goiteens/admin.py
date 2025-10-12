@@ -1,13 +1,14 @@
 from re import M
 from django.contrib import admin
 from unfold.admin import ModelAdmin
-from .models import Category, Comment, Location, Message, Promotion, Discount, Rating, SavedItem, PromoCode, Category, Item
+from .models import Category, Comment, Location, Message, Promotion, Discount, Rating, SavedItem, PromoCode, Category, Item, BlackList, Notification, ItemComplaint, UserComplaint, OwnerAnalytics
 from django.contrib.postgres.fields import ArrayField
 from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
 import random
 import string
 from django import forms
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 @admin.register(Category)
 class CustomAdminClass(ModelAdmin):
@@ -289,4 +290,100 @@ class PromoCodeAdmin(ModelAdmin):
         return FormWithRequest
 
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+@admin.register(BlackList)
+class BlackListAdmin(ModelAdmin):
+    list_display = ('blocker', 'blocked', 'created_at')
+    search_fields = ('blocker__username', 'blocked__username')
+    readonly_fields = ('created_at',)
+    list_filter = ('created_at',)
+
+    fieldsets = (
+        (None, {
+            'fields': ('blocker', 'blocked')
+        }),
+        ('Додатково', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+    
+
+@admin.register(Notification)
+class NotificationAdmin(ModelAdmin):
+    list_display = ('user', 'content', 'created_at', 'read')
+    list_filter = ('read', 'created_at')
+    search_fields = ('user__username', 'content')
+    readonly_fields = ('created_at',)
+
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'content', 'read')
+        }),
+        ('Час створення', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+    
+    
+@admin.register(ItemComplaint)
+class ItemComplaintAdmin(ModelAdmin):
+    list_display = ('author', 'owner', 'content_type', 'object_id', 'content_object', 'resolved', 'created_at')
+    list_filter = ('resolved', 'created_at', 'content_type')
+    search_fields = ('author__username', 'owner__username', 'text')
+    readonly_fields = ('created_at', 'get_content_object')
+    
+    fieldsets = (
+        (None, {
+            'fields': ('author', 'owner', 'content_type', 'object_id', 'get_content_object', 'text', 'resolved')
+        }),
+        ('Додатково', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+    
+    def get_content_object(self, obj):
+        return obj.content_object
+    get_content_object.short_description = "Content object"
+    
+@admin.register(UserComplaint)
+class UserComplaintAdmin(ModelAdmin):
+    list_display = ('author', 'user', 'resolved', 'created_at')
+    list_filter = ('resolved', 'created_at')
+    search_fields = ('author__username', 'user__username', 'text')
+    readonly_fields = ('created_at',)
+    
+    fieldsets = (
+        (None, {
+            'fields': ('author', 'user', 'text', 'resolved')
+        }),
+        ('Додатково', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    compressed_fields = True
+    list_fullwidth = True
+    warn_unsaved_form = True
+
+    def save_model(self, request, obj, form, change):
+        # Проверка при сохранении в админке
+        if obj.author == obj.user:
+            raise ValidationError("Користувач не може подати скаргу сам на себе.")
         super().save_model(request, obj, form, change)

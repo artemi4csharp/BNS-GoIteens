@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -22,6 +23,7 @@ class User(AbstractUser):
     phone = models.CharField(validators=[phone_validator], max_length=15)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")
+    income = models.DecimalField(null = True, max_digits=10, decimal_places=2, default=0.00)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     address = models.CharField(max_length=255, blank=True, null=True)
 
@@ -349,3 +351,108 @@ class Block(models.Model):
 
     def __str__(self):
         return f'{self.blocker} blocked {self.blocked}'
+
+#
+#
+# class BlackList(models.Model):
+#     blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
+#     blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="in_blacklist")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     class Meta:
+#         unique_together = ("blocker", "blocked")
+#         verbose_name = "Чорний список"
+#         verbose_name_plural = "Чорний список"
+#
+#     def __str__(self):
+#         return f"{self.blocker} заблокував {self.blocked}"
+#
+#
+# class Notification(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
+#     content = models.CharField(max_length=255)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     read = models.BooleanField(default=False)
+#
+#     class Meta:
+#         ordering = ["-created_at"]
+#         verbose_name = "Повідомлення"
+#         verbose_name_plural = "Повідомлення"
+#
+#     def __str__(self):
+#         return f"Notification for {self.user.username}: {self.content}"
+#
+#
+# class ItemComplaint(models.Model):
+#     author = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="item_complaints")
+#     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="item_complaints_ct")
+#     object_id = models.PositiveIntegerField()
+#     owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='owner_items_complaints')
+#     content_object = GenericForeignKey("content_type", "object_id")
+#     text = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     resolved = models.BooleanField(default=False)
+#
+#     class Meta:
+#         ordering = ["-created_at"]
+#         verbose_name = "Скарга"
+#         verbose_name_plural = "Скарги"
+#
+#     def clean(self):
+#         if self.owner == self.author:
+#             raise ValidationError("Користувач не може подати скаргу на свій товар.")
+#
+# class UserComplaint(models.Model):
+#     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="complaints")
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_complaints")
+#     text = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     resolved = models.BooleanField(default=False)
+#
+#     class Meta:
+#         ordering = ["-created_at"]
+#         verbose_name = "Скарга на користувача"
+#         verbose_name_plural = "Скарги на користувачів"
+#
+#
+#     def clean(self):
+#         if self.author == self.user:
+#             raise ValidationError("Користувач не може подати скаргу сам на себе.")
+#
+#     def __str__(self):
+#         return f"Скарга від {self.author.username} на {self.user.username}"
+#
+#
+# class OwnerAnalytics(models.Model):
+#     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#
+#     @property
+#     def total_views_services(self):
+#         services = Service.objects.filter(owner=self.owner)
+#         return sum(s.views for s in services)
+#
+#     @property
+#     def total_views_items(self):
+#         items = Item.objects.filter(owner=self.owner)
+#         return sum(i.views for i in items)
+#
+#
+#     @property
+#     def average_product_rating(self):
+#         item = Item.objects.filter(owner = self.owner)
+#         rating = Rating.objects.filter(content_type = ContentType.objects.get_for_model(Item), object_id__in = [i.id for i in item])
+#         if rating.exists():
+#             return round(sum(r.value for r in rating)/ rating.count(), 1)
+#         return 0
+#
+#     @property
+#     def total_item_complains(self):
+#         return ItemComplaint.objects.filter(owner=self.owner).count()
+#
+#     @property
+#     def total_user_complains(self):
+#         return UserComplaint.objects.filter(user=self.owner).count()
+#
+#     @property
+#     def total_income(self):
+#         return self.owner.income
