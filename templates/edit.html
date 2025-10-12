@@ -51,8 +51,7 @@
                 <img id="preview_image"
                      src="{% if form.instance and form.instance.image %}{{ form.instance.image.url }}{% else %}{% static 'icons/add.svg' %}{% endif %}"
                      alt="preview"
-                     class="img_add"
-                     style="width:100%; height:100%; object-fit:cover; border-radius:15px;">
+                     class="img_add">
             </div>
         </div>
 
@@ -73,6 +72,12 @@
         input.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 preview.src = URL.createObjectURL(this.files[0]);
+                // !!! Добавляем класс full-size !!!
+                preview.classList.add('full-size');
+            } else {
+                // Если файл сброшен, возвращаем исходный src и удаляем класс
+                preview.src = "{% static 'icons/add.svg' %}";
+                preview.classList.remove('full-size');
             }
         });
     }

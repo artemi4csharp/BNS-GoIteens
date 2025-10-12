@@ -1,57 +1,110 @@
 {% extends "base.html" %}
 {% load static %}
-{% load form_tags %}
 {% block content %}
 
-<h2>Створити товар</h2>
+<h2 style="text-align:center; margin-top:20px;">Створити товар</h2>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <div>
-        <label for="{{ form.name.id_for_label }}">Назва</label>
-        {{ form.name|add_class:"capitalize-first input1" }}
+        Назва
+        {{ form.name }}
     </div>
 
     <div>
-        <label for="{{ form.description.id_for_label }}">Опис</label>
-        {{ form.description|add_class:"capitalize-first input2" }}
+        Опис
+        {{ form.description }}
     </div>
 
-    <div class="category_price">
-        <div class="flex_column">
-            <label for="{{ form.category.id_for_label }}">Категорія</label>
-            {{ form.category|add_class:"capitalize-first input3" }}
+    <div class="flex_column" style="margin-top: 6px;">
+        Категорія
+        {{ form.category }}
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; margin-top: 6px;">
+        <label for="{{ form.price.id_for_label }}" style="font-size:25px; color:#003B46;">Ціна</label>
+        {{ form.price }}
+    </div>
+
+    <div style="margin-top: 6px;">
+        Місто, Регіон, Країна
+        {{ form.location }}
+    </div>
+
+    <div style="text-align: left; margin-top: 40px;">
+        Фото товару
+        <div style="margin-top: 5px;" class="flex_row">
+            <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                <img id="preview_image"
+                     src="{% static 'icons/add.svg' %}"
+                     alt="preview"
+                     class="img_add">
+            </div>
         </div>
 
-        <div class="flex_column">
-            <label for="{{ form.price.id_for_label }}">Ціна</label>
-            {{ form.price|add_class:"input4" }}
-        </div>
+        {{ form.image }}
     </div>
 
-    <div>
-        <label for="{{ form.location.id_for_label }}">Місто, Регіон, Країна</label>
-        {{ form.location|add_class:"capitalize-first input1" }}
+    <div style="display:flex; justify-content:center; margin-top:20px; margin-bottom:40px;">
+        <button type="submit" class="create_and_edit_btn">Створити</button>
     </div>
-
-    <div style="text-align: left">
-        <label for="{{ form.image.id_for_label }}">Фото товару</label>
-        <div class="addPhoto_btn">
-            {{ form.image|add_class:"img-input" }}
-            <img src="{% static 'icons/add.svg' %}" alt="add_photo" class="img_add">
-        </div>
-    </div>
-
-    <button type="submit" class="create_and_edit_btn">Створити</button>
 </form>
 
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-        <div class="alert">{{ message }}</div>
-    {% endfor %}
-</div>
-{% endif %}
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // ----- Автосохранение данных -----
+    const fields = {
+        name: document.getElementById("id_name"),
+        description: document.getElementById("id_description"),
+        price: document.getElementById("id_price"),
+        category: document.getElementById("id_category"),
+        location: document.getElementById("id_location"),
+    };
+
+    const storageKey = "create_item_form";
+
+    const savedData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+    Object.keys(fields).forEach(key => {
+        if (fields[key] && savedData[key]) {
+            fields[key].value = savedData[key];
+        }
+    });
+
+    Object.keys(fields).forEach(key => {
+        if (fields[key]) {
+            fields[key].addEventListener("input", () => {
+                const currentData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+                currentData[key] = fields[key].value;
+                sessionStorage.setItem(storageKey, JSON.stringify(currentData));
+            });
+        }
+    });
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", () => {
+            sessionStorage.removeItem(storageKey);
+        });
+    }
+
+    // ----- Превью изображения -----
+    const input = document.getElementById('id_image_input');
+    const preview = document.getElementById('preview_image');
+    if (input && preview) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                preview.src = URL.createObjectURL(this.files[0]);
+                // !!! Добавляем класс full-size !!!
+                preview.classList.add('full-size');
+            } else {
+                // Если файл сброшен, возвращаем исходный src и удаляем класс
+                preview.src = "{% static 'icons/add.svg' %}";
+                preview.classList.remove('full-size');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

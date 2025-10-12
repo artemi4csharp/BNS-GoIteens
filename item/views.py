@@ -115,6 +115,7 @@ def create_item(request):
             item.owner = request.user
             item.save() 
             messages.success(request, 'Success')
+            return redirect('item:item_list')
         else: 
             messages.error(request, 'Error')
     else: 
@@ -138,7 +139,7 @@ def delete_item(request, pk):
     item = get_object_or_404(Item, pk=pk, owner=request.user)
     item.delete()
     messages.success(request, 'Success')
-    return redirect("item_list")
+    return redirect("item:item_list")
 
 
 def item_list(request):

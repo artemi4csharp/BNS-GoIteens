@@ -142,11 +142,27 @@ input[type=number] {
   width: 929px; 
   height: 622.5px; 
   margin-right: 15px;
+  position: relative;
+  overflow: hidden;
 }
 
 .addPhoto_btn:hover {
   background-color: #66A5AD;
   transition: 0.3s;
+}
+
+.addPhoto_btn img {
+  pointer-events: none;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.addPhoto_btn img.full-size {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Заполняет всю область, обрезая при необходимости */
+  border-radius: 15px; /* Сохраняем радиус контейнера */
 }
 
 .type {
@@ -157,20 +173,6 @@ input[type=number] {
 
 .img_add {
   height: 35px;
-}
-
-
-
-.addPhoto_btn {
-  position: relative;
-  overflow: hidden;
-}
-.addPhoto_btn img {
-  pointer-events: none;
-}
-.addPhoto_btn:hover {
-  background-color: #66A5AD;
-  transition: 0.3s;
 }
 
 select.input3 {

@@ -15,11 +15,21 @@ LocationForm = modelform_factory(
     labels = {'city':'Місто', 'region':'Область', 'country': 'Країна'}
 )
 
-ItemCreationForm = modelform_factory(
-    Item, 
-    fields = ['name', 'description', 'price', 'category', 'location', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'location': 'Розміщення', 'image': 'Фото'}, 
-)
+class ItemCreationForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'price', 'category', 'location', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'capitalize-first input1', 'placeholder': 'Назва'}),
+            'description': forms.Textarea(attrs={'class': 'capitalize-first input2', 'placeholder': 'Опис'}),
+            'price': forms.NumberInput(attrs={'class': 'input4', 'placeholder': 'Ціна'}),
+            'category': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'location': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'image': forms.FileInput(attrs={
+                'id': 'id_image_input',
+                'style': 'display:none;'
+            }),
+        }
 
 class ItemEditForm(forms.ModelForm):
     class Meta:
