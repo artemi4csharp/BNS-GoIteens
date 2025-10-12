@@ -79,6 +79,7 @@ MessageCreationForm = modelform_factory(
 class CommentForm(forms.ModelForm):
     text = forms.CharField(
         widget=forms.Textarea(attrs={
+            'id': 'comment-text',
             'placeholder': "Введіть ваш коментар...",
             'rows': 4,
             'class': 'comment_textarea',

@@ -101,17 +101,32 @@
             <p>Немає коментарів.</p>
         {% endfor %}
         
-        <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const toggleBtn = document.getElementById("toggle-description");
-            const desc = document.getElementById("description-text");
-            let expanded = false;
-        
-            toggleBtn.addEventListener("click", () => {
-                expanded = !expanded;
-                desc.classList.toggle("expanded", expanded);
-                toggleBtn.textContent = expanded ? "Сховати опис" : "Показати повний опис";
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const commentField = document.getElementById("comment-text");
+        const storageKey = `comment_text_item_{{ item.id }}`;
+
+        // Восстанавливаем значение из sessionStorage
+        const savedText = sessionStorage.getItem(storageKey);
+        if (savedText && commentField) {
+            commentField.value = savedText;
+        }
+
+        // Сохраняем при каждом изменении
+        if (commentField) {
+            commentField.addEventListener("input", () => {
+                sessionStorage.setItem(storageKey, commentField.value);
             });
-        });
-        </script>
+        }
+
+        // Очищаем при успешной отправке формы
+        const form = document.querySelector(".comment_form");
+        if (form) {
+            form.addEventListener("submit", () => {
+                sessionStorage.removeItem(storageKey);
+            });
+        }
+    });
+    </script>
+        
 {% endblock %}
