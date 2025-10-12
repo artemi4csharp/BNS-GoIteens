@@ -69,14 +69,16 @@
   </div>
   </header>
 
+{% block navigation %}
   <nav>
     <p><a href="{% url 'bns:home' %}">Всі категорії</a></p>
-  {% for category in categories|slice:":7" %}
-    <p>{{ category.name }}</p>
-  {% empty %}
-    <p>Немає категорій</p>
-  {% endfor %}
+    {% for category in categories|slice:":7" %}
+      <p>{{ category.name }}</p>
+    {% empty %}
+      <p>Немає категорій</p>
+    {% endfor %}
   </nav>
+{% endblock %}
 
   <main>
     {% block content %}{% endblock %}
