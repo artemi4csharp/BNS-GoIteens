@@ -25,12 +25,10 @@ def item_detail(request, pk):
     # -------- обновляем историю просмотров в сессии --------
     item_history = request.session.get('item_history', [])
 
-    # если товара нет в списке — добавляем его в конец
     if pk not in item_history:
         item_history.append(pk)
-        # ограничиваем историю максимум 10 товарами
-        if len(item_history) > 10:
-            item_history = item_history[-10:]
+        if len(item_history) > 5:
+            item_history = item_history[-5:]
         request.session['item_history'] = item_history
         request.session.modified = True
     # -------------------------------------
@@ -166,7 +164,10 @@ def item_list(request):
     items = Item.objects.all()
     services = Service.objects.all()
     last_seen_items = request.session.get("item_history", [])
-    items_in_history = Item.objects.filter(pk__in=last_seen_items)
+    items_in_history = sorted(
+        Item.objects.filter(pk__in=last_seen_items), 
+        key=lambda s: -last_seen_items.index(s.pk)
+    )
 # --------------End----------
 
 # ---------- Сортировка айтемов --------------------
