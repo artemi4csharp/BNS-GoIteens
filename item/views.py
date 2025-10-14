@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service, Category
+from bns_goiteens.models import Item, Rating, Service, Category, User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
@@ -9,8 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
-
+from django.db.models import F
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -106,15 +105,23 @@ def item_list(request):
 
     items = Item.objects.all()
     services = Service.objects.all()
-    categories = Category.objects.order_by('-views').all()
+    dynamic_categories = Category.objects.order_by('-views').all()
+    categories = Category.objects.order_by('name').all()
 
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
         services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
 
     if category:
-        items = items.filter(category_id=category)
-        services = services.filter(category_id=category)
+        if category.isdigit():
+            selected_category = Category.objects.filter(id=category).first()
+            if selected_category:
+                selected_category.views = F('views') + 1
+                selected_category.save(update_fields=['views'])
+                selected_category.refresh_from_db()
+
+                items = items.filter(category_id=category)
+                services = services.filter(category_id=category)
 
     if owner:
         items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
@@ -123,6 +130,7 @@ def item_list(request):
     return render(request, "item_list.html", {
         "items": items,
         "services": services,
+        "dynamic_categories" : dynamic_categories,
         "categories": categories
     })
 
@@ -144,14 +152,14 @@ def request_category_create(request):
             staff_emails = list(User.objects.filter(is_staff=True).exclude(email='').values_list('email', flat=True))
             if staff_emails:
                 subject = f"Новий запит на категорію: {cat_req.name}"
-                url = request.build_absolute_uri(reverse('admin:app_categoryrequest_change', args=(cat_req.pk,)))
+                url = request.build_absolute_uri(reverse('admin:bns_goiteens_categoryrequest_change', args=(cat_req.pk,)))
                 body = f"Користувач {request.user.get_username()} запропонував категорію '{cat_req.name}'.\n\nПереглянути в адмінці: {url}"
                 try:
                     send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, staff_emails, fail_silently=True)
                 except Exception:
                     pass
 
-            return redirect('categories:list')
+            return redirect('bns:home')
     else:
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})

@@ -70,15 +70,44 @@
   </header>
 
 {% block navigation %}
-  <nav>
-    <p><a href="{% url 'bns:home' %}">Всі категорії</a></p>
-    {% for category in categories|slice:":7" %}
-      <p>{{ category.name }}</p>
-    {% empty %}
-      <p>Немає категорій</p>
-    {% endfor %}
-  </nav>
+<nav>
+  <p><a href="#" id="openCategories">Всі категорії</a></p>
+
+  {% for category in dynamic_categories|slice:":7" %}
+    <p>
+      <a  href="?category={{ category.id }}">
+        {{ category.name }}
+      </a>
+    </p>
+  {% empty %}
+    <p>Немає категорій</p>
+  {% endfor %}
+</nav>
 {% endblock %}
+
+<div id="categoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Всі категорії</h2>
+    <ul>
+      <a class="categories" href="{% url 'bns:home' %}">
+        <span><b>Всі категорії</b></span>
+      </a>
+      {% for category in categories %}
+        <li>
+          <a class="categories" href="?category={{ category.id }}">
+            {{ category.name }}
+          </a>
+          {% if category.parent %}
+            <small>({{ category.parent.name }})</small>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li>Немає категорій</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
   <main>
     {% block content %}{% endblock %}
@@ -110,5 +139,27 @@
       <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a> 
     </div>
   </footer>
+
+  <script>
+    const modal = document.getElementById("categoryModal");
+    const link = document.getElementById("openCategories");
+    const span = document.getElementsByClassName("close")[0];
+
+    link.addEventListener("click", function(event) {
+      event.preventDefault();
+      modal.style.display = "block";
+    });
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    };
+
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
+
 </body>
 </html>
