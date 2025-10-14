@@ -17,7 +17,7 @@ def add_to_cart(request, object_id, content_type_id):
         cart['offers'].append({'content_type_id':content_type_id, 'object_id':object_id, 'quantity': 1})
     request.session['cart'] = cart
     request.session.modified = True
-    return redirect('item:item_list')
+    return redirect('bns:home')
 
 @login_required
 def get_cart_objects(request):

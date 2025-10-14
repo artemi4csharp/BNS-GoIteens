@@ -4,12 +4,33 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from decimal import Decimal
-from .models import PromoCode, Item
+from .models import PromoCode, Item, Service
 from .forms import PromoCodeForm
 
 
+
 def home(request):
-    return render(request, "base.html")
+    items = Item.objects.all()
+    services = Service.objects.all()
+
+    last_seen_items = request.session.get("item_history", [])
+    last_seen_services = request.session.get("service_history", [])
+
+    items_in_history = sorted(
+        Item.objects.filter(pk__in=last_seen_items),
+        key=lambda s: -last_seen_items.index(s.pk)
+    )
+    services_in_history = sorted(
+        Service.objects.filter(pk__in=last_seen_services),
+        key=lambda s: -last_seen_services.index(s.pk)
+    )
+
+    return render(request, "home.html", {
+        "items": items,
+        "services": services,
+        "items_in_history": items_in_history,
+        "services_in_history": services_in_history,
+    })
 
 
 @login_required

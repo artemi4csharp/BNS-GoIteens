@@ -48,17 +48,39 @@ class ItemEditForm(forms.ModelForm):
             }),
         }
 
-ServiceCreationForm = modelform_factory(
-    Service, 
-    fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'service_type', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
-)
+class ServiceCreationForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'price', 'category', 'location', 'service_type', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'capitalize-first input1', 'placeholder': 'Назва'}),
+            'description': forms.Textarea(attrs={'class': 'capitalize-first input2', 'placeholder': 'Опис'}),
+            'price': forms.NumberInput(attrs={'class': 'input4', 'placeholder': 'Ціна'}),
+            'category': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'location': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'service_type' : forms.Select(attrs={'class': 'capitalize-first input3', 'placeholder' : 'Тип послуги'}),
+            'image': forms.FileInput(attrs={
+                'id': 'id_image_input',
+                'style': 'display:none;'
+            }),
+        }
 
 class ServiceEditForm(forms.ModelForm):
-    class Meta: 
-        model = Service 
-        fields = ['name', 'description', 'price', 'service_type', 'image']
-
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'price', 'category', 'location', 'service_type', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'capitalize-first input1', 'placeholder': 'Назва'}),
+            'description': forms.Textarea(attrs={'class': 'capitalize-first input2', 'placeholder': 'Опис'}),
+            'price': forms.NumberInput(attrs={'class': 'input4', 'placeholder': 'Ціна'}),
+            'category': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'location': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'service_type' : forms.Select(attrs={'class': 'capitalize-first input3', 'placeholder' : 'Тип послуги'}),
+            'image': forms.FileInput(attrs={
+                'id': 'id_image_input',
+                'style': 'display:none;'
+            }),
+        }
 
 class RatingForm(forms.ModelForm):
     class Meta: 

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h2 style="text-align:center; margin-top:20px;">Редагувати послугу</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div>
+        Назва
+        {{ form.name }}
+    </div>
+
+    <div>
+        Опис
+        {{ form.description }}
+    </div>
+
+    <div class="flex_column" style="margin-top: 6px;">
+        Категорія
+        {{ form.category }}
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; margin-top: 6px;">
+        <label for="{{ form.price.id_for_label }}" style="font-size:25px; color:#003B46;">Ціна</label>
+        {{ form.price }}
+    </div>
+
+    <div style="margin-top: 6px;">
+        Місто, Регіон, Країна
+        {{ form.location }}
+    </div>
+
+    <div style="margin-top: 6px;">
+        Тип послуги
+        {{ form.service_type }}
+    </div>
+
+    <div style="text-align: left; margin-top: 40px;">
+        Фото товару
+        <div style="margin-top: 5px;" class="flex_row">
+            <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                <img id="preview_image"
+                     src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'icons/add.svg' %}{% endif %}"
+                     alt="preview"
+                     class="img_add {% if service.image %}full-size{% endif %}">
+            </div>
+        </div>
+
+        {{ form.image }}
+    </div>
+
+    <div style="display:flex; justify-content:center; margin-top:20px; margin-bottom:40px;">
+        <button type="submit" class="create_and_edit_btn">Зберегти зміни</button>
+        <a href="{% url 'services:service_delete' service.pk %}" style="background-color: red; margin-left: 5px;" class="button" >Видалити</a>
+    </div>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // ----- Превью изображения -----
+    const input = document.getElementById('id_image_input');
+    const preview = document.getElementById('preview_image');
+    if (input && preview) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                preview.src = URL.createObjectURL(this.files[0]);
+                preview.classList.add('full-size');
+            } else {
+                preview.src = "{% static 'icons/add.svg' %}";
+                preview.classList.remove('full-size');
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/bns/home/', permanent=True)),
     path('admin/', admin.site.urls),
     path('item/', include('item.urls')),
+    path('services/', include('services.urls')),
     path('bns/', include("bns_goiteens.urls")),
     path('chat/', include('chat.urls')),
     path('saved/', include("saved_item.urls")),

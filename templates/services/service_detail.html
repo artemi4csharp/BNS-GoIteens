@@ -3,13 +3,13 @@
 {% load custom_tags %}
 {% block content %}
 <div class="main_div div_1th">
-    <p>{{ item.name }}</p>
+    <p>{{ service.name }}</p>
 </div>
         <div class="between">
             <div>
                 <div class="main_div div_2th">
-                    {% if item.image %}
-                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}">
                     {% else %}
                         <img src="/media/items_image/default.png" alt="Default image">
                     {% endif %}
@@ -54,18 +54,18 @@
 
             <div class="div_4th">
                 <div class="main_div div_5th">
-                    <b>{{item.price}} ₴</b>
+                    <b>{{ service.price}} ₴</b>
                     <button class="button">Купити</button>
-                    <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}" class="button">До кошику</a>
+                    <a href="{% url 'add_to_cart' service.pk service.get_content_type_id %}" class="button">До кошику</a>
                 </div>
                 <div class="main_div div_6th">
                     <b>Опис</b>
                     <p id="description-text">{{ item.description|linebreaksbr }}</p>
                     <b id="toggle-description">Показати повний опис</b>
                 </div>
-                {% if request.user == item.owner%}
-                <a class="create-btn" href="{% url 'item:edit_item' item.pk %}">Редагувати</a>
-                {%endif%}
+                    {% if request.user == service.owner%}
+                    <a href="{% url 'services:service_edit' service.pk %}" class="button">Редагувати</a>
+                    {% endif %}
             </div>
 
         </div>

@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from .models import Service
-from .forms import ServiceCreationForm, ServiceEditForm
+from bns_goiteens.models import Service
+from item.forms import ServiceCreationForm, ServiceEditForm
 
 class ServiceListView(View):
     def get(self, request):
@@ -65,7 +65,7 @@ class ServiceCreateView(LoginRequiredMixin, View):
             service = form.save(commit=False)
             service.owner = request.user
             service.save()
-            return redirect("service_list")
+            return redirect("services:service_list")
         return render(request, "services/service_form.html", {"form": form})
 
 
@@ -75,19 +75,23 @@ class ServiceUpdateView(LoginRequiredMixin, View):
     def get(self, request, pk):
         service = get_object_or_404(Service, pk=pk)
         if service.owner != request.user:
-            return redirect("service_list")
-        form = ServiceEditForm(queryset=Service.objects.filter(pk=pk))
-        return render(request, "services/service_form.html", {"form": form})
+            return redirect("services:service_list")
+        form = ServiceEditForm(instance=service)
+        return render(request, "services/service_edit_form.html", {"form": form, "service": service})
 
     def post(self, request, pk):
         service = get_object_or_404(Service, pk=pk)
         if service.owner != request.user:
-            return redirect("service_list")
-        form = ServiceEditForm(request.POST, queryset=Service.objects.filter(pk=pk))
+            return redirect("services:service_list")
+
+        form = ServiceEditForm(request.POST, request.FILES, instance=service)  
+
         if form.is_valid():
             form.save()
-            return redirect("service_list")
-        return render(request, "services/service_form.html", {"form": form})
+            return redirect("services:service_list")
+
+        return render(request, "services/service_edit_form.html", {"form": form, "service": service})
+
 
 
 class ServiceDeleteView(LoginRequiredMixin, View):
@@ -102,6 +106,6 @@ class ServiceDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         service = get_object_or_404(Service, pk=pk)
         if service.owner != request.user:
-            return redirect("service_list")
+            return redirect("services:service_list")
         service.delete()
-        return redirect("service_list")
+        return redirect("services:service_list")

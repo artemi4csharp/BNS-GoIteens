@@ -6,6 +6,8 @@ from .views import (
     ServiceUpdateView,
     ServiceDeleteView,
 )
+app_name = 'services'
+
 
 urlpatterns = [
     path("", ServiceListView.as_view(), name="service_list"),

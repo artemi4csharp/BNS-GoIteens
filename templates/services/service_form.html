@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h2 style="text-align:center; margin-top:20px;">Додати послугу</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div>
+        Назва
+        {{ form.name }}
+    </div>
+
+    <div>
+        Опис
+        {{ form.description }}
+    </div>
+
+    <div class="flex_column" style="margin-top: 6px;">
+        Категорія
+        {{ form.category }}
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; margin-top: 6px;">
+        <label for="{{ form.price.id_for_label }}" style="font-size:25px; color:#003B46;">Ціна</label>
+        {{ form.price }}
+    </div>
+
+    <div style="margin-top: 6px;">
+        Місто, Регіон, Країна
+        {{ form.location }}
+    </div>
+
+    <div style="margin-top: 6px;">
+        Тип послуги
+        {{ form.service_type }}
+    </div>
+
+    <div style="text-align: left; margin-top: 40px;">
+        Фото товару
+        <div style="margin-top: 5px;" class="flex_row">
+            <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                <img id="preview_image"
+                     src="{% static 'icons/add.svg' %}"
+                     alt="preview"
+                     class="img_add">
+            </div>
+        </div>
+
+        {{ form.image }}
+    </div>
+
+    <div style="display:flex; justify-content:center; margin-top:20px; margin-bottom:40px;">
+        <button type="submit" class="create_and_edit_btn">Створити</button>
+    </div>
+</form>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // ----- Автосохранение данных -----
+    const fields = {
+        name: document.getElementById("id_name"),
+        description: document.getElementById("id_description"),
+        price: document.getElementById("id_price"),
+        category: document.getElementById("id_category"),
+        location: document.getElementById("id_location"),
+    };
+
+    const storageKey = "create_item_form";
+
+    const savedData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+    Object.keys(fields).forEach(key => {
+        if (fields[key] && savedData[key]) {
+            fields[key].value = savedData[key];
+        }
+    });
+
+    Object.keys(fields).forEach(key => {
+        if (fields[key]) {
+            fields[key].addEventListener("input", () => {
+                const currentData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+                currentData[key] = fields[key].value;
+                sessionStorage.setItem(storageKey, JSON.stringify(currentData));
+            });
+        }
+    });
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", () => {
+            sessionStorage.removeItem(storageKey);
+        });
+    }
+
+    // ----- Превью изображения -----
+    const input = document.getElementById('id_image_input');
+    const preview = document.getElementById('preview_image');
+    if (input && preview) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                preview.src = URL.createObjectURL(this.files[0]);
+                // !!! Добавляем класс full-size !!!
+                preview.classList.add('full-size');
+            } else {
+                // Если файл сброшен, возвращаем исходный src и удаляем класс
+                preview.src = "{% static 'icons/add.svg' %}";
+                preview.classList.remove('full-size');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

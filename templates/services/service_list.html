@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="between">
+    <div class="group1">
+        <img src="{% static 'icons/search.svg' %}" alt="search">
+        <input type="text" placeholder="Пошук товару та послуг...">
+        <button class="group_button">Знайти</button>
+    </div>
+    <div class="group2">
+        <input type="text" placeholder="Тут активні фільтри">
+        <button class="group_button">Знайти</button>
+    </div>
+</div>
+
+<section style="margin-top: 30px;">
+    <div class="between" style="align-items: center; margin-bottom: 10px;">
+        <b style="font-size: 18px;">Раніше переглянуті сервіси</b>
+    </div>
+    <div style="gap: 12px;" class="row">
+        {% for service in services_in_history|slice:":5" %}
+            <div class="div_card">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                {% else %}
+                    <img src="/media/items_image/default.png" alt="Default image">
+                {% endif %}
+                <div class="div_content">
+                    <p style="margin: 0;">{{ service.name }}</p>
+                    <b>{{ service.price }} ₴</b>
+                    <div class="between">
+                        <div style="height: fit-content;" class="row between">
+                            <a href="{% url 'services:service_detail' service.pk %}" class="buy_button">Детальніше</a>
+                            <div class="between card_buttons1">
+                                <div style="gap: 5px;" class="row">
+                                    <a href="{% url 'save_item' service.pk service.get_content_type_id %}">
+                                        <img src="{% static 'icons/like.svg' %}" alt="like" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'services:service_detail' service.pk %}">
+                                        <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'services:service_detail' service.pk %}">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                                            <p style="margin: 0;">{{ service.views }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>Немає переглянутих сервісів</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section style="margin-top: 40px;">
+    <div class="between" style="align-items: center; margin-bottom: 10px;">
+        <b style="font-size: 18px;">Основні сервіси</b>
+    </div>
+    <div style="gap: 12px;" class="row">
+        {% for service in services %}
+            <div class="div_card">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                {% else %}
+                    <img src="/media/items_image/default.png" alt="Default image">
+                {% endif %}
+                <div class="div_content">
+                    <p style="margin: 0;">{{ service.name }}</p>
+                    <b>{{ service.price }} ₴</b>
+                    <div class="between">
+                        <div style="height: fit-content;" class="row between">
+                            <a href="{% url 'services:service_detail' service.pk %}" class="buy_button">Детальніше</a>
+                            <div class="between card_buttons1">
+                                <div style="gap: 5px;" class="row">
+                                    <a href="{% url 'save_item' service.pk service.get_content_type_id %}">
+                                        <img src="{% static 'icons/like.svg' %}" alt="like" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'services:service_detail' service.pk %}">
+                                        <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2">
+                                    </a>
+                                    <a href="{% url 'services:service_detail' service.pk %}">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                                            <p style="margin: 0;">{{ service.views }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>Немає сервісів</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
