@@ -86,11 +86,12 @@ header {
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .create-btn:hover {
-    background-color: #66A5AD;
-    transition: 0.3s;
+  background-color: #66A5AD;
+  transition: 0.3s;
 }
 
 .profile-btn {
@@ -149,8 +150,8 @@ header {
 
 nav {
   display: flex;
-  gap: 60px;
-  padding: 10px 80px;
+  gap: 100px;
+  padding: 10px 199px;
   background: #d9eaf1;
   font-size: 17px;
   justify-content: center;

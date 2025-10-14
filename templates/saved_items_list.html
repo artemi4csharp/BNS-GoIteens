@@ -6,19 +6,44 @@
     <h2>Мої збережені об'єкти</h2>
 
     {% if saved_items %}
-        <ul class="list-group mt-3">
+        <div class="row" style="gap: 12px; margin-top: 20px;">
             {% for saved in saved_items %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <!-- Название объекта -->
-                        <strong>{{ saved.content_object }}</strong> <br>
+                {% with item=saved.content_object %}
+                <div class="div_card">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% else %}
+                        <img src="/media/items_image/default.png" alt="Default image">
+                    {% endif %}
+
+                    <div class="div_content">
+                        <p style="margin: 0;">{{ item.name }}</p>
+                        <b>{{ item.price }} ₴</b>
+                        <div class="between">
+                            <div style="height: fit-content;" class="row between">
+                                <a href="{% url 'item:item_detail' item.pk %}" class="buy_button">Купити</a>
+                                <div class="between card_buttons1">
+                                    <a href="{% url 'delete_saved' saved.pk %}">
+                                        <img src="{% static 'icons/like.svg' %}" alt="delete" class="card_buttons2" title="Видалити із збережених">
+                                    </a>
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <img src="{% static 'icons/comment.svg' %}" alt="comment" class="card_buttons2" title="Коментарі">
+                                    </a>
+                                    <a href="{% url 'item:item_detail' item.pk %}">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <img src="{% static 'icons/eye.svg' %}" alt="eye" class="card_buttons2">
+                                            <p style="margin: 0;">{{ item.views }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         <small class="text-muted">Додано: {{ saved.saved_at|date:"d.m.Y H:i" }}</small>
                     </div>
-
-                    <button class="create-btn"><a href="{% url 'delete_saved' saved.pk %}">Delete</a></button>
-                </li>
+                </div>
+                {% endwith %}
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
         <p class="text-muted mt-3">У вас поки що немає збережених об'єктів.</p>
     {% endif %}

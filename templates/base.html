@@ -9,15 +9,20 @@
   <script src="https://cdn.tailwindcss.com"></script>
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/item_list.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/create_and_edit_announcement.css' %}">
+
     {% endblock %}
 </head>
 <body>
 <header>
 
-  <div class="logo">
+<div class="logo">
+  <a href="{% url 'bns:home' %}" class="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
     <img src="{% static 'icons/logo.svg' %}" alt="logo" style="margin-right: 5px;">
     <h2>Buy and Sell</h2>
-  </div>
+  </a>
+</div>
 
 
 
@@ -31,19 +36,21 @@
         <div class="divider"></div>
 
         <div class="button-item">
+          <a href="{% url 'saved_list' %}">
             <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
-            <span>Обране</span>
+          </a>
+          <span>Обране</span>
         </div>
 
         <div class="divider"></div>
-
+        
         <div class="button-item">
             <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
             <span>Повідомлення</span>
         </div>
 
         <div class="divider"></div>
-
+        
         <div class="button-item">
     <a href="{% url 'cart' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
         <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
@@ -57,13 +64,14 @@
 </div>>
 
         <div class="divider"></div>
-
+        
         <div class="button-item">
             <img src="{% static 'icons/to_compare.svg' %}" alt="to_compare" style="margin-right: 5px;">
             <span>Порівняти</span>
         </div>
         
-        <button  class="create-btn">+ Створити оголошення</button>
+        <a class="create-btn" href="{% url 'item:create_item' %}">+ Створити оголошення</a>
+
     </div>
 
 {% if user.is_authenticated %}
@@ -123,7 +131,7 @@
       <h6>All rights reserved.&nbsp</h6>
       <a href=""><h6 style="text-decoration-line: underline;">Terms & Conditions</h6></a>
       <h6>&nbsp•&nbsp</h6>
-      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a>
+      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a> 
     </div>
   </footer>
 </body>

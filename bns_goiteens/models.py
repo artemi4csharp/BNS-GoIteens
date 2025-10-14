@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.timezone import now
@@ -136,6 +136,11 @@ class BaseOffer(models.Model):
 
 class Item(BaseOffer):
     is_active = models.BooleanField(default=True)  # ← Додати це поле
+
+    comments = GenericRelation(
+        "Comment",
+        related_query_name="item_comment"
+    )
 
     def average_rating(self):
         content_type = ContentType.objects.get_for_model(self)
