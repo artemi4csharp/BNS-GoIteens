@@ -45,9 +45,16 @@
         <div class="divider"></div>
 
         <div class="button-item">
-            <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
-            <span>Кошик</span>
-        </div>
+    <a href="{% url 'cart' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+        <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
+        <span>Кошик</span>
+        {% if request.session.cart and request.session.cart.offers %}
+            <span style="background: #07575B; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-left: 5px;">
+                {{ request.session.cart.offers|length }}
+            </span>
+        {% endif %}
+    </a>
+</div>>
 
         <div class="divider"></div>
 
@@ -65,7 +72,7 @@
             <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
         </div>
         <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
-        <h3 class="profile-balance">{{ user.balance|floatformat:2 }} ₴</h3>
+        <h3 class="profile-balance">{{ user.balance|floatformat:2 }}</h3>
         <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
     </button>
 {% else %}

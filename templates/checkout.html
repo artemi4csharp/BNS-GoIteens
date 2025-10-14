@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+    :root {
+        --primary-dark: #003B46;
+        --secondary-dark: #07575B;
+        --primary-light: #C4DFE6;
+        --secondary-light: #66A5AD;
+        --accent: #E8E8E8;
+        --white: #ffffff;
+        --gray: #F5F5F5;
+        --text-dark: #333333;
+        --text-light: #666666;
+        --success: #4CAF50;
+        --warning: #FFC107;
+        --danger: #F44336;
+        --info: #2196F3;
+    }
+
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .checkout-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--secondary-light);
+    }
+
+    .checkout-header h1 {
+        color: var(--primary-dark);
+        font-weight: bold;
+        font-size: 1.8rem;
+    }
+
+    .checkout-content {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 30px;
+    }
+
+    @media (max-width: 992px) {
+        .checkout-content {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .card-custom {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 2px solid var(--secondary-light);
+        margin-bottom: 25px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header-custom {
+        background-color: var(--primary-dark);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 14px 14px 0 0;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .card-body-custom {
+        padding: 25px;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section h2 {
+        color: var(--primary-dark);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--primary-dark);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--secondary-light);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--secondary-dark);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(7, 87, 91, 0.2);
+    }
+
+    .order-items {
+        margin-bottom: 20px;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    .item-name {
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .item-price {
+        font-weight: 500;
+        color: var(--secondary-dark);
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.4rem;
+        font-weight: bold;
+        padding: 15px 0;
+        border-top: 2px solid var(--secondary-light);
+        margin-top: 10px;
+    }
+
+    .total-label {
+        color: var(--primary-dark);
+    }
+
+    .total-value {
+        color: var(--secondary-dark);
+    }
+
+    .btn-custom {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(to right, var(--secondary-dark), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: var(--gray);
+        color: var(--text-dark);
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-custom:active {
+        transform: translateY(0);
+    }
+
+    .error-list {
+        color: var(--danger);
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .toast {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 400px;
+        width: fit-content;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .toast.success { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+    .toast.error { background: linear-gradient(135deg, #F44336, #D32F2F); }
+    .toast.warning { background: linear-gradient(135deg, #FFC107, #FFA000); color: #333; }
+    .toast.info { background: linear-gradient(135deg, #2196F3, #1976D2); }
+
+    .toast-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .toast-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .toast-message {
+        flex: 1;
+        font-size: 15px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 15px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        margin-top: -2px;
+    }
+
+    .toast-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .toast.warning .toast-close {
+        color: #333;
+    }
+
+    .toast.warning .toast-close:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .balance-info {
+        background-color: var(--primary-light);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .balance-amount {
+        font-weight: bold;
+        color: var(--primary-dark);
+        font-size: 1.2rem;
+    }
+
+    .insufficient-funds {
+        color: var(--danger);
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1>Оформлення замовлення</h1>
+    </div>
+
+    <div class="checkout-content">
+        <div class="card-custom">
+            <div class="card-header-custom">
+                Адреса доставки
+            </div>
+            <div class="card-body-custom">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" id="checkoutForm">
+                    {% csrf_token %}
+
+                    <div class="form-section">
+                        <h2>Контактна інформація</h2>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Номер телефону *</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone }}"
+                                   required placeholder="+380XXXXXXXXX">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Адреса доставки</h2>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="region">Область *</label>
+                                    <input type="text" id="region" name="region" class="form-control" placeholder="Область" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="city">Місто *</label>
+                                    <input type="text" id="city" name="city" class="form-control" placeholder="Місто" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="street">Вулиця *</label>
+                                    <input type="text" id="street" name="street" class="form-control" placeholder="Вулиця" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="building">Будинок *</label>
+                                    <input type="text" id="building" name="building" class="form-control" placeholder="Будинок" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Оплата</h2>
+
+                        <div class="balance-info">
+                            <p>Ваш баланс: <span class="balance-amount">{{ user.balance|floatformat:2 }} ₴</span></p>
+                            {% if user.balance >= total_price %}
+                                <p class="text-success">Достатньо коштів для оплати</p>
+                                <input type="hidden" name="payment_method" value="balance">
+                            {% else %}
+                                <p class="insufficient-funds">Недостатньо коштів на балансі</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.balance >= total_price %}
+                        <button type="submit" class="btn-custom btn-primary-custom">Оплатити з балансу</button>
+                    {% endif %}
+                    <a href="{% url 'cart' %}" class="btn-custom btn-secondary-custom">Повернутися до кошика</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-custom">
+            <div class="card-header-custom">
+                Ваше замовлення
+            </div>
+            <div class="card-body-custom">
+                <div class="order-items">
+                    {% for item in items %}
+                        <div class="order-item">
+                            <div class="item-name">
+                                {{ item.object.name }} × {{ item.quantity }}
+                            </div>
+                            <div class="item-price">
+                                {{ item.total }} ₴
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="summary-total">
+                    <span class="total-label">Разом:</span>
+                    <span class="total-value">{{ total_price }} ₴</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if messages %}
+            {% for message in messages %}
+                showToast("{{ message }}", "{{ message.tags }}");
+            {% endfor %}
+        {% endif %}
+    });
+
+    function showToast(message, type = 'info', duration = 5000) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        let icon = '';
+        switch (type) {
+            case 'success':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        `;
+                break;
+            case 'error':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        `;
+                break;
+            case 'warning':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        `;
+                break;
+            default:
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+        `;
+        }
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+`;
+
+        const content = document.createElement('div');
+        content.className = 'toast-content';
+        content.innerHTML = `
+    ${icon}
+    <div class="toast-message">${message}</div>
+`;
+        content.appendChild(closeBtn);
+
+        toast.appendChild(content);
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        const closeToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 400);
+        };
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeToast();
+        });
+
+        setTimeout(closeToast, duration);
+
+        return toast;
+    }
+</script>
+{% endblock %}

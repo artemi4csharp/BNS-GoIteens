@@ -27,7 +27,7 @@ urlpatterns = [
     path('bns/', include("bns_goiteens.urls")),
     path('chat/', include('chat.urls')),
     path('saved/', include("saved_item.urls")),
-    path('cart/', include('cart.urls'),)
+    path('cart/', include('cart.urls')),
 ]
 
 

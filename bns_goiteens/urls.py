@@ -13,4 +13,12 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+path("update-avatar/", views.update_avatar, name="update_avatar"),
+path("clear-avatar/", views.clear_avatar, name="clear_avatar"),
+    path("shared_order/create/", views.create_shared_order, name="create_shared_order"),
+    path("shared_order/<uuid:order_id>/", views.shared_order_detail, name="shared_order_detail"),
+    path("shared_order/<uuid:order_id>/contribute/", views.contribute_to_shared_order, name="contribute_to_shared_order"),
+    path("shared_order/<uuid:order_id>/finalize/", views.finalize_shared_order, name="finalize_shared_order"),
+    path("shared_order/<uuid:order_id>/cancel/", views.cancel_shared_order, name="cancel_shared_order"),
 ]

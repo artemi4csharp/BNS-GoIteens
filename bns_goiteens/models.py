@@ -11,6 +11,7 @@ from django.db.models import Avg
 import datetime
 from django.utils import timezone
 from decimal import Decimal
+import uuid
 
 phone_validator = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
@@ -23,7 +24,7 @@ class User(AbstractUser):
     phone = models.CharField(validators=[phone_validator], max_length=15)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     birth_date = models.DateField(null=True, blank=True, verbose_name="Дата народження")
-    income = models.DecimalField(null = True, max_digits=10, decimal_places=2, default=0.00)
+    income = models.DecimalField(null=True, max_digits=10, decimal_places=2, default=0.00)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     address = models.CharField(max_length=255, blank=True, null=True)
 
@@ -352,107 +353,225 @@ class Block(models.Model):
     def __str__(self):
         return f'{self.blocker} blocked {self.blocked}'
 
-#
-#
-# class BlackList(models.Model):
-#     blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
-#     blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="in_blacklist")
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         unique_together = ("blocker", "blocked")
-#         verbose_name = "Чорний список"
-#         verbose_name_plural = "Чорний список"
-#
-#     def __str__(self):
-#         return f"{self.blocker} заблокував {self.blocked}"
-#
-#
-# class Notification(models.Model):
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
-#     content = models.CharField(max_length=255)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     read = models.BooleanField(default=False)
-#
-#     class Meta:
-#         ordering = ["-created_at"]
-#         verbose_name = "Повідомлення"
-#         verbose_name_plural = "Повідомлення"
-#
-#     def __str__(self):
-#         return f"Notification for {self.user.username}: {self.content}"
-#
-#
-# class ItemComplaint(models.Model):
-#     author = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="item_complaints")
-#     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="item_complaints_ct")
-#     object_id = models.PositiveIntegerField()
-#     owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='owner_items_complaints')
-#     content_object = GenericForeignKey("content_type", "object_id")
-#     text = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     resolved = models.BooleanField(default=False)
-#
-#     class Meta:
-#         ordering = ["-created_at"]
-#         verbose_name = "Скарга"
-#         verbose_name_plural = "Скарги"
-#
-#     def clean(self):
-#         if self.owner == self.author:
-#             raise ValidationError("Користувач не може подати скаргу на свій товар.")
-#
-# class UserComplaint(models.Model):
-#     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="complaints")
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_complaints")
-#     text = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     resolved = models.BooleanField(default=False)
-#
-#     class Meta:
-#         ordering = ["-created_at"]
-#         verbose_name = "Скарга на користувача"
-#         verbose_name_plural = "Скарги на користувачів"
-#
-#
-#     def clean(self):
-#         if self.author == self.user:
-#             raise ValidationError("Користувач не може подати скаргу сам на себе.")
-#
-#     def __str__(self):
-#         return f"Скарга від {self.author.username} на {self.user.username}"
-#
-#
-# class OwnerAnalytics(models.Model):
-#     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#
-#     @property
-#     def total_views_services(self):
-#         services = Service.objects.filter(owner=self.owner)
-#         return sum(s.views for s in services)
-#
-#     @property
-#     def total_views_items(self):
-#         items = Item.objects.filter(owner=self.owner)
-#         return sum(i.views for i in items)
-#
-#
-#     @property
-#     def average_product_rating(self):
-#         item = Item.objects.filter(owner = self.owner)
-#         rating = Rating.objects.filter(content_type = ContentType.objects.get_for_model(Item), object_id__in = [i.id for i in item])
-#         if rating.exists():
-#             return round(sum(r.value for r in rating)/ rating.count(), 1)
-#         return 0
-#
-#     @property
-#     def total_item_complains(self):
-#         return ItemComplaint.objects.filter(owner=self.owner).count()
-#
-#     @property
-#     def total_user_complains(self):
-#         return UserComplaint.objects.filter(user=self.owner).count()
-#
-#     @property
-#     def total_income(self):
-#         return self.owner.income
+
+class BlackList(models.Model):
+    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blacklisted_users')
+    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked_by_others')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blocker', 'blocked')
+
+    def __str__(self):
+        return f"{self.blocker} заблокував {self.blocked}"
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
+    content = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Повідомлення"
+        verbose_name_plural = "Повідомлення"
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.content}"
+
+
+class ItemComplaint(models.Model):
+    author = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="item_complaints")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="item_complaints_ct")
+    object_id = models.PositiveIntegerField()
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='owner_items_complaints')
+    content_object = GenericForeignKey("content_type", "object_id")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Скарга"
+        verbose_name_plural = "Скарги"
+
+    def clean(self):
+        if self.owner == self.author:
+            raise ValidationError("Користувач не може подати скаргу на свій товар.")
+
+class UserComplaint(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="complaints")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_complaints")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Скарга на користувача"
+        verbose_name_plural = "Скарги на користувачів"
+
+
+    def clean(self):
+        if self.author == self.user:
+            raise ValidationError("Користувач не може подати скаргу сам на себе.")
+
+    def __str__(self):
+        return f"Скарга від {self.author.username} на {self.user.username}"
+
+
+class OwnerAnalytics(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    @property
+    def total_views_services(self):
+        services = Service.objects.filter(owner=self.owner)
+        return sum(s.views for s in services)
+
+    @property
+    def total_views_items(self):
+        items = Item.objects.filter(owner=self.owner)
+        return sum(i.views for i in items)
+
+
+    @property
+    def average_product_rating(self):
+        item = Item.objects.filter(owner = self.owner)
+        rating = Rating.objects.filter(content_type = ContentType.objects.get_for_model(Item), object_id__in = [i.id for i in item])
+        if rating.exists():
+            return round(sum(r.value for r in rating)/ rating.count(), 1)
+        return 0
+
+    @property
+    def total_item_complains(self):
+        return ItemComplaint.objects.filter(owner=self.owner).count()
+
+    @property
+    def total_user_complains(self):
+        return UserComplaint.objects.filter(user=self.owner).count()
+
+    @property
+    def total_income(self):
+        return self.owner.income
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Очікує оплати'),
+        ('paid', 'Оплачено'),
+        ('processing', 'Обробляється'),
+        ('shipped', 'Відправлено'),
+        ('delivered', 'Доставлено'),
+        ('cancelled', 'Скасовано'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    items = models.ManyToManyField(Item, through='OrderItem')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    shipping_address = models.TextField()
+    phone = models.CharField(max_length=15)
+
+    payment_method = models.CharField(max_length=50, blank=True)
+    transaction_id = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Замовлення"
+        verbose_name_plural = "Замовлення"
+
+    def __str__(self):
+        return f"Замовлення #{self.id} від {self.user.username}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.item.name}"
+
+
+class SharedOrder(models.Model):
+    STATUS_CHOICES = [
+        ('collecting', 'Збір коштів'),
+        ('paid', 'Оплачено'),
+        ('processing', 'Обробляється'),
+        ('shipped', 'Відправлено'),
+        ('delivered', 'Доставлено'),
+        ('cancelled', 'Скасовано'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_shared_orders')
+    items = models.ManyToManyField(Item, through='SharedOrderItem')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    collected_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='collecting')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    region = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    street = models.CharField(max_length=200)
+    building = models.CharField(max_length=20)
+    phone = models.CharField(max_length=15)
+
+    PAYMENT_CHOICES = [
+        ('balance', 'З балансу'),
+        ('card', 'Картка'),
+        ('mixed', 'Змішана'),
+    ]
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Спільне замовлення"
+        verbose_name_plural = "Спільні замовлення"
+
+    def __str__(self):
+        return f"Спільне замовлення #{self.id} від {self.creator.username}"
+
+    def is_fully_paid(self):
+        return self.collected_amount >= self.total_amount
+
+    def remaining_amount(self):
+        return max(Decimal('0'), self.total_amount - self.collected_amount)
+
+    def progress_percentage(self):
+        if self.total_amount == 0:
+            return 100
+        return min(100, int((self.collected_amount / self.total_amount) * 100))
+
+
+class SharedOrderItem(models.Model):
+    shared_order = models.ForeignKey(SharedOrder, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.item.name}"
+
+
+class SharedOrderContribution(models.Model):
+    shared_order = models.ForeignKey(SharedOrder, on_delete=models.CASCADE, related_name='contributions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=20, choices=[
+        ('balance', 'З балансу'),
+        ('card', 'Картка'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('shared_order', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} внесок {self.amount} грн"
