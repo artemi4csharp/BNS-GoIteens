@@ -10,7 +10,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-
+from django.db.models import F
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -106,15 +106,23 @@ def item_list(request):
 
     items = Item.objects.all()
     services = Service.objects.all()
-    categories = Category.objects.order_by('-views').all()
+    dynamic_categories = Category.objects.order_by('-views').all()
+    categories = Category.objects.order_by('name').all()
 
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
         services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
 
     if category:
-        items = items.filter(category_id=category)
-        services = services.filter(category_id=category)
+        if category.isdigit():
+            selected_category = Category.objects.filter(id=category).first()
+            if selected_category:
+                selected_category.views = F('views') + 1
+                selected_category.save(update_fields=['views'])
+                selected_category.refresh_from_db()
+
+                items = items.filter(category_id=category)
+                services = services.filter(category_id=category)
 
     if owner:
         items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
@@ -123,6 +131,7 @@ def item_list(request):
     return render(request, "item_list.html", {
         "items": items,
         "services": services,
+        "dynamic_categories" : dynamic_categories,
         "categories": categories
     })
 
