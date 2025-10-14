@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service, Category
+from bns_goiteens.models import Item, Rating, Service, Category, User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
@@ -9,7 +9,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from django.db.models import F
 
 # def item_list(request):
@@ -153,14 +152,14 @@ def request_category_create(request):
             staff_emails = list(User.objects.filter(is_staff=True).exclude(email='').values_list('email', flat=True))
             if staff_emails:
                 subject = f"Новий запит на категорію: {cat_req.name}"
-                url = request.build_absolute_uri(reverse('admin:app_categoryrequest_change', args=(cat_req.pk,)))
+                url = request.build_absolute_uri(reverse('admin:bns_goiteens_categoryrequest_change', args=(cat_req.pk,)))
                 body = f"Користувач {request.user.get_username()} запропонував категорію '{cat_req.name}'.\n\nПереглянути в адмінці: {url}"
                 try:
                     send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, staff_emails, fail_silently=True)
                 except Exception:
                     pass
 
-            return redirect('categories:list')
+            return redirect('bns:home')
     else:
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})

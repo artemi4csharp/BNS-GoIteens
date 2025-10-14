@@ -30,7 +30,7 @@ class CategoryAdmin(ModelAdmin):
     }
 
 @admin.register(CategoryRequest)
-class CategoryRequestAdmin(admin.ModelAdmin):
+class CategoryRequestAdmin(ModelAdmin):
     list_display = ('name', 'user', 'status', 'created_at', 'processed_at', 'processed_by')
     list_filter = ('status', 'created_at')
     search_fields = ('name', 'user__username')
