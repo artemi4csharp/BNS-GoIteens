@@ -2,18 +2,67 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Service, Item, Comparison
+from django.shortcuts import render
 from .forms import ServiceCreationForm, ServiceEditForm
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseServerError
 from django.views.decorators.http import require_http_methods, require_POST, require_GET
+from django.contrib.admin.views.decorators import staff_member_required
+from BNS_GoIteens.django_cache.cache_utils import (
+    get_top_categories,
+    get_filtered_services,
+    get_all_categories,
+    get_popular_items,
+    get_analytics_data,
+    clear_cache_for_model
+)
 
 class ServiceListView(View):
     def get(self, request):
-        service_type = request.GET.get("type")
-        if service_type in ["offer", "request"]:
-            services = Service.objects.filter(service_type=service_type)
-        else:
-            services = Service.objects.all()
+        try:
+            service_type = request.GET.get("type")
+            services = get_filtered_services(service_type)
+        except Exception as e:
+            return HttpResponseServerError(f"Помилка під час завантаження послуг: {e}")
+
         return render(request, "services/service_list.html", {"services": services})
+
+def top_categories_view(request):
+    categories = get_top_categories()
+    data = [{"id": c.id, "name": c.name, "views": c.views} for c in categories]
+    return JsonResponse({"top_categories": data})
+
+@require_GET
+def filtered_services_view(request):
+    service_type = request.GET.get("type")
+    services = get_filtered_services(service_type)
+    data = [
+        {"id": s.id, "name": s.name, "type": s.service_type, "price": float(s.price)}
+        for s in services
+    ]
+    return JsonResponse({"services": data})
+
+
+@require_GET
+def all_categories_view(request):
+    categories = get_all_categories()
+    data = [{"id": c.id, "name": c.name, "active": c.is_active} for c in categories]
+    return JsonResponse({"categories": data})
+
+
+@require_GET
+def popular_items_view(request):
+    items = get_popular_items()
+    data = [
+        {"id": i.id, "name": i.name, "price": float(i.price), "views": i.views}
+        for i in items
+    ]
+    return JsonResponse({"popular_items": data})
+
+
+@require_GET
+def analytics_view(request):
+    data = get_analytics_data()
+    return JsonResponse({"analytics": data})
 
 
 
@@ -133,3 +182,24 @@ def get_comparison(request):
     ]
 
     return JsonResponse({'items': data})
+
+
+@require_POST
+@staff_member_required
+def clear_cache_view(request):
+
+    allowed_models = {"Category", "Item", "Service"}
+
+    model_name = request.GET.get("model")
+    if not model_name:
+        return JsonResponse({"error": "Не вказано модель для очищення"}, status=400)
+
+    if model_name not in allowed_models:
+        return JsonResponse(
+            {"error": f"Модель '{model_name}' не підтримується. "
+                      f"Дозволені: {', '.join(allowed_models)}"},
+            status=400
+        )
+
+    clear_cache_for_model(model_name)
+    return JsonResponse({"success": True, "message": f"Кеш очищено для {model_name}"})
