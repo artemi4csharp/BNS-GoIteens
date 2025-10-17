@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/create_and_edit_announcement.css' %}">
+
+    <div class="edit-container">
+        <h2 class="edit-title">Редагувати послугу</h2>
+
+        <form method="post" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">Назва</label>
+                {{ form.name }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Опис</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Категорія</label>
+                {{ form.category }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ціна</label>
+                <div class="price-input-container">
+                    {{ form.price }}
+                    <span class="currency">₴</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Тип послуги</label>
+                {{ form.service_type }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Місто, Регіон, Країна</label>
+                {{ form.location }}
+            </div>
+
+            <div class="form-group">
+                <label class="custom-checkbox">
+                    <input type="checkbox" name="is_active" {% if form.instance and form.instance.is_active %}checked{% endif %}>
+                    <span></span>
+                    Активно
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Фото послуги</label>
+                <div class="image-upload-container">
+                    <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                        <img id="preview_image"
+                             src="{% if form.instance and form.instance.image %}{{ form.instance.image.url }}{% else %}{% static 'icons/add.svg' %}{% endif %}"
+                             alt="preview"
+                             class="img_add">
+                    </div>
+                    {{ form.image }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="edit_btn">Змінити</button>
+            </div>
+        </form>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const input = document.getElementById('id_image_input');
+        const preview = document.getElementById('preview_image');
+        if (input && preview) {
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    preview.src = URL.createObjectURL(this.files[0]);
+                    preview.classList.add('full-size');
+                } else {
+                    preview.src = "{% static 'icons/add.svg' %}";
+                    preview.classList.remove('full-size');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

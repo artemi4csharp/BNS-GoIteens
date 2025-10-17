@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+:root {
+    --primary-dark: #003B46;
+    --secondary-dark: #07575B;
+    --primary-light: #C4DFE6;
+    --secondary-light: #66A5AD;
+    --accent: #E8E8E8;
+    --white: #ffffff;
+    --gray: #F5F5F5;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F44336;
+}
+
+.success-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.success-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 2px solid var(--secondary-light);
+    padding: 40px;
+    text-align: center;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--success);
+}
+
+.success-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.success-title {
+    color: var(--primary-dark);
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.order-details {
+    background: var(--gray);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--accent);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: var(--text-light);
+}
+
+.detail-value {
+    font-weight: 500;
+    color: var(--primary-dark);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--secondary-dark);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 2px solid var(--secondary-light);
+}
+
+.btn-secondary:hover {
+    background: var(--secondary-light);
+    color: var(--white);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        
+        <h1 class="success-title">Замовлення успішно оформлено!</h1>
+        
+        <p class="success-message">
+            Дякуємо за ваше замовлення! Ми отримали ваш платіж і вже обробляємо ваше замовлення. 
+            Номер вашого замовлення: <strong>#{{ order.id }}</strong>
+        </p>
+        
+        <div class="order-details">
+            <div class="detail-row">
+                <span class="detail-label">Номер замовлення:</span>
+                <span class="detail-value">#{{ order.id }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Дата оформлення:</span>
+                <span class="detail-value">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Сума замовлення:</span>
+                <span class="detail-value">{{ order.total_amount }} ₴</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Статус:</span>
+                <span class="detail-value">
+                    {% if order.status == 'pending' %}Очікує оплати
+                    {% elif order.status == 'paid' %}Оплачено
+                    {% elif order.status == 'processing' %}Обробляється
+                    {% elif order.status == 'shipped' %}Відправлено
+                    {% elif order.status == 'delivered' %}Доставлено
+                    {% elif order.status == 'cancelled' %}Скасовано
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{% url 'item:item_list' %}" class="btn btn-primary">Повернутися до покупок</a>
+            <a href="{% url 'cart' %}" class="btn btn-secondary">Перейти до кошика</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Спільне замовлення #{{ shared_order.id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-dark: #003B46;
+        --secondary-dark: #07575B;
+        --primary-light: #C4DFE6;
+        --secondary-light: #66A5AD;
+        --accent: #E8E8E8;
+        --white: #ffffff;
+        --gray: #F5F5F5;
+        --text-dark: #333333;
+        --text-light: #666666;
+        --success: #4CAF50;
+        --warning: #FFC107;
+        --danger: #F44336;
+        --info: #2196F3;
+    }
+
+    .shared-order-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--secondary-light);
+    }
+
+    .order-id {
+        font-size: 1.8rem;
+        color: var(--primary-dark);
+        font-weight: bold;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .status-collecting { background-color: var(--warning); color: #333; }
+    .status-paid { background-color: var(--success); color: white; }
+    .status-processing { background-color: var(--info); color: white; }
+    .status-shipped { background-color: #9C27B0; color: white; }
+    .status-delivered { background-color: var(--success); color: white; }
+    .status-cancelled { background-color: var(--danger); color: white; }
+
+    .card-custom {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 2px solid var(--secondary-light);
+        margin-bottom: 25px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header-custom {
+        background-color: var(--primary-dark);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 14px 14px 0 0;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .card-body-custom {
+        padding: 20px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: var(--primary-dark);
+        min-width: 180px;
+    }
+
+    .detail-value {
+        flex: 1;
+        color: var(--text-dark);
+    }
+
+    .progress-container {
+        margin: 20px 0;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .progress-bar-container {
+        height: 24px;
+        background-color: var(--gray);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary-light), var(--secondary-dark));
+        border-radius: 12px;
+        transition: width 1s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    .item-name {
+        font-weight: 500;
+    }
+
+    .item-price {
+        font-weight: bold;
+        color: var(--secondary-dark);
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding-top: 15px;
+        margin-top: 15px;
+        border-top: 2px solid var(--secondary-light);
+    }
+
+    .btn-custom {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        margin: 5px 0;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(to right, var(--secondary-dark), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-success-custom {
+        background: linear-gradient(to right, #4CAF50, #2E7D32);
+        color: white;
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(to right, #F44336, #D32F2F);
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: var(--gray);
+        color: var(--text-dark);
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-custom:active {
+        transform: translateY(0);
+    }
+
+    .contribution-card, .owner-actions-card, .participants-card {
+        margin-bottom: 20px;
+    }
+
+    .contribution-amount {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: var(--secondary-dark);
+    }
+
+    .participant-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--accent);
+    }
+
+    .participant-name {
+        font-weight: 500;
+    }
+
+    .participant-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .badge-creator {
+        background-color: var(--primary-dark);
+        color: white;
+    }
+
+    .badge-contributor {
+        background-color: var(--success);
+        color: white;
+    }
+
+    .amount-badge {
+        background-color: var(--secondary-light);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-weight: bold;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .toast {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 400px;
+        width: fit-content;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .toast.success { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+    .toast.error { background: linear-gradient(135deg, #F44336, #D32F2F); }
+    .toast.warning { background: linear-gradient(135deg, #FFC107, #FFA000); color: #333; }
+    .toast.info { background: linear-gradient(135deg, #2196F3, #1976D2); }
+
+    .toast-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .toast-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .toast-message {
+        flex: 1;
+        font-size: 15px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 15px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        margin-top: -2px;
+    }
+
+    .toast-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .toast.warning .toast-close {
+        color: #333;
+    }
+
+    .toast.warning .toast-close:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shared-order-container">
+    <div class="order-header">
+        <div class="order-id">Спільне замовлення #{{ shared_order.id }}</div>
+        <div class="status-badge status-{{ shared_order.status }}">
+            {% if shared_order.status == 'collecting' %}Збір коштів
+            {% elif shared_order.status == 'paid' %}Оплачено
+            {% elif shared_order.status == 'processing' %}Обробляється
+            {% elif shared_order.status == 'shipped' %}Відправлено
+            {% elif shared_order.status == 'delivered' %}Доставлено
+            {% elif shared_order.status == 'cancelled' %}Скасовано
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card-custom">
+                <div class="card-header-custom">
+                    Деталі замовлення
+                </div>
+                <div class="card-body-custom">
+                    <div class="detail-row">
+                        <div class="detail-label">Адреса доставки:</div>
+                        <div class="detail-value">
+                            {{ shared_order.region }}, м. {{ shared_order.city }},
+                            вул. {{ shared_order.street }}, буд. {{ shared_order.building }}
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Телефон:</div>
+                        <div class="detail-value">{{ shared_order.phone }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Спосіб оплати:</div>
+                        <div class="detail-value">
+                            {% if shared_order.payment_method == 'balance' %}
+                                З балансу
+                            {% elif shared_order.payment_method == 'card' %}
+                                Картка
+                            {% elif shared_order.payment_method == 'mixed' %}
+                                Змішана
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if shared_order.status == 'collecting' and shared_order.creator == request.user %}
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Прогрес збору коштів</span>
+                                <span>{{ progress_percentage }}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-label mt-2">
+                                <span>Зібрано: {{ shared_order.collected_amount|floatformat:2 }} ₴</span>
+                                <span>Всього: {{ shared_order.total_amount|floatformat:2 }} ₴</span>
+                            </div>
+                            <div class="mt-2">
+                                <strong>Залишилось: {{ remaining_amount|floatformat:2 }} ₴</strong>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-custom">
+                <div class="card-header-custom">
+                    Товари
+                </div>
+                <div class="card-body-custom">
+                    {% for item in shared_order.sharedorderitem_set.all %}
+                        <div class="item-row">
+                            <div class="item-name">{{ item.item.name }} × {{ item.quantity }}</div>
+                            <div class="item-price">{{ item.price|floatformat:2 }} ₴</div>
+                        </div>
+                    {% endfor %}
+                    <div class="total-row">
+                        <div>Разом:</div>
+                        <div>{{ shared_order.total_amount|floatformat:2 }} ₴</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if shared_order.status == 'collecting' and not user_contribution %}
+                <div class="card-custom contribution-card">
+                    <div class="card-header-custom">
+                        Зробити внесок
+                    </div>
+                    <div class="card-body-custom">
+                        <p>Залишилось зібрати: <strong>{{ remaining_amount|floatformat:2 }} ₴</strong></p>
+                        <a href="{% url 'bns:contribute_to_shared_order' shared_order.id %}" class="btn-custom btn-primary-custom w-100">
+                            Зробити внесок
+                        </a>
+                    </div>
+                </div>
+            {% elif user_contribution %}
+                <div class="card-custom contribution-card">
+                    <div class="card-header-custom">
+                        Ваш внесок
+                    </div>
+                    <div class="card-body-custom">
+                        <p>Сума: <span class="contribution-amount">{{ user_contribution.amount|floatformat:2 }} ₴</span></p>
+                        <p>Спосіб оплати:
+                            {% if user_contribution.payment_method == 'balance' %}
+                                З балансу
+                            {% else %}
+                                Картка
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if shared_order.creator == request.user %}
+                <div class="card-custom owner-actions-card">
+                    <div class="card-header-custom">
+                        Дії власника
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="action-buttons">
+                            {% if shared_order.status == 'collecting' and shared_order.is_fully_paid %}
+                                <a href="{% url 'bns:finalize_shared_order' shared_order.id %}" class="btn-custom btn-success-custom w-100">
+                                    Підтвердити оплату
+                                </a>
+                            {% endif %}
+
+                            {% if shared_order.status in 'collecting,paid' %}
+                                <a href="{% url 'bns:cancel_shared_order' shared_order.id %}"
+                                   class="btn-custom btn-danger-custom w-100"
+                                   onclick="return confirm('Ви впевнені, що хочете скасувати це замовлення? Кошти будуть повернені учасникам.')">
+                                    Скасувати замовлення
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card-custom participants-card">
+                <div class="card-header-custom">
+                    Учасники
+                </div>
+                <div class="card-body-custom">
+                    <div class="participant-item">
+                        <div class="participant-name">{{ shared_order.creator.username }}</div>
+                        <div class="participant-badge badge-creator">Творець</div>
+                    </div>
+                    {% for contribution in contributions %}
+                        {% if contribution.user != shared_order.creator %}
+                            <div class="participant-item">
+                                <div class="participant-name">{{ contribution.user.username }}</div>
+                                <div class="amount-badge">{{ contribution.amount|floatformat:2 }} ₴</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBar = document.getElementById('progressBar');
+        if (progressBar) {
+            setTimeout(() => {
+                progressBar.style.width = '{{ progress_percentage }}%';
+            }, 300);
+        }
+
+        {% if messages %}
+            {% for message in messages %}
+                showToast("{{ message }}", "{{ message.tags }}");
+            {% endfor %}
+        {% endif %}
+    });
+
+    function showToast(message, type = 'info', duration = 5000) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        let icon = '';
+        switch (type) {
+            case 'success':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        `;
+                break;
+            case 'error':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        `;
+                break;
+            case 'warning':
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        `;
+                break;
+            default:
+                icon = `
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+        `;
+        }
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+`;
+
+        const content = document.createElement('div');
+        content.className = 'toast-content';
+        content.innerHTML = `
+    ${icon}
+    <div class="toast-message">${message}</div>
+`;
+        content.appendChild(closeBtn);
+
+        toast.appendChild(content);
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        const closeToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 400);
+        };
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeToast();
+        });
+
+        setTimeout(closeToast, duration);
+
+        return toast;
+    }
+</script>
+{% endblock %}

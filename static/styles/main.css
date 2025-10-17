@@ -8,26 +8,27 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 50px;
+  padding: 8px 50px 10px 50px;
   background: #fff;
-  border-bottom: 1px solid #d9d9d9;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 20px;
-  
+  gap: 10px;
 }
 
-.logo span {
-  background: #003B46;
-  color: #fff;
-  padding: 20px 20px;
-  border-radius: 10px;
+.logo img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
 }
 
 .logo h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
   color: #003B46;
 }
 
@@ -53,6 +54,7 @@ header {
   display: flex;
   align-items: center;
   gap: 5px;
+  margin-right: 5px;
   padding: 10px;
   color: #003B46;
   font-family: Arial, sans-serif;
@@ -84,6 +86,7 @@ header {
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .create-btn:hover {
@@ -94,36 +97,55 @@ header {
 .profile-btn {
     display: flex;
     align-items: center;
-    font-family: Arial, sans-serif;
-    background-color: #003B46;
-    color: #C4DFE6;
-    padding: 10px 20px;
+    padding: 10px 15px;
+    border-radius: 30px;
+    background: linear-gradient(to right, #07575B, #003B46);
+    color: white;
     border: none;
-    border-radius: 15px;
-    font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .profile-btn:hover {
-    background-color: #66A5AD;
-    transition: 0.3s;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .profile-icon {
-    display: flex;
-    align-items: center;
-    background-color: #C4DFE6;
-    padding: 5px;
-    border-radius: 100px;
+    margin-right: 10px;
 }
 
 .profile-name {
-    margin: 0 35px 0 0;
+    margin: 0 10px 0 0;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
 }
 
 .profile-balance {
-    margin: 0 10px 0 0;
+    margin: 0 5px 0 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .profile-name {
+        font-size: 12px;
+    }
+
+    .profile-balance {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-btn {
+        padding: 8px 12px;
+    }
+
+    .profile-name {
+        display: none;
+    }
 }
 
 nav {
@@ -132,6 +154,7 @@ nav {
   padding: 10px 199px;
   background: #d9eaf1;
   font-size: 17px;
+  justify-content: center;
 }
 
 nav a {
@@ -139,20 +162,12 @@ nav a {
   color: #003B46;
 }
 
-
-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 418.5px 20px;
-}
-
 footer {
   display: flex;
   justify-content: space-between;
   background-color: #003B46;
   color: #C4DFE6;
-  padding: 0 50px 12px;
+  padding: 3px 50px 15px;
 }
 
 footer div {
@@ -160,21 +175,21 @@ footer div {
   flex-direction: column;
 }
 
-a {
+footer a {
   color: #C4DFE6;
   text-decoration: none;
   width: fit-content;
   
 }
 
-a:hover {
+footer a:hover {
   color: #66A5AD;
   transition: 0.3s;
 }
 
 h5 {
   margin-top: 10px;
-  margin-bottom: 11px;
+  margin-bottom: 5px;
 }
 
 h6 {
@@ -191,137 +206,209 @@ footer div:last-child h6 {
 footer div:last-child {
   display: inline-flex; 
   flex-direction: row;
+  height: fit-content;
 }
 
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-}
+/* ============================================
+   МОДАЛЬНЕ ВІКНО СТВОРЕННЯ ОГОЛОШЕННЯ
+   ============================================ */
 
-.card {
-  width: 230px;
-  background: #fff;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.card img {
+#createModal {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 160px;
-  object-fit: cover;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.card-content {
-  padding: 10px;
-  flex-grow: 1;
+#createModal.hidden {
+  display: none !important;
 }
 
-.card-content p {
-  font-size: 13px;
-  color: #333;
-  margin: 0 0 6px 0;
-  line-height: 1.3;
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-.card-number {
-  font-weight: bold;
-  font-size: 14px;
-  color: #0a3d4d;
-  margin-bottom: 10px;
+.modal-container {
+  position: relative;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 600px;
+  width: 90%;
+  animation: modalAppear 0.3s ease-out;
+  z-index: 1001;
 }
 
-.btn {
-  display: inline-block;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: bold;
-  color: white;
-  background: #0a3d4d;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background .2s;
-  text-decoration: none;
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.btn:hover {
-  background: #145d70;
-}
-
-
-.card-footer {
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border-top: 1px solid #e0e0e0;
+  padding: 24px 24px 0;
 }
 
-.icons {
-  display: flex;
-  gap: 8px;
-  font-size: 16px;
-  color: #555;
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #07575B;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
   cursor: pointer;
+  color: #9CA3AF;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #4B5563;
+}
+
+#createModal .modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+.option-card {
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.option-card:hover {
+  border-color: #07575B;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(7, 87, 91, 0.2);
+}
+
+.option-icon {
+  margin-bottom: 16px;
+  color: #07575B;
+}
+
+.option-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.option-description {
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+/* ============================================
+   МОДАЛЬНЕ ВІКНО КАТЕГОРІЙ
+   ============================================ */
+
+#categoryModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 80px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+#categoryModal .modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px 30px;
+  border-radius: 12px;
+  width: 60%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #003B46;
+}
+
+.close:hover {
+  color: red;
+}
+
+#categoryModal .modal-content ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#categoryModal .modal-content li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.categories {
+  color: #003B46;
+  text-decoration: none;
+  display: block;
+  padding: 8px 0;
+}
+
+.categories:hover {
+  color: #07575B;
 }
 
 .icons span:hover {
   color: #0a3d4d;
 }
 
-  .modal {
-    display: none; /* по умолчанию скрыто */
-    position: fixed;
-    z-index: 1000;
-    padding-top: 80px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
+/* ============================================
+   MEDIA QUERIES
+   ============================================ */
+
+@media (max-width: 640px) {
+  #createModal .modal-content {
+    grid-template-columns: 1fr;
   }
 
-  /* контент окна */
-  .modal-content {
-    background-color: #fff;
-    margin: auto;
-    padding: 20px 30px;
-    border-radius: 12px;
-    width: 60%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  .modal-header {
+    padding: 16px 16px 0;
   }
 
-  /* кнопка закрытия */
-  .close {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  #createModal .modal-content {
+    padding: 16px;
+    gap: 16px;
   }
 
-  .close:hover {
-    color: red;
+  .option-card {
+    padding: 16px;
   }
-
-  .modal-content ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-
-  .modal-content li {
-    padding: 6px 0;
-    border-bottom: 1px solid #eee;
-  }
-
-.categories {
-  color: #003B46;
 }

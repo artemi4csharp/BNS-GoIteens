@@ -6,23 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base</title>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
-    <style>
-      nav {
-      text-align: center;}
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_css %}
+    {% endblock %}
 </head>
 <body>
 <header>
-  <div class="logo">
-    <span>Лого</span>
+
+<div class="logo">
+  <a href="{% url 'bns:home' %}" class="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+    <img src="{% static 'icons/logo.svg' %}" alt="logo" style="margin-right: 5px;">
     <h2>Buy and Sell</h2>
-  </div>
-
-
+  </a>
+</div>
 
   <div class="header-right">
-  <div class="button-group">
-
+    <div class="button-group">
         <div class="button-item">
             <img src="{% static 'icons/statistics.svg' %}" alt="statistics" style="margin-right: 5px;">
             <span>Статистика</span>
@@ -31,43 +30,63 @@
         <div class="divider"></div>
 
         <div class="button-item">
+            <a href="{% url 'saved_list' %}" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
             <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
             <span>Обране</span>
+            </a>
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
             <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
             <span>Повідомлення</span>
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
+        <a href="{% url 'cart' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
             <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
-            <span>Кошик</span>
+            <span>Кошик </span>
+            {% if request.session.cart and request.session.cart.offers %}
+                <span style="background: #07575B; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-left: 5px;">
+                    {{ request.session.cart.offers|length }}
+                </span>
+            {% endif %}
+        </a>
         </div>
 
         <div class="divider"></div>
-        
+
         <div class="button-item">
             <img src="{% static 'icons/to_compare.svg' %}" alt="to_compare" style="margin-right: 5px;">
             <span>Порівняти</span>
         </div>
-        
-        <button  class="create-btn">+ Створити оголошення</button>
+
+<a class="create-btn" href="#">+ Створити оголошення</a>
     </div>
 
-    <button class="profile-btn">
-      <div class="profile-icon">
-        <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
-      </div>
-      <p class="profile-name">{{user.last_name}}<br>{{user.first_name}}</p>
-   <h3 class="profile-balance">{{ user.balance|default:"0.00" }} ₴</h3>      <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
+{% if user.is_authenticated %}
+    <button class="profile-btn" onclick="window.location.href='{% url 'bns:profile' %}'">
+        <div class="profile-icon">
+            <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+        </div>
+        <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
+        <h3 class="profile-balance">{{ user.balance|floatformat:2 }}</h3>
+        <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
     </button>
+{% else %}
+    <button class="profile-btn" onclick="window.location.href='{% url 'bns:login' %}'">
+        <div class="profile-icon">
+            <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
+        </div>
+        <p class="profile-name">Увійти</p>
+    </button>
+{% endif %}
+
   </div>
-  </header>
+</header>
 
 {% block navigation %}
 <nav>
@@ -75,7 +94,7 @@
 
   {% for category in dynamic_categories|slice:":7" %}
     <p>
-      <a  href="?category={{ category.id }}">
+      <a href="?category={{ category.id }}">
         {{ category.name }}
       </a>
     </p>
@@ -85,6 +104,7 @@
 </nav>
 {% endblock %}
 
+<!-- Модальне вікно категорій -->
 <div id="categoryModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -136,30 +156,43 @@
       <h6>All rights reserved.&nbsp</h6>
       <a href=""><h6 style="text-decoration-line: underline;">Terms & Conditions</h6></a>
       <h6>&nbsp•&nbsp</h6>
-      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a> 
+      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a>
     </div>
   </footer>
 
-  <script>
-    const modal = document.getElementById("categoryModal");
-    const link = document.getElementById("openCategories");
-    const span = document.getElementsByClassName("close")[0];
+<!-- Модальне вікно створення оголошення -->
+<div id="createModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Що ви хочете створити?</h2>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-content">
+      <div class="option-card" data-type="item">
+        <div class="option-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          </svg>
+        </div>
+        <h3 class="option-title">Товар</h3>
+        <p class="option-description">Створіть оголошення для фізичного товару, який ви хочете продати</p>
+      </div>
 
-    link.addEventListener("click", function(event) {
-      event.preventDefault();
-      modal.style.display = "block";
-    });
+      <div class="option-card" data-type="service">
+        <div class="option-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h3 class="option-title">Послуга</h3>
+        <p class="option-description">Створіть оголошення для надання або пошуку послуг</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-    span.onclick = function() {
-      modal.style.display = "none";
-    };
-
-    window.onclick = function(event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    };
-  </script>
-
+<!-- Всі скрипти в кінці -->
+<script src="{% static 'scripts/main.js' %}"></script>
 </body>
 </html>

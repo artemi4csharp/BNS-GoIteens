@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -8,9 +8,12 @@ from .forms import SupportSessionForm, SupportMessageForm
 from django.db.models import Q
 from django.utils import timezone
 from .utils import send_chat_closed_email, send_agent_reply_email
+from bns_goiteens.decorators import support_required
+from django.db.models import Prefetch
 
 def is_support_agent(user):
     return user.is_staff
+
 
 @login_required
 def create_support_session(request):
@@ -30,12 +33,16 @@ def create_support_session(request):
 def user_support_sessions(request):
     sessions = SupportSession.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'chat/user_support_sessions.html', {'sessions': sessions})
+
+
+# Оновлений фрагмент у chat/views.py
 @login_required
 def support_session_detail(request, session_id):
     session = get_object_or_404(SupportSession, id=session_id)
     if session.user != request.user and (not session.agent or session.agent != request.user):
         messages.error(request, 'У вас немає доступу до цієї сесії.')
         return redirect('chat:user_support_sessions')
+
     if request.method == 'POST':
         form = SupportMessageForm(request.POST)
         if form.is_valid():
@@ -55,6 +62,7 @@ def support_session_detail(request, session_id):
                     messages.error(request, f"Помилка: {error}")
     else:
         form = SupportMessageForm()
+
     if session.agent == request.user:
         SupportMessage.objects.filter(
             session=session,
@@ -68,13 +76,14 @@ def support_session_detail(request, session_id):
             is_read=False
         ).update(is_read=True)
     messages_list = session.messages.all()
-    return render(request, 'chat/support_session_detail.html', {
+    return render(request, 'chat/support_chat.html', {
         'session': session,
         'messages_list': messages_list,
         'form': form
     })
 
-@user_passes_test(is_support_agent)
+
+@support_required
 def agent_dashboard(request):
     pending_sessions = SupportSession.objects.filter(status='pending', agent=None)
     assigned_sessions = SupportSession.objects.filter(agent=request.user).exclude(status='closed')
@@ -83,8 +92,10 @@ def agent_dashboard(request):
         'pending_sessions': pending_sessions,
         'assigned_sessions': assigned_sessions
     })
+
+
 @require_POST
-@user_passes_test(is_support_agent)
+@support_required
 def assign_session(request, session_id):
     try:
         session = get_object_or_404(SupportSession, id=session_id, agent=None, status='pending')
@@ -96,7 +107,8 @@ def assign_session(request, session_id):
         messages.error(request, 'Не вдалося прийняти сесію. Можливо, її вже прийняв інший агент.')
     return redirect('chat:agent_dashboard')
 
-@user_passes_test(is_support_agent)
+
+@support_required
 def agent_session_detail(request, session_id):
     session = get_object_or_404(SupportSession, id=session_id, agent=request.user)
     if request.method == 'POST':
@@ -131,6 +143,7 @@ def agent_session_detail(request, session_id):
         'form': form
     })
 
+
 @require_POST
 @login_required
 def close_session(request, session_id):
@@ -151,3 +164,42 @@ def close_session(request, session_id):
     else:
         messages.success(request, 'Вашу сесію підтримки закрито.')
         return redirect('chat:user_support_sessions')
+
+
+def get_unread_messages_count(request):
+    if request.user.is_authenticated:
+        unread_count = SupportMessage.objects.filter(
+            session__user=request.user,
+            is_read=False
+        ).count()
+        return JsonResponse({'unread_count': unread_count})
+    return JsonResponse({'unread_count': 0})
+
+
+@login_required
+def websocket_chat_test(request, session_id):
+    session = get_object_or_404(SupportSession, id=session_id)
+    if session.user != request.user and (not session.agent or session.agent != request.user):
+        messages.error(request, 'У вас немає доступу до цієї сесії.')
+        return redirect('chat:user_support_sessions')
+
+    messages_list = session.messages.all().order_by('created_at')
+
+    return render(request, 'chat/websocket_chat.html', {
+        'session': session,
+        'messages_list': messages_list
+    })
+
+
+@login_required
+def chat_view(request):
+    return render(request, "chat/chat.html")
+
+
+@login_required
+def support_history(request):
+    sessions = SupportSession.objects.filter(user=request.user).prefetch_related(
+        Prefetch('messages', queryset=SupportMessage.objects.order_by('-created_at'))
+    ).order_by('-created_at')
+
+    return render(request, 'chat/support_history.html', {'sessions': sessions})

@@ -1,0 +1,939 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'styles/personal_data.css' %}">
+<style>
+:root {
+  --primary-dark: #003B46;
+  --secondary-dark: #07575B;
+  --primary-light: #C4DFE6;
+  --secondary-light: #66A5AD;
+  --white: #ffffff;
+}
+
+/* Основний контейнер */
+.profile-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 24px;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: var(--secondary-dark);
+}
+
+.profile-card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 2px solid var(--secondary-light);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(to right, var(--primary-dark), var(--secondary-dark));
+  color: var(--white);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 32px;
+  gap: 24px;
+}
+
+.avatar-container {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--primary-light);
+  overflow: hidden;
+  border: 4px solid var(--white);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  color: var(--primary-dark);
+  opacity: 0.8;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.upload-button,
+.clear-avatar {
+  position: absolute;
+  bottom: 0;
+  background: var(--white);
+  color: var(--primary-dark);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.upload-button {
+  right: 0;
+}
+
+.clear-avatar {
+  left: 0;
+}
+
+.upload-button:hover {
+  background: var(--primary-light);
+  transform: scale(1.05);
+}
+
+.clear-avatar:hover {
+  background: var(--secondary-light);
+  color: var(--white);
+  transform: scale(1.05);
+}
+
+.hidden {
+  display: none;
+}
+
+/* === ФОРМА === */
+.form-section {
+  padding: 32px;
+}
+
+.form-section h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--secondary-light);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--secondary-dark);
+  outline: none;
+}
+
+.address-group {
+  grid-column: 1 / -1;
+}
+
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  gap: 16px;
+}
+
+.btn {
+  padding: 12px 24px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-save {
+  background: var(--secondary-dark);
+  color: white;
+  border: none;
+}
+
+.btn-save:hover {
+  background: var(--primary-dark);
+}
+
+.btn-clear {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 2px solid var(--secondary-light);
+}
+
+.btn-clear:hover {
+  background: var(--secondary-light);
+  color: white;
+}
+
+.password-section {
+  margin-top: 40px;
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 400px;
+  width: fit-content;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+}
+
+.toast.error {
+  background: linear-gradient(135deg, #F44336, #D32F2F);
+}
+
+.toast.warning {
+  background: linear-gradient(135deg, #FFC107, #FFA000);
+  color: #333;
+}
+
+.toast.info {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.toast-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 15px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.toast.warning .toast-close {
+  color: #333;
+}
+
+.toast.warning .toast-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform-origin: left;
+  transform: scaleX(1);
+  transition: transform 0.3s linear;
+}
+
+.toast.success .toast-progress {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.toast.warning .toast-progress {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.modal-header {
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.modal-body {
+  margin-bottom: 25px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-modal {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-confirm {
+  background: var(--secondary-dark);
+  color: white;
+  border: none;
+}
+
+.btn-confirm:hover {
+  background: var(--primary-dark);
+}
+
+.btn-cancel {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 2px solid var(--secondary-light);
+}
+
+.btn-cancel:hover {
+  background: var(--secondary-light);
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .toast-container {
+    top: 15px;
+    right: 15px;
+    left: 15px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+  <a href="{% url 'bns:profile' %}" class="back-link">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    Назад до профілю
+  </a>
+
+  <div class="profile-card">
+    <div class="card-header">
+      <form method="post" enctype="multipart/form-data" id="avatar-form">
+        {% csrf_token %}
+        <div class="avatar-container">
+          <div class="avatar">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="Аватар" id="avatar-preview">
+            {% else %}
+              <svg class="avatar-placeholder" xmlns="http://www.w3.org/2000/svg" width="64" height="64"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            {% endif %}
+          </div>
+
+          <label for="id_avatar" class="upload-button" title="Завантажити аватар">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </label>
+
+          <button type="button" id="clear-avatar" class="clear-avatar" title="Очистити аватар">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+
+          <input type="file" name="avatar" id="id_avatar" accept="image/*" class="hidden">
+        </div>
+      </form>
+
+      <div>
+        <h1 class="text-3xl font-bold">Особисті дані користувача</h1>
+        <p class="opacity-80 mt-1">Редагуйте профіль, змінюйте пароль або адресу доставки</p>
+      </div>
+    </div>
+
+    <!-- === ФОРМА ОСОБИСТИХ ДАНИХ === -->
+    <form method="post" enctype="multipart/form-data" class="form-section" id="personal-data-form">
+      {% csrf_token %}
+      <h2>Основна інформація</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}">Ім’я</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}">Прізвище</label>
+          {{ form.last_name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.phone.id_for_label }}">Телефон</label>
+          {{ form.phone }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.birth_date.id_for_label }}">Дата народження</label>
+          {{ form.birth_date }}
+        </div>
+
+        <div class="form-group address-group">
+          <label>Адреса доставки</label>
+          <div class="address-grid">
+            <div class="form-group">
+              <label for="region">Область</label>
+              <input type="text" name="region" id="region" value="{{ user.profile.region|default:'' }}">
+            </div>
+            <div class="form-group">
+              <label for="city">Місто</label>
+              <input type="text" name="city" id="city" value="{{ user.profile.city|default:'' }}">
+            </div>
+            <div class="form-group">
+              <label for="street">Вулиця</label>
+              <input type="text" name="street" id="street" value="{{ user.profile.street|default:'' }}">
+            </div>
+            <div class="form-group">
+              <label for="house">Будинок/Квартира</label>
+              <input type="text" name="house" id="house" value="{{ user.profile.house|default:'' }}">
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-save">Зберегти зміни</button>
+      </div>
+    </form>
+
+    <div class="form-section password-section">
+      <h2>Змінити пароль</h2>
+      <form method="post" action="" id="password-form">
+        {% csrf_token %}
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="id_old_password">Старий пароль</label>
+            <input type="password" name="old_password" id="id_old_password" required>
+          </div>
+          <div class="form-group">
+            <label for="id_new_password1">Новий пароль</label>
+            <input type="password" name="new_password1" id="id_new_password1" required>
+          </div>
+          <div class="form-group">
+            <label for="id_new_password2">Підтвердження паролю</label>
+            <input type="password" name="new_password2" id="id_new_password2" required>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-save">Змінити пароль</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast notifications container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Модальні вікна підтвердження -->
+  <div id="confirm-data-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Підтвердження змін</h3>
+      </div>
+      <div class="modal-body">
+        <p>Ви впевнені, що хочете зберегти зміни в особистих даних?</p>
+      </div>
+      <div class="modal-actions">
+        <button id="confirm-data-btn" class="btn-modal btn-confirm">Так, зберегти</button>
+        <button id="cancel-data-btn" class="btn-modal btn-cancel">Скасувати</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-password-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Підтвердження зміни пароля</h3>
+      </div>
+      <div class="modal-body">
+        <p>Ви впевнені, що хочете змінити свій пароль?</p>
+        <p style="font-size: 0.9em; color: #f44336; margin-top: 10px;">Після зміни пароля вам потрібно буде знову увійти в систему.</p>
+      </div>
+      <div class="modal-actions">
+        <button id="confirm-password-btn" class="btn-modal btn-confirm">Так, змінити</button>
+        <button id="cancel-password-btn" class="btn-modal btn-cancel">Скасувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Toast notification function
+function showToast(message, type = 'info', duration = 5000) {
+  const toastContainer = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+
+  const progressBar = document.createElement('div');
+  progressBar.className = 'toast-progress';
+
+  let icon = '';
+  switch (type) {
+    case 'success':
+      icon = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      `;
+      break;
+    case 'error':
+      icon = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      `;
+      break;
+    case 'warning':
+      icon = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      `;
+      break;
+    default:
+      icon = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      `;
+  }
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'toast-close';
+  closeBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  `;
+
+  const content = document.createElement('div');
+  content.className = 'toast-content';
+  content.innerHTML = `
+    ${icon}
+    <div class="toast-message">${message}</div>
+  `;
+  content.appendChild(closeBtn);
+
+  toast.appendChild(content);
+  toast.appendChild(progressBar);
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  let startTime = Date.now();
+  const animateProgress = () => {
+    const elapsed = Date.now() - startTime;
+    const progress = 1 - (elapsed / duration);
+    if (progress > 0) {
+      progressBar.style.transform = `scaleX(${progress})`;
+      requestAnimationFrame(animateProgress);
+    }
+  };
+  animateProgress();
+
+  const closeToast = () => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 400);
+  };
+
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeToast();
+  });
+
+  const timeoutId = setTimeout(closeToast, duration);
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(timeoutId);
+    progressBar.style.transition = 'none';
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    const remainingTime = duration - (Date.now() - startTime);
+    if (remainingTime > 0) {
+      setTimeout(closeToast, remainingTime);
+    }
+    progressBar.style.transition = 'transform 0.3s linear';
+  });
+
+  return toast;
+}
+
+function showModal(modalId) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById(modalId);
+    const confirmBtn = modal.querySelector('.btn-confirm');
+    const cancelBtn = modal.querySelector('.btn-cancel');
+
+    modal.style.display = 'flex';
+
+    const close = () => {
+      modal.style.display = 'none';
+      confirmBtn.removeEventListener('click', confirmHandler);
+      cancelBtn.removeEventListener('click', cancelHandler);
+    };
+
+    const confirmHandler = () => {
+      close();
+      resolve(true);
+    };
+
+    const cancelHandler = () => {
+      close();
+      resolve(false);
+    };
+
+    confirmBtn.addEventListener('click', confirmHandler);
+    cancelBtn.addEventListener('click', cancelHandler);
+  });
+}
+
+const avatarInput = document.getElementById('id_avatar');
+const avatarPreview = document.getElementById('avatar-preview');
+const clearButton = document.getElementById('clear-avatar');
+const avatarForm = document.getElementById('avatar-form');
+const avatarPlaceholder = document.querySelector('.avatar-placeholder');
+
+if (avatarInput) {
+  avatarInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Будь ласка, виберіть зображення', 'error');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Розмір файлу не повинен перевищувати 5 МБ', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        if (avatarPreview) {
+          avatarPreview.src = ev.target.result;
+        }
+        else {
+          const newImg = document.createElement('img');
+          newImg.src = ev.target.result;
+          newImg.alt = "Аватар";
+          newImg.id = "avatar-preview";
+
+          if (avatarPlaceholder) {
+            avatarPlaceholder.remove();
+          }
+
+          document.querySelector('.avatar').appendChild(newImg);
+        }
+      };
+      reader.readAsDataURL(file);
+
+      const formData = new FormData(avatarForm);
+
+      fetch("{% url 'bns:update_avatar' %}", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          showToast('Аватар успішно оновлено!', 'success');
+        } else {
+          showToast('Помилка при збереженні аватара', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('Помилка сервера', 'error');
+      });
+    }
+  });
+}
+
+if (clearButton) {
+  clearButton.addEventListener('click', async () => {
+    const confirmed = await showModal('confirm-data-modal');
+    if (confirmed) {
+      fetch("{% url 'bns:clear_avatar' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          avatarInput.value = '';
+          if (avatarPreview) {
+            avatarPreview.remove();
+
+            const placeholder = document.createElement('svg');
+            placeholder.className = "avatar-placeholder";
+            placeholder.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            placeholder.setAttribute("width", "64");
+            placeholder.setAttribute("height", "64");
+            placeholder.setAttribute("viewBox", "0 0 24 24");
+            placeholder.setAttribute("fill", "none");
+            placeholder.setAttribute("stroke", "currentColor");
+            placeholder.setAttribute("stroke-width", "2");
+            placeholder.setAttribute("stroke-linecap", "round");
+            placeholder.setAttribute("stroke-linejoin", "round");
+            placeholder.innerHTML = `
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            `;
+
+            document.querySelector('.avatar').appendChild(placeholder);
+          }
+          showToast('Аватар успішно видалено!', 'success');
+        } else {
+          showToast('Помилка при видаленні аватара', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('Помилка сервера', 'error');
+      });
+    }
+  });
+}
+
+const personalDataForm = document.getElementById('personal-data-form');
+if (personalDataForm) {
+  personalDataForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const confirmed = await showModal('confirm-data-modal');
+    if (confirmed) {
+      const formData = new FormData(personalDataForm);
+
+      fetch(personalDataForm.action || window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          showToast('Особисті дані успішно оновлено!', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showToast('Помилка при збереженні даних', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('Помилка сервера', 'error');
+      });
+    }
+  });
+}
+
+const passwordForm = document.getElementById('password-form');
+if (passwordForm) {
+  passwordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const confirmed = await showModal('confirm-password-modal');
+    if (confirmed) {
+      const formData = new FormData(passwordForm);
+
+      fetch(passwordForm.action || window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          showToast('Пароль успішно змінено! Через 3 секунди вас буде переведено на сторінку входу.', 'success');
+          setTimeout(() => {
+            window.location.href = "{% url 'bns:login' %}";
+          }, 3000);
+        } else {
+          showToast('Помилка при зміні пароля. Перевірте правильність введених даних.', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('Помилка сервера', 'error');
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  {% if messages %}
+    {% for message in messages %}
+      showToast("{{ message }}", "{{ message.tags }}");
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock %}

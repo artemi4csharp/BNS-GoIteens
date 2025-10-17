@@ -55,13 +55,13 @@ class CustomItemClass(ModelAdmin):
     fieldsets = (
         ("Main", {
             "classes" : ("wide",),
-            "fields" : ('name', 'price', 'category', 'owner', 'location', 'image', 'created_at', 'updated_at', 'get_avg_rating'),
+            "fields" : ('name', 'price', 'description', 'category', 'owner', 'location', 'image', 'created_at', 'updated_at', 'get_avg_rating'),
             }),
     )
     add_fieldsets = (
         ("Main", {
         "classes" : ("wide",),
-        "fields" : ('name', 'price', 'category', 'owner', 'location', 'image'),
+        "fields" : ('name', 'price','description', 'category', 'owner', 'location', 'image'),
         }),
     )
     readonly_fields = ("created_at", "updated_at", "get_avg_rating")
@@ -86,5 +86,3 @@ class CustomItemClass(ModelAdmin):
             "widget": ArrayWidget,
         }
     }
-
-

@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_tags %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
+
+    <div class="product-view-container">
+        <div class="toast-container" id="toast-container"></div>
+
+        <div class="product-header">
+            <h1 class="product-title">{{ item.name }}</h1>
+        </div>
+
+        <div class="product-content">
+            <div class="product-left">
+                <div class="product-image-container">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
+                    {% else %}
+                        <img src="{% static 'images/default.png' %}" alt="Default image" class="product-image">
+                    {% endif %}
+                </div>
+
+                <div class="rating-card">
+                    <h3 class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Оцінка товару
+                    </h3>
+                    <div class="rating-overview">
+                        <div class="rating-score">
+                            <span class="score-number">{{ avg_rating|floatformat:1 }}</span>
+                            <div class="rating-stars-display user-rating" data-item-id="{{ item.id }}">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= avg_rating|floatformat:"0" %}
+                                        <svg class="star active" data-value="{{ forloop.counter }}" xmlns="http://www.w3.org/2000/svg"
+                                             width="24" height="24" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700"
+                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    {% else %}
+                                        <svg class="star" data-value="{{ forloop.counter }}" xmlns="http://www.w3.org/2000/svg"
+                                             width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ddd"
+                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="reviews-count">{{ item.comments.count }} відгуків</p>
+
+                        <div class="rating-bars">
+                            {% for star in "54321" %}
+                                {% with star_count=rating_counts|dict_get:star|default:0 %}
+                                    {% with percentage=rating_percentages|dict_get:star|default:0 %}
+                                        <div class="rating-bar-row">
+                                            <span class="star-label">{{ star }}</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
+                                            <div class="bar-container">
+                                                <div class="bar-fill rating-{{ star }}" style="width: {{ percentage }}%"></div>
+                                            </div>
+                                            <span class="count-label">{{ star_count }}</span>
+                                        </div>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-right">
+                <div class="purchase-card">
+                    <div class="price-section">
+                        <span class="price-label">Ціна:</span>
+                        <span class="price-value">{{ item.price }} ₴</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-buy">Купити зараз</button>
+                        <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}" class="btn-cart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            До кошика
+                        </a>
+                    </div>
+                </div>
+
+                <div class="description-card">
+                    <h3 class="description-title">Опис товару</h3>
+                    <p class="description-text" id="description-text">{{ item.description|linebreaksbr }}</p>
+                    <button id="toggle-description" class="toggle-description">Показати повний опис</button>
+                </div>
+
+                {% if request.user == item.owner %}
+                    <a href="{% url 'item:edit_item' item.pk %}" class="btn-edit">Редагувати товар</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <h2 class="comments-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Коментарі
+            </h2>
+
+            {% if request.user.is_authenticated %}
+                <form method="post" class="comment_form">
+                    {% csrf_token %}
+                    <div class="comment-form">
+                        <div class="form-header">
+                            <div class="user-info">
+                                <div class="info-field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <span>{{ request.user.username }}</span>
+                                </div>
+                                <div class="info-field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <span>{{ request.user.email }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <textarea
+                            name="text"
+                            placeholder="Напишіть ваш коментар..."
+                            class="comment-textarea"
+                            rows="5"
+                            id="comment-text"
+                        >{{ form_comment.text.value|default:"" }}</textarea>
+
+                        {% if form_comment.text.errors %}
+                            <div class="error">{{ form_comment.text.errors }}</div>
+                        {% endif %}
+
+                        <button type="submit" class="btn-submit-comment">Надіслати коментар</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="login-prompt">
+                    <p>Щоб залишити коментар, <a href="{% url 'bns:login' %}">увійдіть у свій акаунт</a>.</p>
+                </div>
+            {% endif %}
+
+            <div class="comments-list">
+                {% for comment in item.comments.all %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>{{ comment.author }}</span>
+                            </div>
+                            <div class="comment-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                        </div>
+                        <p class="comment-text">{{ comment.text|linebreaksbr }}</p>
+                    </div>
+                {% empty %}
+                    <p class="no-comments">Немає коментарів. Будьте першим!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.user-rating').forEach(container => {
+        const stars = container.querySelectorAll('.star');
+        const itemId = container.dataset.itemId;
+        let selected = 0;
+
+        stars.forEach((s, i) => {
+            if (s.classList.contains('active')) {
+                selected = i + 1;
+            }
+        });
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                const val = parseInt(star.dataset.value);
+                stars.forEach((s, i) => {
+                    s.setAttribute('fill', i < val ? '#FFD700' : 'none');
+                    s.setAttribute('stroke', i < val ? '#FFD700' : '#ddd');
+                });
+            });
+
+            star.addEventListener('mouseout', () => {
+                stars.forEach((s, i) => {
+                    s.setAttribute('fill', i < selected ? '#FFD700' : 'none');
+                    s.setAttribute('stroke', i < selected ? '#FFD700' : '#ddd');
+                });
+            });
+
+            star.addEventListener('click', () => {
+                selected = parseInt(star.dataset.value);
+
+                stars.forEach((s, i) => {
+                    s.setAttribute('fill', i < selected ? '#FFD700' : 'none');
+                    s.setAttribute('stroke', i < selected ? '#FFD700' : '#ddd');
+                });
+
+                // Відправляємо рейтинг на сервер
+                fetch(`/bns/rate_item/${itemId}/${selected}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Вашу оцінку ${selected}★ збережено!`, 'success');
+
+                        if (data.new_avg) {
+                            const scoreEl = container.closest('.rating-score').querySelector('.score-number');
+                            scoreEl.textContent = data.new_avg.toFixed(1);
+                        }
+                    } else {
+                        showToast('Помилка при збереженні оцінки.', 'error');
+                    }
+                })
+                .catch(() => showToast('Сталася помилка з\'єднання.', 'error'));
+            });
+        });
+    });
+
+    function showToast(message, type = 'info', duration = 5000) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        const progressBar = document.createElement('div');
+        progressBar.className = 'toast-progress';
+
+        let icon = '';
+        switch (type) {
+            case 'success':
+                icon = `
+                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                `;
+                break;
+            case 'error':
+                icon = `
+                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                `;
+                break;
+            case 'warning':
+                icon = `
+                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                `;
+                break;
+            default:
+                icon = `
+                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                `;
+        }
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        `;
+
+        const content = document.createElement('div');
+        content.className = 'toast-content';
+        content.innerHTML = `
+            ${icon}
+            <div class="toast-message">${message}</div>
+        `;
+        content.appendChild(closeBtn);
+
+        toast.appendChild(content);
+        toast.appendChild(progressBar);
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        let startTime = Date.now();
+        const animateProgress = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = 1 - (elapsed / duration);
+            if (progress > 0) {
+                progressBar.style.transform = `scaleX(${progress})`;
+                requestAnimationFrame(animateProgress);
+            }
+        };
+        animateProgress();
+
+        const closeToast = () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 400);
+        };
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeToast();
+        });
+
+        const timeoutId = setTimeout(closeToast, duration);
+
+        toast.addEventListener('mouseenter', () => {
+            clearTimeout(timeoutId);
+            progressBar.style.transition = 'none';
+        });
+
+        toast.addEventListener('mouseleave', () => {
+            const remainingTime = duration - (Date.now() - startTime);
+            if (remainingTime > 0) {
+                setTimeout(closeToast, remainingTime);
+            }
+            progressBar.style.transition = 'transform 0.3s linear';
+        });
+
+        return toast;
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const toggleDescription = document.getElementById("toggle-description");
+    const descriptionText = document.getElementById("description-text");
+
+    if (toggleDescription && descriptionText) {
+        toggleDescription.addEventListener("click", () => {
+            descriptionText.classList.toggle("expanded");
+            toggleDescription.textContent = descriptionText.classList.contains("expanded")
+                ? "Згорнути"
+                : "Показати повний опис";
+        });
+    }
+
+    const commentField = document.getElementById("comment-text");
+    const storageKey = `comment_text_item_{{ item.id }}`;
+
+    const savedText = sessionStorage.getItem(storageKey);
+    if (savedText && commentField) {
+        commentField.value = savedText;
+    }
+
+    if (commentField) {
+        commentField.addEventListener("input", () => {
+            sessionStorage.setItem(storageKey, commentField.value);
+        });
+    }
+
+    const form = document.querySelector(".comment_form");
+    if (form) {
+        form.addEventListener("submit", () => {
+            sessionStorage.removeItem(storageKey);
+        });
+    }
+
+    {% if messages %}
+        {% for message in messages %}
+            showToast("{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+    {% endif %}
+});
+
+    </script>
+
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 400px;
+            width: fit-content;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+        }
+
+        .toast.warning {
+            background: linear-gradient(135deg, #FFC107, #FFA000);
+            color: #333;
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .toast-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 15px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            margin-top: -2px;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .toast.warning .toast-close {
+            color: #333;
+        }
+
+        .toast.warning .toast-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left;
+            transform: scaleX(1);
+            transition: transform 0.3s linear;
+        }
+
+        .toast.success .toast-progress {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .toast.warning .toast-progress {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 15px;
+                right: 15px;
+                left: 15px;
+            }
+
+            .toast {
+                max-width: 100%;
+            }
+        }
+    </style>
+{% endblock %}

@@ -1,39 +1,62 @@
 from django import forms
 from django.forms import modelform_factory
-from bns_goiteens.models import Category,CategoryRequest, Location, Item, Service, Rating, Promotion, SavedItem, Message
+from bns_goiteens.models import Category, Location, Item, Service, Rating, Promotion, SavedItem, Message, Comment, \
+    CategoryRequest
 
 CategoryForm = modelform_factory(
-    Category, 
+    Category,
     fields = ['name', 'is_active'],
     labels = {'name':'Назва товару', 'is_active': 'Чи активна категорія'}
 )
 
 LocationForm = modelform_factory(
-    Location, 
+    Location,
     fields = ['city', 'region', 'country'],
     labels = {'city':'Місто', 'region':'Область', 'country': 'Країна'}
 )
 
-ItemCreationForm = modelform_factory(
-    Item, 
-    fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
-)
+class ItemCreationForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'price', 'category', 'location', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'capitalize-first input1', 'placeholder': 'Назва'}),
+            'description': forms.Textarea(attrs={'class': 'capitalize-first input2', 'placeholder': 'Опис'}),
+            'price': forms.NumberInput(attrs={'class': 'input4', 'placeholder': 'Ціна'}),
+            'category': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'location': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'image': forms.FileInput(attrs={
+                'id': 'id_image_input',
+                'style': 'display:none;'
+            }),
+        }
 
 class ItemEditForm(forms.ModelForm):
-    class Meta: 
-        model = Item 
-        fields = ['name', 'description', 'price', 'image']
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'price', 'category', 'location', 'image']
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'capitalize-first input1', 'placeholder': 'Назва'}),
+            'description': forms.Textarea(attrs={'class': 'capitalize-first input2', 'placeholder': 'Опис'}),
+            'price': forms.NumberInput(attrs={'class': 'input4', 'placeholder': 'Ціна'}),
+            'category': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'location': forms.Select(attrs={'class': 'capitalize-first input3'}),
+            'image': forms.FileInput(attrs={
+                'id': 'id_image_input',
+                'style': 'display:none;'
+            }),
+        }
 
 ServiceCreationForm = modelform_factory(
-    Service, 
+    Service,
     fields = ['name', 'description', 'price', 'category', 'owner', 'location', 'service_type', 'image'],
-    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'}, 
+    labels = {'name': 'Назва', 'description': 'Опис', 'price': 'Ціна', 'category':'Категорія', 'owner': 'Власник', 'location': 'Розміщення', 'image': 'Фото'},
 )
 
 class ServiceEditForm(forms.ModelForm):
-    class Meta: 
-        model = Service 
+    class Meta:
+        model = Service
         fields = ['name', 'description', 'price', 'service_type', 'image']
 
 
@@ -62,6 +85,22 @@ MessageCreationForm = modelform_factory(
     fields = ['content', 'receiver', 'read'],
     labels = {'content': 'Вміст', 'receiver': 'отримувач', 'read': 'Прочитано'}
 )
+
+class CommentForm(forms.ModelForm):
+    text = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'id': 'comment-text',
+            'placeholder': "Введіть ваш коментар...",
+            'rows': 4,
+            'class': 'comment_textarea',
+        }),
+        label="Текст коментаря"
+    )
+
+    class Meta:
+        model = Comment
+        fields = ['text']
+
 
 class CategoryRequestForm(forms.ModelForm):
     class Meta:

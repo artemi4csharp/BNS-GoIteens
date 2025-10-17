@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/create_and_edit_announcement.css' %}">
+
+<div class="create-container">
+    <h2 class="page-title">
+         Створити товар
+    </h2>
+
+    <form method="post" enctype="multipart/form-data" class="announcement-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">Назва</label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Опис</label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Категорія</label>
+                {{ form.category }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ціна</label>
+                <div class="price-input-container">
+                    {{ form.price }}
+                    <span class="currency">₴</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Місто, Регіон, Країна</label>
+            {{ form.location }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Фото товару</label>
+            <div class="image-upload-container">
+                <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
+                    <img id="preview_image"
+                         src="{% static 'icons/add.svg' %}"
+                         alt="preview"
+                         class="img_add">
+                    <div class="upload-placeholder" style="display: none;">
+                        <div class="upload-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <span class="upload-text">Натисніть, щоб завантажити</span>
+                    </div>
+                </div>
+                {{ form.image }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="create_and_edit_btn">
+                 Створити оголошення
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const fields = {
+        name: document.getElementById("id_name"),
+        description: document.getElementById("id_description"),
+        price: document.getElementById("id_price"),
+        category: document.getElementById("id_category"),
+        location: document.getElementById("id_location"),
+    };
+
+    const storageKey = "create_item_form";
+    const savedData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+
+    Object.keys(fields).forEach(key => {
+        if (fields[key] && savedData[key]) {
+            fields[key].value = savedData[key];
+        }
+    });
+
+    Object.keys(fields).forEach(key => {
+        if (fields[key]) {
+            fields[key].addEventListener("input", () => {
+                const currentData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+                currentData[key] = fields[key].value;
+                sessionStorage.setItem(storageKey, JSON.stringify(currentData));
+            });
+        }
+    });
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", () => {
+            sessionStorage.removeItem(storageKey);
+        });
+    }
+
+    const input = document.getElementById('id_image_input');
+    const preview = document.getElementById('preview_image');
+    const placeholder = document.querySelector('.upload-placeholder');
+
+    if (input && preview && placeholder) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                preview.src = URL.createObjectURL(this.files[0]);
+                preview.classList.add('full-size');
+                placeholder.style.display = 'none';
+            } else {
+                preview.src = "{% static 'icons/add.svg' %}";
+                preview.classList.remove('full-size');
+                placeholder.style.display = 'flex';
+            }
+        });
+    }
+});
+
+</script>
+{% endblock %}

@@ -12,8 +12,8 @@ def list_saved(request):
 
 
 @login_required
-def save_item(request, object_id, content_type):
-    ct = get_object_or_404(ContentType, pk=content_type)
+def save_item(request, object_id, content_type_id):
+    ct = get_object_or_404(ContentType, pk=content_type_id)
 
     _, created = SavedItem.objects.get_or_create(
         user=request.user,
