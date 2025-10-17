@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bns_goiteens', '0003_user_balance_user_birth_date_promocode'),
+        ('bns_goiteens', '0002_alter_location_options_alter_rating_options'),
     ]
 
     operations = [

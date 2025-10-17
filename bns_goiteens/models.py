@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -295,6 +296,8 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     read = models.BooleanField(default=False)
+    room_name = models.CharField(max_length=255, default='')
+
 
     class Meta:
         ordering = ["-created_at"]
@@ -390,3 +393,31 @@ class PromoCode(models.Model):
                 result['message'] = 'Промокод не дійсний для цього товару'
 
         return result
+
+
+class Complaint(models.Model):
+    REASON_CHOICES = [
+        ("swearing", "Образи / мова ненависті"),
+        ('spam', 'Спам'),
+        ('harassment', 'Переслідування'),
+        ('inappropriate', 'Неприпустимий контент'),
+        ('other', 'Інше'),
+    ]
+
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bns_complaints")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="bns_complaints")
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES, default='swearing')
+    text = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Скарга"
+        verbose_name_plural = "Скарги"
+
+    def __str__(self):
+        return f"Скарга від {self.author.username} на {self.content_object}"
+    

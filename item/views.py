@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service, Category, User
+from django.contrib.auth.decorators import login_required
+from bns_goiteens.models import Item, Rating, Service, Category, User, Complaint
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import ItemCreationForm, ItemEditForm, RatingForm, CategoryRequestForm
+from bns_goiteens.forms import ComplaintForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
@@ -163,3 +164,27 @@ def request_category_create(request):
     else:
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})
+
+
+@login_required
+def file_complaint(request, content_type_id, object_id):
+    content_type = get_object_or_404(ContentType, pk=content_type_id)
+    obj = get_object_or_404(content_type.model_class(), pk=object_id)
+
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.author = request.user
+            complaint.content_object = obj
+            complaint.save()
+            messages.success(request, 'Ви успішно надіслали скаргу!')
+            return redirect('bns:home')
+    else:
+        form = ComplaintForm()
+
+    return render(request, 'complaint_form.html', {
+        'form': form,
+        'object': obj,
+        'cancel_url': 'bns:home',
+    })

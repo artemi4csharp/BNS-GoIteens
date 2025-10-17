@@ -24,3 +24,11 @@ class PromoCodeForm(forms.Form):
         except PromoCode.DoesNotExist:
             raise forms.ValidationError("Промокод не знайдено")
         return code
+
+class ComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ['reason', 'text']
+        widgets = {
+            'text': forms.Textarea(attrs={'placeholder': 'Опишіть причину скарги...'}),
+        }

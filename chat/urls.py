@@ -12,4 +12,8 @@ urlpatterns = [
     path('agent/session/<int:session_id>/', views.agent_session_detail, name='agent_session_detail'),
     path('agent/session/<int:session_id>/assign/', views.assign_session, name='assign_session'),
     path('session/<int:session_id>/close/', views.close_session, name='close_session'),
+    
+    path("room/<int:other_user_id>/", views.chat_view, name="chat_room"),
+    path("history/", views.user_chat_history, name="user_chat_history"),
+    path("message/<int:message_id>/complaint/", views.file_complaint_message, name="file_complaint_message"),
 ]

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="item-detail">
+    <h1>{{ item.name }}</h1>
+    {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+    {% else %}
+        <img src="/media/items_image/default.png" alt="Default image">
+    {% endif %}
+    <p>{{ item.description }}</p>
+    <p>Ціна: {{ item.price }}</p>
+    <p>Категорія: {{ item.category.name }}</p>
+    <p>Власник: {{ item.owner.username }}</p>
+    <p>Місце: {{ item.location.city }}, {{ item.location.region }}, {{ item.location.country }}</p>
+    <p>Перегляди: {{ item.views }}</p>
+    <p>Середній рейтинг: {{ item.average_rating }}</p>
+    <a href="{% url 'item_list' %}">Назад до списку</a>
+</div>
+{% endblock %}

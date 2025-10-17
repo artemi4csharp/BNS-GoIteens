@@ -8,6 +8,9 @@ from .forms import SupportSessionForm, SupportMessageForm
 from django.db.models import Q
 from django.utils import timezone
 from .utils import send_chat_closed_email, send_agent_reply_email
+from bns_goiteens.models import User, Message
+from bns_goiteens.forms import ComplaintForm
+from django.contrib.contenttypes.models import ContentType
 
 def is_support_agent(user):
     return user.is_staff
@@ -151,3 +154,66 @@ def close_session(request, session_id):
     else:
         messages.success(request, 'Вашу сесію підтримки закрито.')
         return redirect('chat:user_support_sessions')
+
+
+
+
+@login_required
+def chat_view(request, other_user_id):
+
+    other_user = get_object_or_404(User, id=other_user_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('created_at')
+
+    return render(request, "chat/chat.html", {"room_name": other_user_id, "messages": messages, "other_user": other_user})
+
+@login_required
+def user_chat_history(request):
+    sent_users = Message.objects.filter(sender=request.user).values_list('receiver', flat=True).distinct()
+    received_users = Message.objects.filter(receiver=request.user).values_list('sender', flat=True).distinct()
+    chatted_user_ids = set(sent_users) | set(received_users)
+    chatted_users = User.objects.filter(id__in=chatted_user_ids).exclude(id=request.user.id)
+
+
+    chat_data = []
+    for user in chatted_users:
+        last_message = Message.objects.filter(
+            (Q(sender=request.user) & Q(receiver=user)) |
+            (Q(sender=user) & Q(receiver=request.user))
+        ).order_by('-created_at').first()
+        if last_message:
+            chat_data.append({
+                'user': user,
+                'last_message': last_message,
+            })
+
+
+    chat_data.sort(key=lambda x: x['last_message'].created_at, reverse=True)
+
+    return render(request, 'chat/user_chat_history.html', {'chat_data': chat_data})
+
+@login_required
+def file_complaint_message(request, message_id):
+    message = get_object_or_404(Message, pk=message_id)
+    content_type = ContentType.objects.get_for_model(Message)
+
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.author = request.user
+            complaint.content_object = message
+            complaint.save()
+            messages.success(request, 'Ви успішно надіслали скаргу!')
+            return redirect('chat:user_chat_history')
+    else:
+        form = ComplaintForm()
+
+    return render(request, 'complaint_form.html', {
+        'form': form,
+        'object': message,
+        'cancel_url': 'chat:user_chat_history',
+    })
+
