@@ -21,4 +21,4 @@ path("clear-avatar/", views.clear_avatar, name="clear_avatar"),
     path("shared_order/<uuid:order_id>/contribute/", views.contribute_to_shared_order, name="contribute_to_shared_order"),
     path("shared_order/<uuid:order_id>/finalize/", views.finalize_shared_order, name="finalize_shared_order"),
     path("shared_order/<uuid:order_id>/cancel/", views.cancel_shared_order, name="cancel_shared_order"),
-]
+    path("rate_item/<int:item_id>/<int:rating>/", views.rate_item, name="rate_item"),]

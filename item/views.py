@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.db.models import Avg
 from .forms import ItemCreationForm, ItemEditForm, RatingForm
 from django.views.decorators.http import require_POST
-
+from bns_goiteens.models import Category
 
 # def item_list(request):
 #     items = Item.objects.all()
@@ -75,7 +75,7 @@ def item_detail(request, pk):
         user_rating = None
 
     form = RatingForm(request.POST or None, instance=user_rating)
-    if request.method == 'POST':
+    if request.method == 'POST' and 'value' in request.POST:
         if form.is_valid() and request.user.is_authenticated:
             rating = form.save(commit=False)
             rating.user = request.user
@@ -112,8 +112,6 @@ def item_detail(request, pk):
 
     return render(request, 'view_item.html', context)
 
-
-
 @login_required
 def create_item(request):
     if request.method == 'POST':
@@ -129,7 +127,6 @@ def create_item(request):
     else: 
         form = ItemCreationForm()
     return render(request, 'create_item.html', {'form': form})
-
 
 @login_required
 def edit_item(request, pk):
@@ -151,13 +148,15 @@ def delete_item(request, pk):
 
 
 def item_list(request):
-
     query = request.GET.get("q")
     category = request.GET.get("category")
     owner = request.GET.get("owner")
+    categories = Category.objects.filter(is_active=True)
 
+    # -------- Пошук айтемів --------------
+    items = Item.objects.all()
+    services = Service.objects.all()
 
-# -------- Поиск айтемов --------------
     if query:
         items = items.filter(name__icontains=query) | items.filter(description__icontains=query)
         services = services.filter(name__icontains=query) | services.filter(description__icontains=query)
@@ -169,22 +168,20 @@ def item_list(request):
     if owner:
         items = items.filter(owner__id=owner) | items.filter(owner__username__icontains=owner)
         services = services.filter(owner__id=owner) | services.filter(owner__username__icontains=owner)
-# -------------------------------
+    # -------------------------------
 
-# Показывает ранее просмотренные товары
-    items = Item.objects.all()
-    services = Service.objects.all()
+    # Показує раніше переглянуті товари
     last_seen_items = request.session.get("item_history", [])
     items_in_history = sorted(
         Item.objects.filter(pk__in=last_seen_items),
         key=lambda s: -last_seen_items.index(s.pk)
     )
-# --------------End----------
+    # --------------End----------
 
-# ---------- Сортировка айтемов --------------------
+    # ---------- Сортування айтемів --------------------
     sort = request.GET.get('sort') or request.session.get('sort')
 
-# -------------- Сохранение сортировки в сессии --------------
+    # -------------- Збереження сортування в сесії --------------
     if sort:
         request.session['sort'] = sort
 
@@ -194,12 +191,13 @@ def item_list(request):
         items = items.order_by('-price')
     elif sort == 'name':
         items = items.order_by('name')
-# -------------------------------------
+    # -------------------------------------
 
     return render(request, "item_list.html", {
         "items": items,
         "services": services,
-        "items_in_history" : items_in_history
+        "items_in_history": items_in_history,
+        "categories": categories
     })
 
 

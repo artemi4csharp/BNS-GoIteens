@@ -13,6 +13,10 @@ from django.contrib.contenttypes.models import ContentType
 from .forms import SharedOrderForm, SharedOrderContributionForm
 from .models import SharedOrder, SharedOrderItem
 from bns_goiteens.models import OwnerAnalytics
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.contenttypes.models import ContentType
+from .models import Item, Rating
 
 # Create your views here.
 
@@ -446,3 +450,36 @@ def cancel_shared_order(request, order_id):
 
     messages.success(request, 'Спільне замовлення скасовано, кошти повернено учасникам')
     return redirect('bns:shared_order_detail', order_id=shared_order.id)
+
+
+@require_POST
+def rate_item(request, item_id, rating):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Необхідно увійти в систему'}, status=401)
+
+    if rating < 1 or rating > 5:
+        return JsonResponse({'success': False, 'error': 'Неправильний рейтинг'}, status=400)
+
+    try:
+        item = Item.objects.get(id=item_id)
+        content_type = ContentType.objects.get_for_model(Item)
+
+        rating_obj, created = Rating.objects.update_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=item_id,
+            defaults={'value': rating}
+        )
+
+        new_avg = item.average_rating()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Рейтинг {rating} збережено',
+            'new_avg': new_avg
+        })
+
+    except Item.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Товар не знайдено'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

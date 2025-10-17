@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Послуги{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/service_list.css' %}">
+
+<div class="container mt-4">
+    <div class="between">
+        <h2>Послуги</h2>
+        {% if user.is_authenticated %}
+            <a href="{% url 'service_create' %}" class="btn-primary">Створити послугу</a>
+        {% endif %}
+    </div>
+
+    <!-- Фільтри -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="type" class="form-label">Тип послуги</label>
+                            <select name="type" id="type" class="form-select">
+                                <option value="">Всі типи</option>
+                                <option value="offer" {% if request.GET.type == 'offer' %}selected{% endif %}>Надаю</option>
+                                <option value="request" {% if request.GET.type == 'request' %}selected{% endif %}>Шукаю</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="sort" class="form-label">Сортування</label>
+                            <select name="sort" id="sort" class="form-select">
+                                <option value="">За замовчуванням</option>
+                                <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Ціна за зростанням</option>
+                                <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Ціна за спаданням</option>
+                                <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Назва</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn-outline-primary w-100">Фільтрувати</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if services %}
+        <div class="row">
+            {% for service in services %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}" alt="{{ service.name }}" class="card-img-top">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">Немає зображення</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ service.name }}</h5>
+                            <p class="card-text">{{ service.description|truncatewords:15 }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">{{ service.price }} ₴</span>
+                                    <span class="badge bg-secondary {% if service.service_type == 'offer' %}offer{% elif service.service_type == 'request' %}request{% endif %}">
+                                        {{ service.get_service_type_display }}
+                                    </span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">Категорія: {{ service.category }}</small>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">Місце: {{ service.location }}</small>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{% url 'service_detail' service.pk %}" class="btn-primary">Детальніше</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Опубліковано: {{ service.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert-info">
+            <h4 class="alert-heading">Послуги відсутні</h4>
+            <p>Наразі немає доступних послуг. Спробуйте змінити параметри фільтра або створіть нову послугу.</p>
+        </div>
+    {% endif %}
+
+    {% if services_in_history %}
+        <hr class="my-5">
+        <h3>Нещодавно переглянуті послуги</h3>
+        <div class="row">
+            {% for service in services_in_history %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}" alt="{{ service.name }}" class="card-img-top">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">Немає зображення</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ service.name }}</h5>
+                            <p class="card-text">{{ service.description|truncatewords:10 }}</p>
+                            <a href="{% url 'service_detail' service.pk %}" class="btn-outline-primary">Переглянути</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
