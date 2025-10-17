@@ -19,6 +19,8 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.conf.urls.i18n import i18n_patterns
+
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/bns/home/', permanent=True)),
@@ -27,10 +29,15 @@ urlpatterns = [
     path('bns/', include("bns_goiteens.urls")),
     path('chat/', include('chat.urls')),
     path('saved/', include("saved_item.urls")),
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('saved/', include("saved_item.urls")),
     path('cart/', include('cart.urls')),
-path('services/', include('services.urls')),
+    path('services/', include('services.urls')),
 ]
 
+urlpatterns += i18n_patterns(
+    path('', include('bns_goiteens.urls')),
+)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

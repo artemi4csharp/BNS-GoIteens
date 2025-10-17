@@ -1,10 +1,10 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base</title>
+    <title>{% trans "Base" %}</title>
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     {% block extra_css %}
@@ -16,7 +16,7 @@
 <div class="logo">
   <a href="{% url 'bns:home' %}" class="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
     <img src="{% static 'icons/logo.svg' %}" alt="logo" style="margin-right: 5px;">
-    <h2>Buy and Sell</h2>
+    <h2>{% trans "Buy and Sell" %}</h2>
   </a>
 </div>
 
@@ -24,7 +24,7 @@
     <div class="button-group">
         <div class="button-item">
             <img src="{% static 'icons/statistics.svg' %}" alt="statistics" style="margin-right: 5px;">
-            <span>Статистика</span>
+            <span>{% trans "Статистика" %}</span>
         </div>
 
         <div class="divider"></div>
@@ -32,7 +32,7 @@
         <div class="button-item">
             <a href="{% url 'saved_list' %}" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
             <img src="{% static 'icons/favorites.svg' %}" alt="favorites" style="margin-right: 5px;">
-            <span>Обране</span>
+            <span>{% trans "Обране" %}</span>
             </a>
         </div>
 
@@ -40,7 +40,7 @@
 
         <div class="button-item">
             <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
-            <span>Повідомлення</span>
+            <span>{% trans "Повідомлення" %}</span>
         </div>
 
         <div class="divider"></div>
@@ -48,7 +48,7 @@
         <div class="button-item">
         <a href="{% url 'cart' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
             <img src="{% static 'icons/basket.svg' %}" alt="basket" style="margin-right: 5px;">
-            <span>Кошик </span>
+            <span>{% trans "Кошик" %} </span>
             {% if request.session.cart and request.session.cart.offers %}
                 <span style="background: #07575B; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-left: 5px;">
                     {{ request.session.cart.offers|length }}
@@ -61,10 +61,10 @@
 
         <div class="button-item">
             <img src="{% static 'icons/to_compare.svg' %}" alt="to_compare" style="margin-right: 5px;">
-            <span>Порівняти</span>
+            <span>{% trans "Порівняти" %}</span>
         </div>
 
-<a class="create-btn" href="#">+ Створити оголошення</a>
+<a class="create-btn" href="#">+ {% trans "Створити оголошення" %}</a>
     </div>
 
 {% if user.is_authenticated %}
@@ -73,7 +73,7 @@
             <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
         </div>
         <p class="profile-name">{{ user.first_name|default:user.username }}<br>{{ user.last_name|default:"" }}</p>
-        <h3 class="profile-balance">{{ user.balance|floatformat:2 }}</h3>
+        <h3 class="profile-balance">{{ user.balance|floatformat:2 }} ₴</h3>
         <img src="{% static 'icons/wallet.svg' %}" alt="wallet-icon">
     </button>
 {% else %}
@@ -81,16 +81,44 @@
         <div class="profile-icon">
             <img src="{% static 'icons/profile.svg' %}" alt="profile_icon">
         </div>
-        <p class="profile-name">Увійти</p>
+        <p class="profile-name">{% trans "Увійти" %}</p>
     </button>
 {% endif %}
 
   </div>
+
+    <!-- Перемикач мов -->
+    <div>
+       <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.path }}">
+
+  <button type="submit" name="language" value="uk"
+          class="flag-btn {% if LANGUAGE_CODE == 'uk' %}active{% endif %}"
+          title="Українська">UA</button>
+
+  <button type="submit" name="language" value="en"
+          class="flag-btn {% if LANGUAGE_CODE == 'en' %}active{% endif %}"
+          title="English">EN</button>
+
+  <button type="submit" name="language" value="de"
+          class="flag-btn {% if LANGUAGE_CODE == 'de' %}active{% endif %}"
+          title="Deutsch">DE</button>
+
+  <button type="submit" name="language" value="fr"
+          class="flag-btn {% if LANGUAGE_CODE == 'fr' %}active{% endif %}"
+          title="Français">FR</button>
+
+  <button type="submit" name="language" value="es"
+          class="flag-btn {% if LANGUAGE_CODE == 'es' %}active{% endif %}"
+          title="Español">ES</button>
+</form>
+    </div>
 </header>
 
 {% block navigation %}
 <nav>
-  <p><a href="#" id="openCategories">Всі категорії</a></p>
+  <p><a href="#" id="openCategories">{% trans "Всі категорії" %}</a></p>
 
   {% for category in dynamic_categories|slice:":7" %}
     <p>
@@ -99,7 +127,7 @@
       </a>
     </p>
   {% empty %}
-    <p>Немає категорій</p>
+    <p>{% trans "Немає категорій" %}</p>
   {% endfor %}
 </nav>
 {% endblock %}
@@ -108,10 +136,10 @@
 <div id="categoryModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
-    <h2>Всі категорії</h2>
+    <h2>{% trans "Всі категорії" %}</h2>
     <ul>
       <a class="categories" href="{% url 'bns:home' %}">
-        <span><b>Всі категорії</b></span>
+        <span><b>{% trans "Всі категорії" %}</b></span>
       </a>
       {% for category in categories %}
         <li>
@@ -123,7 +151,7 @@
           {% endif %}
         </li>
       {% empty %}
-        <li>Немає категорій</li>
+        <li>{% trans "Немає категорій" %}</li>
       {% endfor %}
     </ul>
   </div>
@@ -134,29 +162,29 @@
   </main>
 
   <footer>
-    <h6 style="margin-top: 11px;">© 2025 Company Name</h6>
+    <h6 style="margin-top: 11px;">© 2025 {% trans "Company Name" %}</h6>
     <div>
-      <h5>About Us</h5>
-      <a href=""><h6>Company History</h6></a>
-      <a href=""><h6>Our Team</h6></a>
+      <h5>{% trans "About Us" %}</h5>
+      <a href=""><h6>{% trans "Company History" %}</h6></a>
+      <a href=""><h6>{% trans "Our Team" %}</h6></a>
     </div>
     <div>
-      <h5>Helpful Links</h5>
-      <a href=""><h6>FAQs</h6></a>
-      <a href=""><h6>Support</h6></a>
-      <a href=""><h6>Live Chat</h6></a>
+      <h5>{% trans "Helpful Links" %}</h5>
+      <a href=""><h6>{% trans "FAQs" %}</h6></a>
+      <a href=""><h6>{% trans "Support" %}</h6></a>
+      <a href=""><h6>{% trans "Live Chat" %}</h6></a>
     </div>
     <div>
-      <h5>Contact Us</h5>
-      <a href="mailto: bns@gmail.com"><h6>bns@gmail.com</h6></a>
-      <a href="tel: +3801234567899"><h6>+3801234567899</h6></a>
-      <a href=""><h6>Ukraine, Zhytomir, Neisnuvanivca</h6></a>
+      <h5>{% trans "Contact Us" %}</h5>
+      <a href="mailto:bns@gmail.com"><h6>bns@gmail.com</h6></a>
+      <a href="tel:+3801234567899"><h6>+3801234567899</h6></a>
+      <a href=""><h6>{% trans "Ukraine, Zhytomir, Neisnuvanivca" %}</h6></a>
     </div>
     <div>
-      <h6>All rights reserved.&nbsp</h6>
-      <a href=""><h6 style="text-decoration-line: underline;">Terms & Conditions</h6></a>
+      <h6>{% trans "All rights reserved." %}&nbsp</h6>
+      <a href=""><h6 style="text-decoration-line: underline;">{% trans "Terms & Conditions" %}</h6></a>
       <h6>&nbsp•&nbsp</h6>
-      <a href=""><h6 style="text-decoration-line: underline;">Privacy Policy</h6></a>
+      <a href=""><h6 style="text-decoration-line: underline;">{% trans "Privacy Policy" %}</h6></a>
     </div>
   </footer>
 
@@ -165,7 +193,7 @@
   <div class="modal-overlay"></div>
   <div class="modal-container">
     <div class="modal-header">
-      <h2 class="modal-title">Що ви хочете створити?</h2>
+      <h2 class="modal-title">{% trans "Що ви хочете створити?" %}</h2>
       <button class="modal-close">&times;</button>
     </div>
     <div class="modal-content">
@@ -175,8 +203,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
           </svg>
         </div>
-        <h3 class="option-title">Товар</h3>
-        <p class="option-description">Створіть оголошення для фізичного товару, який ви хочете продати</p>
+        <h3 class="option-title">{% trans "Товар" %}</h3>
+        <p class="option-description">{% trans "Створіть оголошення для фізичного товару, який ви хочете продати" %}</p>
       </div>
 
       <div class="option-card" data-type="service">
@@ -185,8 +213,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <h3 class="option-title">Послуга</h3>
-        <p class="option-description">Створіть оголошення для надання або пошуку послуг</p>
+        <h3 class="option-title">{% trans "Послуга" %}</h3>
+        <p class="option-description">{% trans "Створіть оголошення для надання або пошуку послуг" %}</p>
       </div>
     </div>
   </div>

@@ -1,0 +1,168 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-11 20:52+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: .\config\settings.py:187
+msgid "My site"
+msgstr ""
+
+#: .\config\settings.py:245
+msgid "Navigation"
+msgstr ""
+
+#: .\config\settings.py:250
+msgid "Dashboard"
+msgstr ""
+
+#: .\config\settings.py:256 .\config\settings.py:346
+msgid "Users"
+msgstr ""
+
+#: .\config\settings.py:261
+msgid "Items"
+msgstr ""
+
+#: .\config\settings.py:266
+msgid "Category"
+msgstr ""
+
+#: .\config\settings.py:271
+msgid "Services"
+msgstr ""
+
+#: .\config\settings.py:276
+msgid "Rating"
+msgstr ""
+
+#: .\config\settings.py:281
+msgid "Comment"
+msgstr ""
+
+#: .\config\settings.py:286
+msgid "Saved Item"
+msgstr ""
+
+#: .\config\settings.py:291
+msgid "Promotion"
+msgstr ""
+
+#: .\config\settings.py:296
+msgid "Discount"
+msgstr ""
+
+#: .\config\settings.py:301
+msgid "Message"
+msgstr ""
+
+#: .\config\settings.py:306
+msgid "Location"
+msgstr ""
+
+#: .\config\settings.py:313
+msgid "Chat"
+msgstr ""
+
+msgid "Base"
+msgstr "Base"
+
+msgid "Buy and Sell"
+msgstr "Acheter et vendre"
+
+msgid "Статистика"
+msgstr "Statistiques"
+
+msgid "Обране"
+msgstr "Favoris"
+
+msgid "Повідомлення"
+msgstr "Messages"
+
+msgid "Кошик"
+msgstr "Panier"
+
+msgid "Порівняти"
+msgstr "Comparer"
+
+msgid "Створити оголошення"
+msgstr "Créer une annonce"
+
+msgid "Всі категорії"
+msgstr "Toutes les catégories"
+
+msgid "Company Name"
+msgstr "Nom de l'entreprise"
+
+msgid "About Us"
+msgstr "À propos"
+
+msgid "Company History"
+msgstr "Historique de l'entreprise"
+
+msgid "Our Team"
+msgstr "Notre équipe"
+
+msgid "Helpful Links"
+msgstr "Liens utiles"
+
+msgid "FAQs"
+msgstr "FAQ"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Live Chat"
+msgstr "Chat en direct"
+
+msgid "Contact Us"
+msgstr "Nous contacter"
+
+msgid "All rights reserved."
+msgstr "Tous droits réservés."
+
+msgid "Terms & Conditions"
+msgstr "Conditions générales"
+
+msgid "Privacy Policy"
+msgstr "Politique de confidentialité"
+
+msgid "Купити"
+msgstr "Acheter"
+
+msgid "Додати в обране"
+msgstr "Ajouter aux favoris"
+
+msgid "Коментарі"
+msgstr "Commentaires"
+
+msgid "Поділитися"
+msgstr "Partager"
+
+msgid "Немає товарів"
+msgstr "Aucun article disponible"
+
+msgid "Мої збережені об'єкти"
+msgstr "Mes éléments enregistrés"
+
+msgid "Додано"
+msgstr "Ajouté"
+
+msgid "Видалити"
+msgstr "Supprimer"
+
+msgid "У вас поки що немає збережених об'єктів."
+msgstr "Vous n'avez pas encore d'éléments enregistrés."
