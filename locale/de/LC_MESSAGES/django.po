@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-11 20:51+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\config\settings.py:187
+msgid "My site"
+msgstr ""
+
+#: .\config\settings.py:245
+msgid "Navigation"
+msgstr ""
+
+#: .\config\settings.py:250
+msgid "Dashboard"
+msgstr ""
+
+#: .\config\settings.py:256 .\config\settings.py:346
+msgid "Users"
+msgstr ""
+
+#: .\config\settings.py:261
+msgid "Items"
+msgstr ""
+
+#: .\config\settings.py:266
+msgid "Category"
+msgstr ""
+
+#: .\config\settings.py:271
+msgid "Services"
+msgstr ""
+
+#: .\config\settings.py:276
+msgid "Rating"
+msgstr ""
+
+#: .\config\settings.py:281
+msgid "Comment"
+msgstr ""
+
+#: .\config\settings.py:286
+msgid "Saved Item"
+msgstr ""
+
+#: .\config\settings.py:291
+msgid "Promotion"
+msgstr ""
+
+#: .\config\settings.py:296
+msgid "Discount"
+msgstr ""
+
+#: .\config\settings.py:301
+msgid "Message"
+msgstr ""
+
+#: .\config\settings.py:306
+msgid "Location"
+msgstr ""
+
+#: .\config\settings.py:313
+msgid "Chat"
+msgstr ""
+
+msgid "Base"
+msgstr "Basis"
+
+msgid "Лого"
+msgstr "Logo"
+
+msgid "Buy and Sell"
+msgstr "Kaufen und Verkaufen"
+
+msgid "Статистика"
+msgstr "Statistik"
+
+msgid "Обране"
+msgstr "Favoriten"
+
+msgid "Повідомлення"
+msgstr "Nachrichten"
+
+msgid "Кошик"
+msgstr "Warenkorb"
+
+msgid "Порівняти"
+msgstr "Vergleichen"
+
+msgid "Створити оголошення"
+msgstr "Anzeige erstellen"
+
+msgid "Всі категорії"
+msgstr "Alle Kategorien"
+
+msgid "Company Name"
+msgstr "Firmenname"
+
+msgid "About Us"
+msgstr "Über uns"
+
+msgid "Company History"
+msgstr "Firmengeschichte"
+
+msgid "Our Team"
+msgstr "Unser Team"
+
+msgid "Helpful Links"
+msgstr "Nützliche Links"
+
+msgid "FAQs"
+msgstr "Häufige Fragen"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Live Chat"
+msgstr "Live-Chat"
+
+msgid "Contact Us"
+msgstr "Kontakt"
+
+msgid "Ukraine, Zhytomir, Neisnuvanivca"
+msgstr "Ukraine, Schytomyr, Neisnuwanivka"
+
+msgid "All rights reserved."
+msgstr "Alle Rechte vorbehalten."
+
+msgid "Terms & Conditions"
+msgstr "Allgemeine Geschäftsbedingungen"
+
+msgid "Privacy Policy"
+msgstr "Datenschutzrichtlinie"
+
+msgid "Купити"
+msgstr "Kaufen"
+
+msgid "Додати в обране"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "Коментарі"
+msgstr "Kommentare"
+
+msgid "Поділитися"
+msgstr "Teilen"
+
+msgid "Немає товарів"
+msgstr "Keine Produkte verfügbar"
+
+msgid "Мої збережені об'єкти"
+msgstr "Meine gespeicherten Artikel"
+
+msgid "Додано"
+msgstr "Hinzugefügt"
+
+msgid "Видалити"
+msgstr "Löschen"
+
+msgid "У вас поки що немає збережених об'єктів."
+msgstr "Sie haben noch keine gespeicherten Artikel."
