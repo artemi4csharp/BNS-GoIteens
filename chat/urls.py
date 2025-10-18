@@ -13,5 +13,5 @@ urlpatterns = [
     path('agent/session/<int:session_id>/assign/', views.assign_session, name='assign_session'),
     path('session/<int:session_id>/close/', views.close_session, name='close_session'),
     path('support/history/', views.support_history, name='support_history'),
-    path("room/", views.chat_view, name="chat_room"),
+    path("room/<int:pk>", views.chat_view, name="chat_room"),
 ]
