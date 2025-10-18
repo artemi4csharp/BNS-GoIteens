@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .models import SupportSession, SupportMessage
+from bns_goiteens.models import Block
 from .forms import SupportSessionForm, SupportMessageForm
 from django.db.models import Q
 from django.utils import timezone
@@ -12,8 +13,14 @@ from .utils import send_chat_closed_email, send_agent_reply_email
 def is_support_agent(user):
     return user.is_staff
 
+def is_user_blacklisted(user):
+    return Block.objects.filter(user=user).exists()
 @login_required
 def create_support_session(request):
+    if is_user_blacklisted(request.user):
+        messages.error(request, 'Ви не можете створювати звернення, бо перебуваєте у чорному списку.')
+        return redirect('home')
+
     if request.method == 'POST':
         form = SupportSessionForm(request.POST)
         if form.is_valid():
@@ -32,6 +39,10 @@ def user_support_sessions(request):
     return render(request, 'chat/user_support_sessions.html', {'sessions': sessions})
 @login_required
 def support_session_detail(request, session_id):
+    if is_user_blacklisted(request.user):
+        messages.error(request, 'Доступ заборонено: ви у чорному списку.')
+        return redirect('home')
+
     session = get_object_or_404(SupportSession, id=session_id)
     if session.user != request.user and (not session.agent or session.agent != request.user):
         messages.error(request, 'У вас немає доступу до цієї сесії.')
@@ -134,6 +145,10 @@ def agent_session_detail(request, session_id):
 @require_POST
 @login_required
 def close_session(request, session_id):
+    if is_user_blacklisted(request.user):
+        messages.error(request, 'Доступ заборонено: ви у чорному списку.')
+        return redirect('home')
+
     session = get_object_or_404(SupportSession, id=session_id)
     if session.user != request.user and session.agent != request.user:
         messages.error(request, 'У вас немає прав для закриття цієї сесії.')
