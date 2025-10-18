@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% load custom_tags %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'styles/view_announcement.css' %}">
@@ -17,7 +18,7 @@
                     {% if item.image %}
                         <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
                     {% else %}
-                        <img src="{% static 'images/default.png' %}" alt="Default image" class="product-image">
+                        <img src="{% static 'images/default.png' %}" alt="{% trans 'Default image' %}" class="product-image">
                     {% endif %}
                 </div>
 
@@ -25,9 +26,7 @@
                     <h3 class="card-header">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                        Оцінка товару
-                    </h3>
+                        </svg>{% trans "Оцінка товару" %}</h3>
                     <div class="rating-overview">
                         <div class="rating-score">
                             <span class="score-number">{{ avg_rating|floatformat:1 }}</span>
@@ -76,30 +75,28 @@
             <div class="product-right">
                 <div class="purchase-card">
                     <div class="price-section">
-                        <span class="price-label">Ціна:</span>
+                        <span class="price-label">{% trans "Ціна:" %}</span>
                         <span class="price-value">{{ item.price }} ₴</span>
                     </div>
                     <div class="action-buttons">
-                        <button class="btn-buy">Купити зараз</button>
+                        <button class="btn-buy">{% trans "Купити зараз" %}</button>
                         <a href="{% url 'add_to_cart' item.pk item.get_content_type_id %}" class="btn-cart">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="9" cy="21" r="1"></circle>
                                 <circle cx="20" cy="21" r="1"></circle>
                                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            До кошика
-                        </a>
+                            </svg>{% trans "До кошика" %}</a>
                     </div>
                 </div>
 
                 <div class="description-card">
-                    <h3 class="description-title">Опис товару</h3>
+                    <h3 class="description-title">{% trans "Опис товару" %}</h3>
                     <p class="description-text" id="description-text">{{ item.description|linebreaksbr }}</p>
-                    <button id="toggle-description" class="toggle-description">Показати повний опис</button>
+                    <button id="toggle-description" class="toggle-description">{% trans "Показати повний опис" %}</button>
                 </div>
 
                 {% if request.user == item.owner %}
-                    <a href="{% url 'item:edit_item' item.pk %}" class="btn-edit">Редагувати товар</a>
+                    <a href="{% url 'item:edit_item' item.pk %}" class="btn-edit">{% trans "Редагувати товар" %}</a>
                 {% endif %}
             </div>
         </div>
@@ -108,9 +105,7 @@
             <h2 class="comments-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Коментарі
-            </h2>
+                </svg>{% trans "Коментарі" %}</h2>
 
             {% if request.user.is_authenticated %}
                 <form method="post" class="comment_form">
@@ -137,7 +132,7 @@
 
                         <textarea
                             name="text"
-                            placeholder="Напишіть ваш коментар..."
+                            placeholder="{% trans 'Напишіть ваш коментар...' %}"
                             class="comment-textarea"
                             rows="5"
                             id="comment-text"
@@ -147,12 +142,12 @@
                             <div class="error">{{ form_comment.text.errors }}</div>
                         {% endif %}
 
-                        <button type="submit" class="btn-submit-comment">Надіслати коментар</button>
+                        <button type="submit" class="btn-submit-comment">{% trans "Надіслати коментар" %}</button>
                     </div>
                 </form>
             {% else %}
                 <div class="login-prompt">
-                    <p>Щоб залишити коментар, <a href="{% url 'bns:login' %}">увійдіть у свій акаунт</a>.</p>
+                    <p>{% trans "Щоб залишити коментар," %}<a href="{% url 'bns:login' %}">{% trans "увійдіть у свій акаунт" %}</a>.</p>
                 </div>
             {% endif %}
 
@@ -180,7 +175,7 @@
                         <p class="comment-text">{{ comment.text|linebreaksbr }}</p>
                     </div>
                 {% empty %}
-                    <p class="no-comments">Немає коментарів. Будьте першим!</p>
+                    <p class="no-comments">{% trans "Немає коментарів. Будьте першим!" %}</p>
                 {% endfor %}
             </div>
         </div>
@@ -208,18 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
 
-            star.addEventListener('mouseout', () => {
-                stars.forEach((s, i) => {
-                    s.setAttribute('fill', i < selected ? '#FFD700' : 'none');
+            star.addEventListener('mouseout', () =>{% trans "{ stars.forEach((s, i) => { s.setAttribute('fill', i" %}< selected ? '#FFD700' : 'none');
                     s.setAttribute('stroke', i < selected ? '#FFD700' : '#ddd');
                 });
             });
 
-            star.addEventListener('click', () => {
-                selected = parseInt(star.dataset.value);
-
-                stars.forEach((s, i) => {
-                    s.setAttribute('fill', i < selected ? '#FFD700' : 'none');
+            star.addEventListener('click', () =>{% trans "{ selected = parseInt(star.dataset.value); stars.forEach((s, i) => { s.setAttribute('fill', i" %}< selected ? '#FFD700' : 'none');
                     s.setAttribute('stroke', i < selected ? '#FFD700' : '#ddd');
                 });
 
@@ -268,51 +257,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                `;
-                break;
-            case 'error':
-                icon = `
-                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; case 'error': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="15" y1="9" x2="9" y2="15"></line>
                         <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                `;
-                break;
-            case 'warning':
-                icon = `
-                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; case 'warning': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
                         <line x1="12" y1="9" x2="12" y2="13"></line>
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                `;
-                break;
-            default:
-                icon = `
-                    <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; default: icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="16" x2="12" y2="12"></line>
                         <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                `;
-        }
-
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'toast-close';
-        closeBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; } const closeBtn = document.createElement('button'); closeBtn.className = 'toast-close'; closeBtn.innerHTML = `" %}<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        `;
-
-        const content = document.createElement('div');
-        content.className = 'toast-content';
-        content.innerHTML = `
-            ${icon}
-            <div class="toast-message">${message}</div>
+            </svg>{% trans "`; const content = document.createElement('div'); content.className = 'toast-content'; content.innerHTML = ` ${icon}" %}<div class="toast-message">{% trans "${message}" %}</div>
         `;
         content.appendChild(closeBtn);
 

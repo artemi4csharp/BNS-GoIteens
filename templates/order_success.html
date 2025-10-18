@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block extra_css %}
 <style>
 :root {
@@ -140,28 +141,26 @@
             </svg>
         </div>
         
-        <h1 class="success-title">Замовлення успішно оформлено!</h1>
+        <h1 class="success-title">{% trans "Замовлення успішно оформлено!" %}</h1>
         
-        <p class="success-message">
-            Дякуємо за ваше замовлення! Ми отримали ваш платіж і вже обробляємо ваше замовлення. 
-            Номер вашого замовлення: <strong>#{{ order.id }}</strong>
+        <p class="success-message">{% trans "Дякуємо за ваше замовлення! Ми отримали ваш платіж і вже обробляємо ваше замовлення. Номер вашого замовлення:" %}<strong>#{{ order.id }}</strong>
         </p>
         
         <div class="order-details">
             <div class="detail-row">
-                <span class="detail-label">Номер замовлення:</span>
+                <span class="detail-label">{% trans "Номер замовлення:" %}</span>
                 <span class="detail-value">#{{ order.id }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Дата оформлення:</span>
+                <span class="detail-label">{% trans "Дата оформлення:" %}</span>
                 <span class="detail-value">{{ order.created_at|date:"d.m.Y H:i" }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Сума замовлення:</span>
+                <span class="detail-label">{% trans "Сума замовлення:" %}</span>
                 <span class="detail-value">{{ order.total_amount }} ₴</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Статус:</span>
+                <span class="detail-label">{% trans "Статус:" %}</span>
                 <span class="detail-value">
                     {% if order.status == 'pending' %}Очікує оплати
                     {% elif order.status == 'paid' %}Оплачено
@@ -175,8 +174,8 @@
         </div>
         
         <div class="actions">
-            <a href="{% url 'item:item_list' %}" class="btn btn-primary">Повернутися до покупок</a>
-            <a href="{% url 'cart' %}" class="btn btn-secondary">Перейти до кошика</a>
+            <a href="{% url 'item:item_list' %}" class="btn btn-primary">{% trans "Повернутися до покупок" %}</a>
+            <a href="{% url 'cart' %}" class="btn btn-secondary">{% trans "Перейти до кошика" %}</a>
         </div>
     </div>
 </div>

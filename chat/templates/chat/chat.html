@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html>
 <head>
-    <title>Чат</title>
+    <title>{% trans "Чат" %}</title>
 </head>
 <body>
-<h1>Чат кімната</h1>
+<h1>{% trans "Чат кімната" %}</h1>
 <div id="chat-log" style="border:1px solid gray; height:300px; overflow:auto;"></div>
-<input id="chat-message-input" type="text" placeholder="Ваше повідомлення...">
-<button id="chat-message-submit">Надіслати</button>
+<input id="chat-message-input" type="text" placeholder="{% trans 'Ваше повідомлення...' %}">
+<button id="chat-message-submit">{% trans "Надіслати" %}</button>
 
 <script>
 const roomName = "{{ room_name }}";
@@ -18,7 +19,7 @@ const chatSocket = new WebSocket(
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     const log = document.querySelector('#chat-log');
-    log.innerHTML += `<p><b>${data.username}</b>: ${data.message}</p>`;
+    log.innerHTML += `<p><b>{% trans "${data.username}" %}</b>{% trans ": ${data.message}" %}</p>`;
     log.scrollTop = log.scrollHeight;
 };
 
@@ -35,4 +36,3 @@ document.querySelector('#chat-message-submit').onclick = function() {
 </script>
 </body>
 </html>
-

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}Внесок у спільне замовлення{% endblock %}
 
@@ -314,33 +315,30 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card-custom">
-                <div class="card-header-custom">
-                    Зробити внесок
-                </div>
+                <div class="card-header-custom">{% trans "Зробити внесок" %}</div>
                 <div class="card-body-custom">
                     <form method="post" id="contributeForm">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="{{ form.amount.id_for_label }}" class="form-label">Сума внеску (₴)</label>
+                            <label for="{{ form.amount.id_for_label }}" class="form-label">{% trans "Сума внеску (₴)" %}</label>
                             {{ form.amount }}
                             {% if form.amount.errors %}
                                 <div class="text-danger">{{ form.amount.errors }}</div>
                             {% endif %}
-                            <div class="form-text">
-                                Максимальна сума: <span id="maxAmount">{{ remaining_amount|floatformat:2 }}</span> ₴
+                            <div class="form-text">{% trans "Максимальна сума:" %}<span id="maxAmount">{{ remaining_amount|floatformat:2 }}</span> ₴
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="{{ form.payment_method.id_for_label }}" class="form-label">Спосіб оплати</label>
+                            <label for="{{ form.payment_method.id_for_label }}" class="form-label">{% trans "Спосіб оплати" %}</label>
                             {{ form.payment_method }}
                             {% if form.payment_method.errors %}
                                 <div class="text-danger">{{ form.payment_method.errors }}</div>
                             {% endif %}
                         </div>
 
-                        <button type="submit" class="btn-custom btn-primary-custom">Зробити внесок</button>
-                        <a href="{% url 'bns:shared_order_detail' shared_order.id %}" class="btn-custom btn-secondary-custom">Скасувати</a>
+                        <button type="submit" class="btn-custom btn-primary-custom">{% trans "Зробити внесок" %}</button>
+                        <a href="{% url 'bns:shared_order_detail' shared_order.id %}" class="btn-custom btn-secondary-custom">{% trans "Скасувати" %}</a>
                     </form>
                 </div>
             </div>
@@ -348,26 +346,24 @@
 
         <div class="col-md-4">
             <div class="card-custom">
-                <div class="card-header-custom">
-                    Деталі замовлення
-                </div>
+                <div class="card-header-custom">{% trans "Деталі замовлення" %}</div>
                 <div class="card-body-custom">
                     <div class="summary-item">
-                        <div class="summary-label">Загальна сума:</div>
+                        <div class="summary-label">{% trans "Загальна сума:" %}</div>
                         <div class="summary-value">{{ shared_order.total_amount|floatformat:2 }} ₴</div>
                     </div>
                     <div class="summary-item">
-                        <div class="summary-label">Зібрано:</div>
+                        <div class="summary-label">{% trans "Зібрано:" %}</div>
                         <div class="summary-value">{{ shared_order.collected_amount|floatformat:2 }} ₴</div>
                     </div>
                     <div class="summary-item">
-                        <div class="summary-label">Залишилось:</div>
+                        <div class="summary-label">{% trans "Залишилось:" %}</div>
                         <div class="summary-value">{{ remaining_amount|floatformat:2 }} ₴</div>
                     </div>
 
                     <div class="progress-container">
                         <div class="progress-label">
-                            <span>Прогрес</span>
+                            <span>{% trans "Прогрес" %}</span>
                             <span>{{ shared_order.progress_percentage }}%</span>
                         </div>
                         <div class="progress-bar-container">
@@ -422,51 +418,22 @@
             <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-        `;
-                break;
-            case 'error':
-                icon = `
-            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>{% trans "`; break; case 'error': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="15" y1="9" x2="9" y2="15"></line>
                 <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
-        `;
-                break;
-            case 'warning':
-                icon = `
-            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>{% trans "`; break; case 'warning': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
                 <line x1="12" y1="9" x2="12" y2="13"></line>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-        `;
-                break;
-            default:
-                icon = `
-            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>{% trans "`; break; default: icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="16" x2="12" y2="12"></line>
                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-        `;
-        }
-
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'toast-close';
-        closeBtn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>{% trans "`; } const closeBtn = document.createElement('button'); closeBtn.className = 'toast-close'; closeBtn.innerHTML = `" %}<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-`;
-
-        const content = document.createElement('div');
-        content.className = 'toast-content';
-        content.innerHTML = `
-    ${icon}
-    <div class="toast-message">${message}</div>
+    </svg>{% trans "`; const content = document.createElement('div'); content.className = 'toast-content'; content.innerHTML = ` ${icon}" %}<div class="toast-message">{% trans "${message}" %}</div>
 `;
         content.appendChild(closeBtn);
 

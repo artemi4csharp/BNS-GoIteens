@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block extra_css %}
 <style>
 :root {
@@ -472,7 +473,7 @@
 <div class="cart-container">
 {% csrf_token %}
     <div class="cart-header">
-        <h1>Кошик</h1>
+        <h1>{% trans "Кошик" %}</h1>
         <span>{{ items|length }} товарів</span>
     </div>
 
@@ -501,7 +502,7 @@
                             <span class="quantity-value">{{ entry.quantity }}</span>
                             <button class="quantity-btn increase-btn" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">+</button>
                             <!-- Змінено кнопку видалення - додано клас remove-all-btn -->
-                            <button class="remove-btn remove-all-btn" title="Видалити всі товари" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">
+                            <button class="remove-btn remove-all-btn" title="{% trans 'Видалити всі товари' %}" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -517,23 +518,23 @@
         </div>
 
         <div class="cart-summary">
-            <h3 class="summary-title">Підсумок замовлення</h3>
+            <h3 class="summary-title">{% trans "Підсумок замовлення" %}</h3>
             <div class="summary-details">
                 <div class="summary-row">
-                    <span class="summary-label">Товарів:</span>
+                    <span class="summary-label">{% trans "Товарів:" %}</span>
                     <span class="summary-value">{{ items|length }}</span>
                 </div>
                 <div class="summary-row">
-                    <span class="summary-label">Кількість:</span>
+                    <span class="summary-label">{% trans "Кількість:" %}</span>
                     <span class="summary-value">{{ total_quantity }}</span>
                 </div>
                 <div class="total-row">
-                    <span class="total-label">До оплати:</span>
+                    <span class="total-label">{% trans "До оплати:" %}</span>
                     <span class="total-value">{{ total_price|floatformat:2 }} ₴</span>
                 </div>
-                <a href="{% url 'checkout' %}" class="checkout-btn">Оформити замовлення</a>
-                <a href="{% url 'bns:create_shared_order' %}" class="shared-order-btn">Створити спільне замовлення</a>
-                <a href="{% url 'item:item_list' %}" class="continue-shopping">Продовжити покупки</a>
+                <a href="{% url 'checkout' %}" class="checkout-btn">{% trans "Оформити замовлення" %}</a>
+                <a href="{% url 'bns:create_shared_order' %}" class="shared-order-btn">{% trans "Створити спільне замовлення" %}</a>
+                <a href="{% url 'item:item_list' %}" class="continue-shopping">{% trans "Продовжити покупки" %}</a>
             </div>
         </div>
     </div>
@@ -544,9 +545,9 @@
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
-            <h2>Ваш кошик порожній</h2>
-            <p>Додайте товари до кошика, щоб зробити покупку</p>
-            <a href="{% url 'item:item_list' %}" class="shop-btn">Перейти до покупок</a>
+            <h2>{% trans "Ваш кошик порожній" %}</h2>
+            <p>{% trans "Додайте товари до кошика, щоб зробити покупку" %}</p>
+            <a href="{% url 'item:item_list' %}" class="shop-btn">{% trans "Перейти до покупок" %}</a>
         </div>
     {% endif %}
 </div>
@@ -564,45 +565,22 @@
             icon = `                <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-            `;
-            break;
-        case 'error':
-            icon = `                <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg>{% trans "`; break; case 'error': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="15" y1="9" x2="9" y2="15"></line>
                     <line x1="9" y1="9" x2="15" y2="15"></line>
-                </svg>
-            `;
-            break;
-        case 'warning':
-            icon = `                <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg>{% trans "`; break; case 'warning': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-            `;
-            break;
-        default:
-            icon = `                <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg>{% trans "`; break; default: icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            `;
-    }
-
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'toast-close';
-    closeBtn.innerHTML = `        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg>{% trans "`; } const closeBtn = document.createElement('button'); closeBtn.className = 'toast-close'; closeBtn.innerHTML = `" %}<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-    `;
-
-    const content = document.createElement('div');
-    content.className = 'toast-content';
-    content.innerHTML = `        ${icon}        <div class="toast-message">${message}</div>
+        </svg>{% trans "`; const content = document.createElement('div'); content.className = 'toast-content'; content.innerHTML = ` ${icon}" %}<div class="toast-message">{% trans "${message}" %}</div>
     `;
     content.appendChild(closeBtn);
 

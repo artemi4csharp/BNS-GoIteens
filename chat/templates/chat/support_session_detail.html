@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html>
 <head>
     <title>Звернення до підтримки #{{ session.id }}</title>
@@ -31,25 +32,23 @@
                 <form method="post" action="{% url 'chat:close_session' session.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Ви впевнені, що хочете закрити це звернення?')">
-                        Закрити звернення
-                    </button>
+                            onclick="return confirm('Ви впевнені, що хочете закрити це звернення?')">{% trans "Закрити звернення" %}</button>
                 </form>
             {% endif %}
         </div>
         <div class="card mb-4">
             <div class="card-header">
-                <strong>Тема:</strong> {{ session.subject }}<br>
-                <strong>Статус:</strong>
+                <strong>{% trans "Тема:" %}</strong> {{ session.subject }}<br>
+                <strong>{% trans "Статус:" %}</strong>
                 {% if session.status == 'pending' %}
-                    <span class="badge bg-warning">Очікує</span>
+                    <span class="badge bg-warning">{% trans "Очікує" %}</span>
                 {% elif session.status == 'active' %}
-                    <span class="badge bg-success">Активний</span>
+                    <span class="badge bg-success">{% trans "Активний" %}</span>
                 {% else %}
-                    <span class="badge bg-secondary">Закритий</span>
+                    <span class="badge bg-secondary">{% trans "Закритий" %}</span>
                 {% endif %}
                 {% if session.agent %}
-                    <br><strong>Працівник підтримки:</strong> {{ session.agent.username }}
+                    <br><strong>{% trans "Працівник підтримки:" %}</strong> {{ session.agent.username }}
                 {% endif %}
             </div>
         </div>
@@ -64,9 +63,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <div class="alert alert-info">
-                Поки що немає повідомлень.
-            </div>
+            <div class="alert alert-info">{% trans "Поки що немає повідомлень." %}</div>
         {% endif %}
         {% if session.status != 'closed' %}
             <form method="post">
@@ -74,14 +71,12 @@
                 <div class="mb-3">
                     {{ form.content }}
                 </div>
-                <button type="submit" class="btn btn-primary">Відправити повідомлення</button>
-                <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">Назад до списку</a>
+                <button type="submit" class="btn btn-primary">{% trans "Відправити повідомлення" %}</button>
+                <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">{% trans "Назад до списку" %}</a>
             </form>
         {% else %}
-            <div class="alert alert-warning">
-                Це звернення закрито. Ви не можете надсилати нові повідомлення.
-            </div>
-            <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">Назад до списку</a>
+            <div class="alert alert-warning">{% trans "Це звернення закрито. Ви не можете надсилати нові повідомлення." %}</div>
+            <a href="{% url 'chat:user_support_sessions' %}" class="btn btn-secondary">{% trans "Назад до списку" %}</a>
         {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

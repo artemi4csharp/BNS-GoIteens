@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 <form method="post">
   {% csrf_token %}
   
   <div>
-    <label for="{{ form.name.id_for_label }}">Назва категорії:</label><br>
+    <label for="{{ form.name.id_for_label }}">{% trans "Назва категорії:" %}</label><br>
     {{ form.name }}
   </div>
 
   <div>
-    <label for="{{ form.parent.id_for_label }}">Батьківська категорія (необов’язково):</label><br>
+    <label for="{{ form.parent.id_for_label }}">{% trans "Батьківська категорія (необов’язково):" %}</label><br>
     {{ form.parent }}
   </div>
 
-  <button type="submit">Створити запит</button>
+  <button type="submit">{% trans "Створити запит" %}</button>
 </form>
 {% endblock %}

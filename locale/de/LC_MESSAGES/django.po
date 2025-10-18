@@ -77,17 +77,14 @@ msgstr ""
 msgid "Chat"
 msgstr ""
 
-msgid "Base"
-msgstr "Basis"
-
 msgid "Лого"
 msgstr "Logo"
 
-msgid "Buy and Sell"
-msgstr "Kaufen und Verkaufen"
+msgid "Купити"
+msgstr "Kaufen"
 
-msgid "Статистика"
-msgstr "Statistik"
+msgid "Продати"
+msgstr "Verkaufen"
 
 msgid "Обране"
 msgstr "Favoriten"
@@ -107,8 +104,290 @@ msgstr "Anzeige erstellen"
 msgid "Всі категорії"
 msgstr "Alle Kategorien"
 
-msgid "Company Name"
-msgstr "Firmenname"
+msgid "Категорія 1"
+msgstr "Kategorie 1"
+
+msgid "Категорія 2"
+msgstr "Kategorie 2"
+
+msgid "Категорія 3"
+msgstr "Kategorie 3"
+
+msgid "Категорія 4"
+msgstr "Kategorie 4"
+
+msgid "Категорія 5"
+msgstr "Kategorie 5"
+
+msgid "Про нас"
+msgstr "Über uns"
+
+msgid "Підтримка"
+msgstr "Support"
+
+msgid "Контакти"
+msgstr "Kontakt"
+
+msgid "Політика конфіденційності"
+msgstr "Datenschutzrichtlinie"
+
+msgid "Умови використання"
+msgstr "Nutzungsbedingungen"
+
+msgid "Коментарі"
+msgstr "Kommentare"
+
+msgid "Поділитися"
+msgstr "Teilen"
+
+msgid "Немає товарів"
+msgstr "Keine Produkte verfügbar"
+
+msgid "Додати в обране"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "Видалити"
+msgstr "Löschen"
+
+msgid "Редагувати"
+msgstr "Bearbeiten"
+
+msgid "Зберегти"
+msgstr "Speichern"
+
+msgid "Скасувати"
+msgstr "Abbrechen"
+
+msgid "Підтвердити"
+msgstr "Bestätigen"
+
+msgid "Повернутися"
+msgstr "Zurückkehren"
+
+msgid "Деталі"
+msgstr "Details"
+
+msgid "Опис"
+msgstr "Beschreibung"
+
+msgid "Ціна"
+msgstr "Preis"
+
+msgid "Статус"
+msgstr "Status"
+
+msgid "Активний"
+msgstr "Aktiv"
+
+msgid "Завершено"
+msgstr "Abgeschlossen"
+
+msgid "Опубліковано"
+msgstr "Veröffentlicht"
+
+msgid "Дата створення"
+msgstr "Erstellungsdatum"
+
+msgid "Користувач"
+msgstr "Benutzer"
+
+msgid "Пошук"
+msgstr "Suche"
+
+msgid "Фільтри"
+msgstr "Filter"
+
+msgid "Сортувати"
+msgstr "Sortieren"
+
+msgid "Показати більше"
+msgstr "Mehr anzeigen"
+
+msgid "Немає результатів"
+msgstr "Keine Ergebnisse gefunden"
+
+msgid "Назад"
+msgstr "Zurück"
+
+msgid "Увійти"
+msgstr "Anmelden"
+
+msgid "Вийти"
+msgstr "Abmelden"
+
+msgid "Реєстрація"
+msgstr "Registrieren"
+
+msgid "Електронна пошта"
+msgstr "E-Mail"
+
+msgid "Пароль"
+msgstr "Passwort"
+
+msgid "Підтвердіть пароль"
+msgstr "Passwort bestätigen"
+
+msgid "Ім'я користувача"
+msgstr "Benutzername"
+
+msgid "Мій профіль"
+msgstr "Mein Profil"
+
+msgid "Редагувати профіль"
+msgstr "Profil bearbeiten"
+
+msgid "Завантажити фото"
+msgstr "Foto hochladen"
+
+msgid "Оновити"
+msgstr "Aktualisieren"
+
+msgid "Зміни збережено успішно"
+msgstr "Änderungen erfolgreich gespeichert"
+
+msgid "Виникла помилка"
+msgstr "Ein Fehler ist aufgetreten"
+
+msgid "Невірний пароль або електронна пошта"
+msgstr "Falsches Passwort oder E-Mail"
+
+msgid "Користувача не знайдено"
+msgstr "Benutzer nicht gefunden"
+
+msgid "Сторінку не знайдено"
+msgstr "Seite nicht gefunden"
+
+msgid "Помилка сервера"
+msgstr "Serverfehler"
+
+msgid "Надіслати"
+msgstr "Senden"
+
+msgid "Ваше повідомлення надіслано"
+msgstr "Ihre Nachricht wurde gesendet"
+
+msgid "Введіть текст повідомлення"
+msgstr "Geben Sie den Nachrichtentext ein"
+
+msgid "Нові повідомлення"
+msgstr "Neue Nachrichten"
+
+msgid "Немає нових повідомлень"
+msgstr "Keine neuen Nachrichten"
+
+msgid "Аукціон"
+msgstr "Auktion"
+
+msgid "Ставка"
+msgstr "Gebot"
+
+msgid "Зробити ставку"
+msgstr "Gebot abgeben"
+
+msgid "Ваша ставка прийнята"
+msgstr "Ihr Gebot wurde angenommen"
+
+msgid "Мінімальна ставка"
+msgstr "Mindestgebot"
+
+msgid "Переможець"
+msgstr "Gewinner"
+
+msgid "Час завершення"
+msgstr "Endzeit"
+
+msgid "Залишилось часу"
+msgstr "Verbleibende Zeit"
+
+msgid "Оголошення"
+msgstr "Anzeigen"
+
+msgid "Нові оголошення"
+msgstr "Neue Anzeigen"
+
+msgid "Популярні товари"
+msgstr "Beliebte Artikel"
+
+msgid "Нещодавно переглянуті"
+msgstr "Kürzlich angesehen"
+
+msgid "Повідомлення користувача"
+msgstr "Benutzernachricht"
+
+msgid "Додати коментар"
+msgstr "Kommentar hinzufügen"
+
+msgid "Ваш коментар збережено"
+msgstr "Ihr Kommentar wurde gespeichert"
+
+msgid "Помилка під час збереження"
+msgstr "Fehler beim Speichern"
+
+msgid "Дата оновлення"
+msgstr "Aktualisierungsdatum"
+
+msgid "Опубліковано сьогодні"
+msgstr "Heute veröffentlicht"
+
+msgid "Вчора"
+msgstr "Gestern"
+
+msgid "Днів тому"
+msgstr "Vor Tagen"
+
+msgid "Переглянути всі"
+msgstr "Alle ansehen"
+
+msgid "Показати менше"
+msgstr "Weniger anzeigen"
+
+msgid "Завантаження..."
+msgstr "Wird geladen..."
+
+msgid "Немає даних"
+msgstr "Keine Daten"
+
+msgid "Statistics"
+msgstr "Statistik"
+
+msgid "Favorites"
+msgstr "Favoriten"
+
+msgid "Messages"
+msgstr "Nachrichten"
+
+msgid "Cart"
+msgstr "Warenkorb"
+
+msgid "Compare"
+msgstr "Vergleichen"
+
+msgid "Create listing"
+msgstr "Anzeige erstellen"
+
+msgid "Log in"
+msgstr "Anmelden"
+
+msgid "All categories"
+msgstr "Alle Kategorien"
+
+msgid "No categories"
+msgstr "Keine Kategorien"
+
+msgid "Search"
+msgstr "Suche"
+
+msgid "All products"
+msgstr "Alle Produkte"
+
+msgid "0 items"
+msgstr "0 Artikel"
+
+msgid "No items found"
+msgstr "Keine Artikel gefunden"
+
+msgid "Try changing search or filter parameters"
+msgstr "Versuchen Sie, die Such- oder Filterparameter zu ändern"
 
 msgid "About Us"
 msgstr "Über uns"
@@ -132,43 +411,97 @@ msgid "Live Chat"
 msgstr "Live-Chat"
 
 msgid "Contact Us"
-msgstr "Kontakt"
-
-msgid "Ukraine, Zhytomir, Neisnuvanivca"
-msgstr "Ukraine, Schytomyr, Neisnuwanivka"
+msgstr "Kontaktieren Sie uns"
 
 msgid "All rights reserved."
 msgstr "Alle Rechte vorbehalten."
 
 msgid "Terms & Conditions"
-msgstr "Allgemeine Geschäftsbedingungen"
+msgstr "Nutzungsbedingungen"
 
 msgid "Privacy Policy"
 msgstr "Datenschutzrichtlinie"
 
-msgid "Купити"
-msgstr "Kaufen"
+msgid "Каталог товарів"
+msgstr "Produktkatalog"
 
-msgid "Додати в обране"
-msgstr "Zu Favoriten hinzufügen"
+msgid "Знайдіть ідеальний товар для себе"
+msgstr "Finden Sie das perfekte Produkt für sich"
 
-msgid "Коментарі"
-msgstr "Kommentare"
+msgid "Пошук товарів..."
+msgstr "Produkte suchen..."
 
-msgid "Поділитися"
-msgstr "Teilen"
+msgid "Сортування"
+msgstr "Sortierung"
 
-msgid "Немає товарів"
-msgstr "Keine Produkte verfügbar"
+msgid "Всі товари"
+msgstr "Alle Produkte"
 
-msgid "Мої збережені об'єкти"
-msgstr "Meine gespeicherten Artikel"
+msgid "0 товарів"
+msgstr "0 Artikel"
 
-msgid "Додано"
-msgstr "Hinzugefügt"
+msgid "Товарів не знайдено"
+msgstr "Keine Produkte gefunden"
 
-msgid "Видалити"
-msgstr "Löschen"
+msgid "Спробуйте змінити параметри пошуку або фільтрації"
+msgstr "Versuchen Sie, die Such- oder Filterparameter zu ändern"
 
-msgid "У вас поки що немає збережених об'єктів."
-msgstr "Sie haben noch keine gespeicherten Artikel."
+msgid "© 2025 Company Name"
+msgstr "© 2025 Company Name"
+
+msgid "Немає категорій"
+msgstr "Keine Kategorien"
+
+msgid "Статистика"
+msgstr "Statistiken"
+
+msgid "Вхід"
+msgstr "Anmeldung"
+
+msgid "Увійдіть до свого акаунту"
+msgstr "Melden Sie sich bei Ihrem Konto an"
+
+msgid "Ім'я користувача або Email"
+msgstr "Benutzername oder E-Mail"
+
+msgid "Ваш логін або email"
+msgstr "Ihr Benutzername oder Ihre E-Mail"
+
+msgid "Введіть пароль"
+msgstr "Passwort eingeben"
+
+msgid "Немає акаунту? Зареєструватися"
+msgstr "Kein Konto? Registrieren"
+
+msgid "Продовжуючи, ви погоджуєтесь з нашими"
+msgstr "Wenn Sie fortfahren, stimmen Sie unseren"
+
+msgid "Умовами використання"
+msgstr "Nutzungsbedingungen"
+
+msgid "Політикою конфіденційності"
+msgstr "Datenschutzrichtlinie"
+
+msgid "Товар"
+msgstr "Waren"
+
+msgid "Послуга"
+msgstr "Service"
+
+msgid "Створіть оголошення для фізичного товару, який ви хочете продати"
+msgstr "Erstellen Sie eine Anzeige für das physische Produkt, das Sie verkaufen möchten"
+
+msgid "Створіть оголошення для надання або пошуку послуг"
+msgstr "Erstellen Sie eine Anzeige zum Anbieten oder Suchen von Diensten"
+
+msgid "Що ви хочете створити?"
+msgstr "Was möchten Sie erstellen?"
+
+msgid "Ціна: за зростанням"
+msgstr "Preis: aufsteigend"
+
+msgid "Ціна: за спаданням"
+msgstr "Preis: absteigend"
+
+msgid "Назва"
+msgstr "Name"

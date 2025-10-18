@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block navigation %}{% endblock %}
 {% block content %}
     <style>
@@ -316,9 +317,7 @@
 
     <div class="saved-items-container">
         <div class="between">
-            <h1>
-                Мої збережені товари
-            </h1>
+            <h1>{% trans "Мої збережені товари" %}</h1>
             <p>
                 {% if saved_items %}
                     У вас {{ saved_items|length }} {% if saved_items|length == 1 %}збережений товар{% else %}збережених
@@ -339,22 +338,20 @@
                                     <img src="{{ item.image.url }}" alt="{{ item.name }}" class="saved-card-image">
                                 {% else %}
                                     <div class="no-image-placeholder">
-                                        <span>Немає зображення</span>
+                                        <span>{% trans "Немає зображення" %}</span>
                                     </div>
                                 {% endif %}
 
                                 <a href="{% url 'delete_saved' saved.pk %}"
                                    class="remove-button"
-                                   title="Видалити зі збережених">
-                                    <img src="{% static 'icons/like.svg' %}" alt="Видалити"
+                                   title="{% trans 'Видалити зі збережених' %}">
+                                    <img src="{% static 'icons/like.svg' %}" alt="{% trans 'Видалити' %}"
                                          style="width: 20px; height: 20px;">
                                 </a>
 
                                 <div class="saved-badge">
-                                    <img src="{% static 'icons/like.svg' %}" alt="Збережено"
-                                         style="width: 16px; height: 16px;">
-                                    Збережено
-                                </div>
+                                    <img src="{% static 'icons/like.svg' %}" alt="{% trans 'Збережено' %}"
+                                         style="width: 16px; height: 16px;">{% trans "Збережено" %}</div>
                             </div>
 
                             <div class="saved-card-content">
@@ -367,12 +364,12 @@
 
                                 <div class="item-stats">
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/eye.svg' %}" alt="Перегляди"
+                                        <img src="{% static 'icons/eye.svg' %}" alt="{% trans 'Перегляди' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.views }}</span>
                                     </div>
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/comment.svg' %}" alt="Коментарі"
+                                        <img src="{% static 'icons/comment.svg' %}" alt="{% trans 'Коментарі' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.comments.count }}</span>
                                     </div>
@@ -391,13 +388,9 @@
                                             <circle cx="9" cy="21" r="1"></circle>
                                             <circle cx="20" cy="21" r="1"></circle>
                                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                        </svg>
-                                        Купити
-                                    </a>
+                                        </svg>{% trans "Купити" %}</a>
                                     <a href="{% url 'item:item_detail' item.pk %}"
-                                       class="btn-view-card">
-                                        Переглянути
-                                    </a>
+                                       class="btn-view-card">{% trans "Переглянути" %}</a>
                                 </div>
                             </div>
                         </div>
@@ -406,12 +399,10 @@
             </div>
         {% else %}
             <div class="no-items">
-                <p>Немає збережених товарів</p>
-                <p>Натисніть на іконку серця на товарі, щоб додати його до збережених</p>
+                <p>{% trans "Немає збережених товарів" %}</p>
+                <p>{% trans "Натисніть на іконку серця на товарі, щоб додати його до збережених" %}</p>
                 <a href="{% url 'item:item_list' %}" class="btn-browse">
-                    <img src="{% static 'icons/sparkles.svg' %}" alt="Переглянути" style="width: 20px; height: 20px;">
-                    Переглянути товари
-                </a>
+                    <img src="{% static 'icons/sparkles.svg' %}" alt="{% trans 'Переглянути' %}" style="width: 20px; height: 20px;">{% trans "Переглянути товари" %}</a>
             </div>
         {% endif %}
     </div>

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'styles/personal_data.css' %}">
@@ -439,9 +440,7 @@
   <a href="{% url 'bns:profile' %}" class="back-link">
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="15 18 9 12 15 6"></polyline>
-    </svg>
-    Назад до профілю
-  </a>
+    </svg>{% trans "Назад до профілю" %}</a>
 
   <div class="profile-card">
     <div class="card-header">
@@ -450,7 +449,7 @@
         <div class="avatar-container">
           <div class="avatar">
             {% if user.avatar %}
-              <img src="{{ user.avatar.url }}" alt="Аватар" id="avatar-preview">
+              <img src="{{ user.avatar.url }}" alt="{% trans 'Аватар' %}" id="avatar-preview">
             {% else %}
               <svg class="avatar-placeholder" xmlns="http://www.w3.org/2000/svg" width="64" height="64"
                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -461,7 +460,7 @@
             {% endif %}
           </div>
 
-          <label for="id_avatar" class="upload-button" title="Завантажити аватар">
+          <label for="id_avatar" class="upload-button" title="{% trans 'Завантажити аватар' %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -471,7 +470,7 @@
             </svg>
           </label>
 
-          <button type="button" id="clear-avatar" class="clear-avatar" title="Очистити аватар">
+          <button type="button" id="clear-avatar" class="clear-avatar" title="{% trans 'Очистити аватар' %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -484,54 +483,54 @@
       </form>
 
       <div>
-        <h1 class="text-3xl font-bold">Особисті дані користувача</h1>
-        <p class="opacity-80 mt-1">Редагуйте профіль, змінюйте пароль або адресу доставки</p>
+        <h1 class="text-3xl font-bold">{% trans "Особисті дані користувача" %}</h1>
+        <p class="opacity-80 mt-1">{% trans "Редагуйте профіль, змінюйте пароль або адресу доставки" %}</p>
       </div>
     </div>
 
     <!-- === ФОРМА ОСОБИСТИХ ДАНИХ === -->
     <form method="post" enctype="multipart/form-data" class="form-section" id="personal-data-form">
       {% csrf_token %}
-      <h2>Основна інформація</h2>
+      <h2>{% trans "Основна інформація" %}</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label for="{{ form.first_name.id_for_label }}">Ім’я</label>
+          <label for="{{ form.first_name.id_for_label }}">{% trans "Ім’я" %}</label>
           {{ form.first_name }}
         </div>
         <div class="form-group">
-          <label for="{{ form.last_name.id_for_label }}">Прізвище</label>
+          <label for="{{ form.last_name.id_for_label }}">{% trans "Прізвище" %}</label>
           {{ form.last_name }}
         </div>
         <div class="form-group">
-          <label for="{{ form.email.id_for_label }}">Email</label>
+          <label for="{{ form.email.id_for_label }}">{% trans "Email" %}</label>
           {{ form.email }}
         </div>
         <div class="form-group">
-          <label for="{{ form.phone.id_for_label }}">Телефон</label>
+          <label for="{{ form.phone.id_for_label }}">{% trans "Телефон" %}</label>
           {{ form.phone }}
         </div>
         <div class="form-group">
-          <label for="{{ form.birth_date.id_for_label }}">Дата народження</label>
+          <label for="{{ form.birth_date.id_for_label }}">{% trans "Дата народження" %}</label>
           {{ form.birth_date }}
         </div>
 
         <div class="form-group address-group">
-          <label>Адреса доставки</label>
+          <label>{% trans "Адреса доставки" %}</label>
           <div class="address-grid">
             <div class="form-group">
-              <label for="region">Область</label>
+              <label for="region">{% trans "Область" %}</label>
               <input type="text" name="region" id="region" value="{{ user.profile.region|default:'' }}">
             </div>
             <div class="form-group">
-              <label for="city">Місто</label>
+              <label for="city">{% trans "Місто" %}</label>
               <input type="text" name="city" id="city" value="{{ user.profile.city|default:'' }}">
             </div>
             <div class="form-group">
-              <label for="street">Вулиця</label>
+              <label for="street">{% trans "Вулиця" %}</label>
               <input type="text" name="street" id="street" value="{{ user.profile.street|default:'' }}">
             </div>
             <div class="form-group">
-              <label for="house">Будинок/Квартира</label>
+              <label for="house">{% trans "Будинок/Квартира" %}</label>
               <input type="text" name="house" id="house" value="{{ user.profile.house|default:'' }}">
             </div>
           </div>
@@ -541,30 +540,30 @@
       </div>
 
       <div class="actions">
-        <button type="submit" class="btn btn-save">Зберегти зміни</button>
+        <button type="submit" class="btn btn-save">{% trans "Зберегти зміни" %}</button>
       </div>
     </form>
 
     <div class="form-section password-section">
-      <h2>Змінити пароль</h2>
+      <h2>{% trans "Змінити пароль" %}</h2>
       <form method="post" action="" id="password-form">
         {% csrf_token %}
         <div class="form-grid">
           <div class="form-group">
-            <label for="id_old_password">Старий пароль</label>
+            <label for="id_old_password">{% trans "Старий пароль" %}</label>
             <input type="password" name="old_password" id="id_old_password" required>
           </div>
           <div class="form-group">
-            <label for="id_new_password1">Новий пароль</label>
+            <label for="id_new_password1">{% trans "Новий пароль" %}</label>
             <input type="password" name="new_password1" id="id_new_password1" required>
           </div>
           <div class="form-group">
-            <label for="id_new_password2">Підтвердження паролю</label>
+            <label for="id_new_password2">{% trans "Підтвердження паролю" %}</label>
             <input type="password" name="new_password2" id="id_new_password2" required>
           </div>
         </div>
         <div class="actions">
-          <button type="submit" class="btn btn-save">Змінити пароль</button>
+          <button type="submit" class="btn btn-save">{% trans "Змінити пароль" %}</button>
         </div>
       </form>
     </div>
@@ -577,14 +576,14 @@
   <div id="confirm-data-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Підтвердження змін</h3>
+        <h3>{% trans "Підтвердження змін" %}</h3>
       </div>
       <div class="modal-body">
-        <p>Ви впевнені, що хочете зберегти зміни в особистих даних?</p>
+        <p>{% trans "Ви впевнені, що хочете зберегти зміни в особистих даних?" %}</p>
       </div>
       <div class="modal-actions">
-        <button id="confirm-data-btn" class="btn-modal btn-confirm">Так, зберегти</button>
-        <button id="cancel-data-btn" class="btn-modal btn-cancel">Скасувати</button>
+        <button id="confirm-data-btn" class="btn-modal btn-confirm">{% trans "Так, зберегти" %}</button>
+        <button id="cancel-data-btn" class="btn-modal btn-cancel">{% trans "Скасувати" %}</button>
       </div>
     </div>
   </div>
@@ -592,15 +591,15 @@
   <div id="confirm-password-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Підтвердження зміни пароля</h3>
+        <h3>{% trans "Підтвердження зміни пароля" %}</h3>
       </div>
       <div class="modal-body">
-        <p>Ви впевнені, що хочете змінити свій пароль?</p>
-        <p style="font-size: 0.9em; color: #f44336; margin-top: 10px;">Після зміни пароля вам потрібно буде знову увійти в систему.</p>
+        <p>{% trans "Ви впевнені, що хочете змінити свій пароль?" %}</p>
+        <p style="font-size: 0.9em; color: #f44336; margin-top: 10px;">{% trans "Після зміни пароля вам потрібно буде знову увійти в систему." %}</p>
       </div>
       <div class="modal-actions">
-        <button id="confirm-password-btn" class="btn-modal btn-confirm">Так, змінити</button>
-        <button id="cancel-password-btn" class="btn-modal btn-cancel">Скасувати</button>
+        <button id="confirm-password-btn" class="btn-modal btn-confirm">{% trans "Так, змінити" %}</button>
+        <button id="cancel-password-btn" class="btn-modal btn-cancel">{% trans "Скасувати" %}</button>
       </div>
     </div>
   </div>
@@ -623,51 +622,22 @@ function showToast(message, type = 'info', duration = 5000) {
         <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
-      `;
-      break;
-    case 'error':
-      icon = `
-        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        </svg>{% trans "`; break; case 'error': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="15" y1="9" x2="9" y2="15"></line>
           <line x1="9" y1="9" x2="15" y2="15"></line>
-        </svg>
-      `;
-      break;
-    case 'warning':
-      icon = `
-        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        </svg>{% trans "`; break; case 'warning': icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-      `;
-      break;
-    default:
-      icon = `
-        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        </svg>{% trans "`; break; default: icon = `" %}<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="16" x2="12" y2="12"></line>
           <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-      `;
-  }
-
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'toast-close';
-  closeBtn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        </svg>{% trans "`; } const closeBtn = document.createElement('button'); closeBtn.className = 'toast-close'; closeBtn.innerHTML = `" %}<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  `;
-
-  const content = document.createElement('div');
-  content.className = 'toast-content';
-  content.innerHTML = `
-    ${icon}
-    <div class="toast-message">${message}</div>
+    </svg>{% trans "`; const content = document.createElement('div'); content.className = 'toast-content'; content.innerHTML = ` ${icon}" %}<div class="toast-message">{% trans "${message}" %}</div>
   `;
   content.appendChild(closeBtn);
 
@@ -779,7 +749,7 @@ if (avatarInput) {
         else {
           const newImg = document.createElement('img');
           newImg.src = ev.target.result;
-          newImg.alt = "Аватар";
+          newImg.alt = "{% trans 'Аватар' %}";
           newImg.id = "avatar-preview";
 
           if (avatarPlaceholder) {

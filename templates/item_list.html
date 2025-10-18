@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'styles/item_list.css' %}">
@@ -7,8 +8,8 @@
 
 <main>
     <div class="between">
-        <h1>Каталог товарів</h1>
-        <p>Знайдіть ідеальний товар для себе</p>
+        <h1>{% trans "Каталог товарів" %}</h1>
+        <p>{% trans "Знайдіть ідеальний товар для себе" %}</p>
     </div>
 
     <form method="GET" class="search-container">
@@ -17,28 +18,26 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" name="q" id="searchInput" placeholder="Пошук товарів..." value="{{ request.GET.q }}" class="search-input">
+            <input type="text" name="q" id="searchInput" placeholder="{% trans 'Пошук товарів...' %}" value="{{ request.GET.q }}" class="search-input">
         </div>
 
         <select name="sort" class="sort-select" onchange="this.form.submit()">
-            <option value="">Сортування</option>
-            <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Ціна: за зростанням</option>
-            <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Ціна: за спаданням</option>
-            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Назва</option>
+            <option value="">{% trans "Сортування" %}</option>
+            <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>{% trans "Ціна: за зростанням" %}</option>
+            <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>{% trans "Ціна: за спаданням" %}</option>
+            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>{% trans "Назва" %}</option>
         </select>
 
         <button type="submit" class="search-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            Пошук
-        </button>
+            </svg>{% trans "Пошук" %}</button>
     </form>
 
     {% if items_in_history %}
     <section>
-        <h2>Раніше переглянуті</h2>
+        <h2>{% trans "Раніше переглянуті" %}</h2>
         <div class="product-grid">
             {% for item in items_in_history|slice:":5" %}
                 <div class="product-card" data-item-id="{{ item.pk }}">
@@ -75,12 +74,12 @@
 
                                 <div class="item-stats">
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/eye.svg' %}" alt="Перегляди"
+                                        <img src="{% static 'icons/eye.svg' %}" alt="{% trans 'Перегляди' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.views }}</span>
                                     </div>
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/comment.svg' %}" alt="Коментарі"
+                                        <img src="{% static 'icons/comment.svg' %}" alt="{% trans 'Коментарі' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.comments.count }}</span>
                                     </div>
@@ -95,13 +94,9 @@
                                             <circle cx="9" cy="21" r="1"></circle>
                                             <circle cx="20" cy="21" r="1"></circle>
                                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                        </svg>
-                                        Купити
-                                    </a>
+                                        </svg>{% trans "Купити" %}</a>
 {#                                    <a href="{% url 'item:item_detail' item.pk %}"#}
-{#                                       class="btn-view-card">#}
-{#                                        Переглянути#}
-{#                                    </a>#}
+{#                                       class="btn-view-card">{% trans "#} {# Переглянути#} {#" %}</a>#}
                                 </div>
                             </div>
                 </div>
@@ -111,7 +106,7 @@
     {% endif %}
 
     <section>
-        <h2>Всі товари</h2>
+        <h2>{% trans "Всі товари" %}</h2>
         <span>{{ items.count }} товарів</span>
 
         {% if items %}
@@ -149,12 +144,12 @@
 
                                 <div class="item-stats">
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/eye.svg' %}" alt="Перегляди"
+                                        <img src="{% static 'icons/eye.svg' %}" alt="{% trans 'Перегляди' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.views }}</span>
                                     </div>
                                     <div class="stat-item">
-                                        <img src="{% static 'icons/comment.svg' %}" alt="Коментарі"
+                                        <img src="{% static 'icons/comment.svg' %}" alt="{% trans 'Коментарі' %}"
                                              style="width: 18px; height: 18px;">
                                         <span>{{ item.comments.count }}</span>
                                     </div>
@@ -169,13 +164,9 @@
 {#                                            <circle cx="9" cy="21" r="1"></circle>#}
 {#                                            <circle cx="20" cy="21" r="1"></circle>#}
 {#                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>#}
-{#                                        </svg>#}
-{#                                        Купити#}
-{#                                    </a>#}
+{#                                        </svg>{% trans "#} {# Купити#} {#" %}</a>#}
                                     <a href="{% url 'item:item_detail' item.pk %}"
-                                       class="btn-view-card">
-                                        Переглянути
-                                    </a>
+                                       class="btn-view-card">{% trans "Переглянути" %}</a>
                                 </div>
                             </div>
                 </div>
@@ -183,8 +174,8 @@
         </div>
         {% else %}
             <div class="no-items">
-                <p>Товарів не знайдено</p>
-                <p>Спробуйте змінити параметри пошуку або фільтрації</p>
+                <p>{% trans "Товарів не знайдено" %}</p>
+                <p>{% trans "Спробуйте змінити параметри пошуку або фільтрації" %}</p>
             </div>
         {% endif %}
     </section>
@@ -209,30 +200,15 @@ class NotificationManager {
                     <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                `;
-                break;
-            case 'error':
-                icon = `
-                    <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; case 'error': icon = `" %}<svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="15" y1="9" x2="9" y2="15"></line>
                         <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                `;
-                break;
-            case 'warning':
-                icon = `
-                    <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; case 'warning': icon = `" %}<svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
                         <line x1="12" y1="9" x2="12" y2="13"></line>
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                `;
-                break;
-            default:
-                icon = `
-                    <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>{% trans "`; break; default: icon = `" %}<svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="16" x2="12" y2="12"></line>
                         <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -256,7 +232,7 @@ class NotificationManager {
         content.className = 'notification-content';
         content.innerHTML = `
             ${icon}
-            <div class="notification-message">${message}</div>
+            <div class="notification-message">{% trans "${message}" %}</div>
         `;
         content.appendChild(closeBtn);
 
@@ -383,11 +359,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.querySelectorAll('.buy-button').forEach(button => {
-        button.addEventListener('click', function(e) {
-            notificationManager.show('Товар додано до кошика!', 'success');
-        });
-    });
-
-</script>
+    document.querySelectorAll('.buy-button').forEach(button =>{% trans "{ button.addEventListener('click', function(e) { notificationManager.show('Товар додано до кошика!', 'success'); }); });" %}</script>
 {% endblock %}

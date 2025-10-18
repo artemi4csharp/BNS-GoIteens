@@ -1,34 +1,33 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/create_and_edit_announcement.css' %}">
 
 <div class="create-container">
-    <h2 class="page-title">
-         Створити товар
-    </h2>
+    <h2 class="page-title">{% trans "Створити товар" %}</h2>
 
     <form method="post" enctype="multipart/form-data" class="announcement-form">
         {% csrf_token %}
 
         <div class="form-group">
-            <label class="form-label">Назва</label>
+            <label class="form-label">{% trans "Назва" %}</label>
             {{ form.name }}
         </div>
 
         <div class="form-group">
-            <label class="form-label">Опис</label>
+            <label class="form-label">{% trans "Опис" %}</label>
             {{ form.description }}
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Категорія</label>
+                <label class="form-label">{% trans "Категорія" %}</label>
                 {{ form.category }}
             </div>
 
             <div class="form-group">
-                <label class="form-label">Ціна</label>
+                <label class="form-label">{% trans "Ціна" %}</label>
                 <div class="price-input-container">
                     {{ form.price }}
                     <span class="currency">₴</span>
@@ -37,17 +36,17 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label">Місто, Регіон, Країна</label>
+            <label class="form-label">{% trans "Місто, Регіон, Країна" %}</label>
             {{ form.location }}
         </div>
 
         <div class="form-group">
-            <label class="form-label">Фото товару</label>
+            <label class="form-label">{% trans "Фото товару" %}</label>
             <div class="image-upload-container">
                 <div class="addPhoto_btn img_add1" onclick="document.getElementById('id_image_input').click()">
                     <img id="preview_image"
                          src="{% static 'icons/add.svg' %}"
-                         alt="preview"
+                         alt="{% trans 'preview' %}"
                          class="img_add">
                     <div class="upload-placeholder" style="display: none;">
                         <div class="upload-icon">
@@ -57,7 +56,7 @@
                                 <line x1="12" y1="3" x2="12" y2="15"></line>
                             </svg>
                         </div>
-                        <span class="upload-text">Натисніть, щоб завантажити</span>
+                        <span class="upload-text">{% trans "Натисніть, щоб завантажити" %}</span>
                     </div>
                 </div>
                 {{ form.image }}
@@ -65,9 +64,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="create_and_edit_btn">
-                 Створити оголошення
-            </button>
+            <button type="submit" class="create_and_edit_btn">{% trans "Створити оголошення" %}</button>
         </div>
     </form>
 </div>

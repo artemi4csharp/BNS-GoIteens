@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Чат підтримки закрито</title>
+    <title>{% trans "Чат підтримки закрито" %}</title>
 </head>
 <body>
     <h2>Ваш чат підтримки #{{ session.id }} було закрито</h2>
@@ -19,8 +20,7 @@
         </div>
     {% endfor %}
     <hr>
-    <p>Дякуємо за звернення!</p>
-    <p>З повагою,<br>
-    Команда підтримки BNS GoIteens</p>
+    <p>{% trans "Дякуємо за звернення!" %}</p>
+    <p>{% trans "З повагою," %}<br>{% trans "Команда підтримки BNS GoIteens" %}</p>
 </body>
 </html>
