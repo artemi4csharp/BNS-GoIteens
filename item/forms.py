@@ -1,7 +1,6 @@
 from django import forms
 from django.forms import modelform_factory
-from bns_goiteens.models import Category, Location, Item, Service, Rating, Promotion, SavedItem, Message, Comment, \
-    CategoryRequest
+from bns_goiteens.models import Category,CategoryRequest, Complaint, Location, Item, Service, Rating, Promotion, SavedItem, Message, Comment
 
 CategoryForm = modelform_factory(
     Category,
@@ -115,3 +114,12 @@ class CategoryRequestForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['parent'].queryset = Category.objects.all()
         self.fields['parent'].required = False
+
+
+class ComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={'placeholder': 'Опишіть причину скарги...'}),
+        }

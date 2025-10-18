@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .models import SupportSession, SupportMessage
 from .forms import SupportSessionForm, SupportMessageForm
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.utils import timezone
 from .utils import send_chat_closed_email, send_agent_reply_email
-from bns_goiteens.decorators import support_required
-from django.db.models import Prefetch
+from bns_goiteens.models import User, Message
+from bns_goiteens.forms import ComplaintForm
+from django.contrib.contenttypes.models import ContentType
+
 
 def is_support_agent(user):
     return user.is_staff
@@ -29,20 +30,20 @@ def create_support_session(request):
         form = SupportSessionForm()
 
     return render(request, 'chat/create_support_session.html', {'form': form})
+
+
 @login_required
 def user_support_sessions(request):
     sessions = SupportSession.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'chat/user_support_sessions.html', {'sessions': sessions})
 
 
-# Оновлений фрагмент у chat/views.py
 @login_required
 def support_session_detail(request, session_id):
     session = get_object_or_404(SupportSession, id=session_id)
     if session.user != request.user and (not session.agent or session.agent != request.user):
         messages.error(request, 'У вас немає доступу до цієї сесії.')
         return redirect('chat:user_support_sessions')
-
     if request.method == 'POST':
         form = SupportMessageForm(request.POST)
         if form.is_valid():
@@ -62,7 +63,6 @@ def support_session_detail(request, session_id):
                     messages.error(request, f"Помилка: {error}")
     else:
         form = SupportMessageForm()
-
     if session.agent == request.user:
         SupportMessage.objects.filter(
             session=session,
@@ -76,14 +76,14 @@ def support_session_detail(request, session_id):
             is_read=False
         ).update(is_read=True)
     messages_list = session.messages.all()
-    return render(request, 'chat/support_chat.html', {
+    return render(request, 'chat/support_session_detail.html', {
         'session': session,
         'messages_list': messages_list,
         'form': form
     })
 
 
-@support_required
+@user_passes_test(is_support_agent)
 def agent_dashboard(request):
     pending_sessions = SupportSession.objects.filter(status='pending', agent=None)
     assigned_sessions = SupportSession.objects.filter(agent=request.user).exclude(status='closed')
@@ -95,7 +95,7 @@ def agent_dashboard(request):
 
 
 @require_POST
-@support_required
+@user_passes_test(is_support_agent)
 def assign_session(request, session_id):
     try:
         session = get_object_or_404(SupportSession, id=session_id, agent=None, status='pending')
@@ -108,7 +108,7 @@ def assign_session(request, session_id):
     return redirect('chat:agent_dashboard')
 
 
-@support_required
+@user_passes_test(is_support_agent)
 def agent_session_detail(request, session_id):
     session = get_object_or_404(SupportSession, id=session_id, agent=request.user)
     if request.method == 'POST':
@@ -143,7 +143,6 @@ def agent_session_detail(request, session_id):
         'form': form
     })
 
-
 @require_POST
 @login_required
 def close_session(request, session_id):
@@ -166,35 +165,66 @@ def close_session(request, session_id):
         return redirect('chat:user_support_sessions')
 
 
-def get_unread_messages_count(request):
-    if request.user.is_authenticated:
-        unread_count = SupportMessage.objects.filter(
-            session__user=request.user,
-            is_read=False
-        ).count()
-        return JsonResponse({'unread_count': unread_count})
-    return JsonResponse({'unread_count': 0})
 
 
 @login_required
-def websocket_chat_test(request, session_id):
-    session = get_object_or_404(SupportSession, id=session_id)
-    if session.user != request.user and (not session.agent or session.agent != request.user):
-        messages.error(request, 'У вас немає доступу до цієї сесії.')
-        return redirect('chat:user_support_sessions')
+def chat_view(request, other_user_id):
 
-    messages_list = session.messages.all().order_by('created_at')
+    other_user = get_object_or_404(User, id=other_user_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('created_at')
 
-    return render(request, 'chat/websocket_chat.html', {
-        'session': session,
-        'messages_list': messages_list
+    return render(request, "chat/chat.html", {"room_name": other_user_id, "messages": messages, "other_user": other_user})
+
+@login_required
+def user_chat_history(request):
+    sent_users = Message.objects.filter(sender=request.user).values_list('receiver', flat=True).distinct()
+    received_users = Message.objects.filter(receiver=request.user).values_list('sender', flat=True).distinct()
+    chatted_user_ids = set(sent_users) | set(received_users)
+    chatted_users = User.objects.filter(id__in=chatted_user_ids).exclude(id=request.user.id)
+
+
+    chat_data = []
+    for user in chatted_users:
+        last_message = Message.objects.filter(
+            (Q(sender=request.user) & Q(receiver=user)) |
+            (Q(sender=user) & Q(receiver=request.user))
+        ).order_by('-created_at').first()
+        if last_message:
+            chat_data.append({
+                'user': user,
+                'last_message': last_message,
+            })
+
+
+    chat_data.sort(key=lambda x: x['last_message'].created_at, reverse=True)
+
+    return render(request, 'chat/user_chat_history.html', {'chat_data': chat_data})
+
+@login_required
+def file_complaint_message(request, message_id):
+    message = get_object_or_404(Message, pk=message_id)
+    content_type = ContentType.objects.get_for_model(Message)
+
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.author = request.user
+            complaint.content_object = message
+            complaint.save()
+            messages.success(request, 'Ви успішно надіслали скаргу!')
+            return redirect('chat:user_chat_history')
+    else:
+        form = ComplaintForm()
+
+    return render(request, 'complaint_form.html', {
+        'form': form,
+        'object': message,
+        'cancel_url': 'chat:user_chat_history',
     })
-
-
-@login_required
-def chat_view(request):
-    return render(request, "chat/chat.html")
-
 
 @login_required
 def support_history(request):

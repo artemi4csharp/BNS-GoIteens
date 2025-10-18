@@ -40,7 +40,7 @@
 
         <div class="button-item">
             <img src="{% static 'icons/message.svg' %}" alt="message" style="margin-right: 5px;">
-            <span>{% trans "Повідомлення" %}</span>
+            <a href="{% url 'chat:user_chat_history' %}">Повідомлення</a>
         </div>
 
         <div class="divider"></div>

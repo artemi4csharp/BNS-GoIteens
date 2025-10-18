@@ -1,9 +1,12 @@
-from django.urls import path 
+from django.urls import path
 from . import views
 
 app_name = 'item'
 
 urlpatterns = [
+    path('list/', views.item_list, name='item_list'),
+    path('<int:pk>/', views.item_detail, name='item_detail'),
+    path('<int:content_type_id>/<int:object_id>/complaint/', views.file_complaint_message, name='file_complaint'),
     path('item_list/', views.item_list, name='item_list'),
     path('item/<int:pk>/', views.item_detail, name='item_detail'),
     path('create_item/', views.create_item, name='create_item'),

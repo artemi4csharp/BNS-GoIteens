@@ -1,38 +1,204 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Чат</title>
-</head>
-<body>
-<h1>Чат кімната</h1>
-<div id="chat-log" style="border:1px solid gray; height:300px; overflow:auto;"></div>
-<input id="chat-message-input" type="text" placeholder="Ваше повідомлення...">
-<button id="chat-message-submit">Надіслати</button>
+{% extends "base.html" %}
+{% load static %}
+
+{% block navigation %}{% endblock %}
+
+{% block content %}
+<style>
+nav {
+  display: none;
+}
+#categoryModal {
+  display: none;
+}
+</style>
+<div class="chat-wrapper">
+  <div class="chat-header">
+    <a href="{% url 'chat:user_chat_history' %}" class="back-btn">← Назад</a>
+    <h3>Чат з {{ other_user.username }}</h3>
+  </div>
+
+  <div id="messages" class="chat-messages">
+    {% for message in messages %}
+      <div class="message {% if message.sender == request.user %}right{% else %}left{% endif %}" data-message-id="{{ message.id }}">
+        <div class="message-content">
+          <strong>{% if message.sender == request.user %}Ви{% else %}{{ message.sender.username }}{% endif %}:</strong> {{ message.content }}
+          <br><small class="time">{{ message.created_at|date:"H:i" }}</small>
+        </div>
+        {% if message.sender != request.user %}
+          <div class="dropdown">
+            <button class="dropbtn">⋮</button>
+            <div class="dropdown-content">
+              <a href="{% url 'chat:file_complaint_message' message.id %}">📢 Поскаржитися</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p class="no-messages">Поки що немає повідомлень</p>
+    {% endfor %}
+  </div>
+
+  <div class="chat-input">
+    <input id="messageInput" type="text" placeholder="Напишіть повідомлення...">
+    <button id="sendBtn">Надіслати</button>
+  </div>
+</div>
 
 <script>
-const roomName = "{{ room_name }}";
-const chatSocket = new WebSocket(
-    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
-);
+  const roomName = "{{ room_name }}";
+  const userId = "{{ request.user.id }}";
 
-chatSocket.onmessage = function(e) {
+  const chatSocket = new WebSocket(
+    `ws://${window.location.host}/ws/chat/${roomName}/`
+  );
+
+  chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    const log = document.querySelector('#chat-log');
-    log.innerHTML += `<p><b>${data.username}</b>: ${data.message}</p>`;
-    log.scrollTop = log.scrollHeight;
-};
+    const isMe = data.username === "{{ request.user.username }}";
+    const msgDiv = document.createElement("div");
+    msgDiv.className = isMe ? "message right" : "message left";
+    const senderName = isMe ? "Ви" : "{{ other_user.username }}";
+    const now = new Date().toLocaleTimeString('uk-UA', {hour: '2-digit', minute: '2-digit'});
+    const contentHtml = `<div class="message-content"><strong>${senderName}:</strong> ${data.message}<br><small class="time">${now}</small></div>`;
+    if (!isMe) {
+      msgDiv.innerHTML = contentHtml + `<div class="dropdown"><button class="dropbtn">⋮</button><div class="dropdown-content"><a href="/chat/message/${data.message_id}/complaint/">📢 Поскаржитися</a></div></div>`;
+    } else {
+      msgDiv.innerHTML = contentHtml;
+    }
+    document.getElementById("messages").appendChild(msgDiv);
+    document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+  };
 
-chatSocket.onclose = function(e) {
-    console.error('WebSocket закрито');
-};
+  document.getElementById("sendBtn").onclick = function() {
+    const input = document.getElementById("messageInput");
+    if (input.value.trim() !== "") {
+      chatSocket.send(JSON.stringify({
+        message: input.value,
+        sender_id: userId
+      }));
+      input.value = "";
+    }
+  };
 
-document.querySelector('#chat-message-submit').onclick = function() {
-    const input = document.querySelector('#chat-message-input');
-    const message = input.value;
-    chatSocket.send(JSON.stringify({'message': message}));
-    input.value = '';
-};
+  // Toggle dropdown
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('dropbtn')) {
+      const dropdown = event.target.nextElementSibling;
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    } else {
+      const dropdowns = document.querySelectorAll('.dropdown-content');
+      dropdowns.forEach(d => d.style.display = 'none');
+    }
+  });
 </script>
-</body>
-</html>
 
+<style>
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.chat-header {
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-btn {
+  text-decoration: none;
+  color: #003B46;
+  font-size: 16px;
+  font-weight: bold;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #fafafa;
+}
+.message {
+  margin: 6px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width:  100%;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.message.left { background: #e0e0e0; align-self: flex-start; }
+.message.right { background: #c7ffc8; align-self: flex-end; flex-direction: row-reverse; }
+.message-content {
+  flex: 1;
+}
+.dropdown {
+  margin-left: 10px;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1000;
+  right: 0;
+  top: 100%;
+}
+.dropbtn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+.chat-input input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  font-size: 15px;
+}
+.chat-input button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.chat-input button:hover {
+  background: #45a049;
+}
+
+.time {
+  color: #999;
+  font-size: 12px;
+  display: block;
+  margin-top: 2px;
+}
+
+.message.left .time {
+  text-align: left;
+}
+
+.message.right .time {
+  text-align: right;
+}
+</style>
+{% endblock %}

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service, User
+from bns_goiteens.models import Item, Rating, Service, User, Message
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from .forms import CategoryRequestForm, CommentForm
+from .forms import CategoryRequestForm, CommentForm, ComplaintForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
@@ -256,3 +256,27 @@ def request_category_create(request):
     else:
         form = CategoryRequestForm()
     return render(request, 'categories/request_create.html', {'form': form})
+
+
+@login_required
+def file_complaint_message(request, message_id):
+    message = get_object_or_404(Message, pk=message_id)
+    content_type = ContentType.objects.get_for_model(Message)
+
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.author = request.user
+            complaint.content_object = message
+            complaint.save()
+            messages.success(request, 'Ви успішно надіслали скаргу!')
+            return redirect('chat:user_chat_history')
+    else:
+        form = ComplaintForm()
+
+    return render(request, 'complaint_form.html', {
+        'form': form,
+        'object': message,
+        'cancel_url': 'chat:user_chat_history',
+    })

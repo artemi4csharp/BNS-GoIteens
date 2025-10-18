@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import User, PromoCode, Order, SharedOrder
+from .models import User, PromoCode, Order, SharedOrder, Complaint
 from decimal import Decimal
 
 class CustomUserCreationForm(UserCreationForm):
@@ -70,3 +70,11 @@ class SharedOrderContributionForm(forms.Form):
         ('balance', 'З балансу'),
         ('card', 'Картка'),
     ])
+
+class ComplaintForm(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ['reason', 'text']
+        widgets = {
+            'text': forms.Textarea(attrs={'placeholder': 'Опишіть причину скарги...'}),
+        }

@@ -36,6 +36,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne", # Зараз потрібно використовувати команду daphne -p 8000 config.asgi:application
     "unfold",
     "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # optional, if special form elements are needed
@@ -53,10 +54,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bns_goiteens',
+    'services',
+    'item',
     'chat',
     'user',
-    'item',
-    'services',
     'browse',
     'saved_item',
     'cart',
@@ -100,7 +101,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-ASGI_APPLICATION = 'config.asgi.application'
+ASGI_APPLICATION = "config.asgi.application"
 
 CHANNEL_LAYERS = {
     'default': {
