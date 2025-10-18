@@ -60,6 +60,7 @@ class Location(models.Model):
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default='1')
 
 
     class Meta:
@@ -67,7 +68,7 @@ class Location(models.Model):
         verbose_name_plural = "Локації"
 
     def __str__(self):
-        return f"{self.country}:{self.region or 'Немає'}:{self.city}"
+        return f"{self.city}, {self.country}"
 
 
 class Comment(models.Model):
@@ -76,7 +77,7 @@ class Comment(models.Model):
                                on_delete=models.CASCADE,
                                related_name='bns_comments',
                                related_query_name='bns_comment')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='+')
     object_id = models.PositiveIntegerField()
@@ -128,7 +129,7 @@ class Item(BaseOffer):
         verbose_name_plural = "Товари"
 
     def __str__(self):
-        return f'{self.name} - {self.category}'
+        return f'{self.name}'
 
 
 class Service(BaseOffer):
@@ -422,3 +423,14 @@ class OwnerAnalytics(models.Model):
     @property
     def total_income(self):
         return self.owner.income
+    
+class Map(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
+    city = models.ForeignKey(Location, max_length=100, on_delete=models.CASCADE)
+    lat = models.FloatField(default=50.4501)  
+    lng = models.FloatField(default=30.5234)  
+    created_at = models.DateField(auto_now_add=True)
+
+    @property 
+    def city_name(self):
+        return self.city.city

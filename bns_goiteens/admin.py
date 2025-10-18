@@ -18,17 +18,17 @@ class CustomAdminClass(ModelAdmin):
 @admin.register(Location)
 class CustomLocationClass(ModelAdmin):
     model = Location
-    list_display = ('country', 'region', 'city')
+    list_display = ('country', 'region', 'city', 'user')
     add_fieldsets = (
         ("Main", {
             'classes': ('wide',),
-            'fields': ('country', 'region', 'city'),
+            'fields': ('country', 'region', 'city', 'user'),
         }),
     )
     fieldsets = (
         (None, {
             'classes' : ('wide',),
-            'fields' : ('country', 'region', 'city'),
+            'fields' : ('country', 'region', 'city', 'user'),
         }),
     )
     list_filter = ('country', 'region', 'city')

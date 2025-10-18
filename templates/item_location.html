@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
+<h3>Додати локацію на карту</h3>
+
+<div style="display: flex;
+    align-items: center;  
+    gap: 10px;">
+    <select style=" 
+        color: #003B46;
+        font-size: 15px;
+        background-color: #C4DFE6;
+        border: 1px solid #003B46;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 100px; 
+        height: 20px; 
+        text-align: center;">
+
+        {% for item in location %}
+            <option value="{{ item.id }}">{{ item.location.city }}</option>
+        {% endfor %}
+
+</select>
+
+<button type="button" style="  
+    background-color: #003B46;
+    border: 0;
+    border-radius: 15px;
+    color: #C4DFE6;
+    font-size: 15px;
+    width: 130px;
+    height: 20px;
+    margin: 0">Додати на карту</button>
+</div>
+
+<div id="result" style="margin-top: 10px;"></div>
+<div id="map" style="height: 500px; margin-top: 20px;"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Ініціалізація карти
+    var map = L.map('map').setView([50.4501, 30.5234], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Додаємо всі точки з бази при завантаженні
+    var points = JSON.parse('{{ points_json|escapejs }}');
+    points.forEach(p => {
+        L.marker([p.lat, p.lng])
+         .addTo(map)
+         .bindPopup(p['city__city']); 
+    });
+
+    // Додавання нової точки
+    document.getElementById('add_btn').addEventListener('click', async () => {
+        const item_id = document.getElementById('item_select').value;
+        if (!item_id) {
+            alert('Оберіть товар!');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('item_id', item_id);
+
+        const response = await fetch("{% url 'add_map_point' %}", {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            body: formData
+        });
+
+        const data = await response.json();
+        console.log("Отримано:", data);
+
+        if (data.status === 'ok') {
+            L.marker([data.lat, data.lng])
+             .addTo(map)
+             .bindPopup(data.city)
+             .openPopup();
+
+            map.setView([data.lat, data.lng], 10);
+            document.getElementById('result').innerHTML = `✅ Локація додана: ${data.city}`;
+        } else {
+            document.getElementById('result').innerHTML = `❌ ${data.error}`;
+        }
+    });
+});
+</script>
+
+{% endblock %}
