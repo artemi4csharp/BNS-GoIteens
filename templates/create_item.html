@@ -74,6 +74,15 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+    const storageKey = "create_item_form";
+    const visitKey = "create_item_last_visited";
+
+    if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
+        sessionStorage.removeItem(storageKey);
+    }
+
+    sessionStorage.setItem(visitKey, "true");
+
     const fields = {
         name: document.getElementById("id_name"),
         description: document.getElementById("id_description"),
@@ -82,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
         location: document.getElementById("id_location"),
     };
 
-    const storageKey = "create_item_form";
     const savedData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
 
     Object.keys(fields).forEach(key => {
@@ -105,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (form) {
         form.addEventListener("submit", () => {
             sessionStorage.removeItem(storageKey);
+            sessionStorage.removeItem(visitKey);
         });
     }
 
@@ -125,7 +134,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-});
 
+    window.addEventListener("beforeunload", (e) => {
+        if (performance.getEntriesByType("navigation")[0]?.type !== "reload") {
+            sessionStorage.removeItem(visitKey);
+        }
+    });
+});
 </script>
+
 {% endblock %}

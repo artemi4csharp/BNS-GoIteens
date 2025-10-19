@@ -75,7 +75,24 @@
     </form>
 </div>
 
-<script>document.addEventListener("DOMContentLoaded", () => {
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const storageKey = "create_service_form";
+    const visitKey = "create_service_last_visited";
+
+    // 1️⃣ Определяем тип навигации (reload или новое открытие)
+    const navigation = performance.getEntriesByType("navigation")[0];
+    const isReload = navigation && navigation.type === "reload";
+
+    // 2️⃣ Если страница открыта впервые (не reload) — очищаем сохранённые данные
+    if (!isReload) {
+        sessionStorage.removeItem(storageKey);
+    }
+
+    // 3️⃣ Отмечаем, что пользователь находится на странице создания услуги
+    sessionStorage.setItem(visitKey, "true");
+
+    // 4️⃣ Поля формы
     const fields = {
         name: document.getElementById("id_name"),
         description: document.getElementById("id_description"),
@@ -85,15 +102,15 @@
         location: document.getElementById("id_location"),
     };
 
-    const storageKey = "create_service_form";
+    // 5️⃣ Восстанавливаем сохранённые значения
     const savedData = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
-
     Object.keys(fields).forEach(key => {
         if (fields[key] && savedData[key]) {
             fields[key].value = savedData[key];
         }
     });
 
+    // 6️⃣ Сохраняем при каждом изменении
     Object.keys(fields).forEach(key => {
         if (fields[key]) {
             fields[key].addEventListener("input", () => {
@@ -104,13 +121,16 @@
         }
     });
 
+    // 7️⃣ При отправке формы — очищаем всё
     const form = document.querySelector("form");
     if (form) {
         form.addEventListener("submit", () => {
             sessionStorage.removeItem(storageKey);
+            sessionStorage.removeItem(visitKey);
         });
     }
 
+    // 8️⃣ Превью изображения
     const input = document.getElementById('id_image_input');
     const preview = document.getElementById('preview_image');
     const placeholder = document.querySelector('.upload-placeholder');
@@ -128,6 +148,16 @@
             }
         });
     }
+
+    // 9️⃣ При уходе со страницы (на другую страницу) — сбрасываем флаг посещения
+    window.addEventListener("beforeunload", (e) => {
+        const nav = performance.getEntriesByType("navigation")[0];
+        const reloading = nav && nav.type === "reload";
+        if (!reloading) {
+            sessionStorage.removeItem(visitKey);
+        }
+    });
 });
 </script>
+
 {% endblock %}

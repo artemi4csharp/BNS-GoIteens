@@ -1,0 +1,82 @@
+.no-deals-wrap {
+  min-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.no-deals-card {
+  max-width: 780px;
+  width: 100%;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(33,47,60,0.06);
+  padding: 40px 36px;
+  border: 1px solid rgba(20,40,40,0.04);
+  transform: translate(130px, -80px);
+}
+
+.no-deals-icon {
+  display: block;
+  margin: 0 auto 18px auto;
+  max-width: 200px;
+  transform: translateX(10px);
+}
+
+.no-deals-title {
+  font-size: 22px;
+  color:#133f3e;
+  margin:0 0 8px;
+  font-weight:700;
+}
+
+.no-deals-sub {
+  color:#5f7b7a;
+  margin:0 0 18px;
+}
+
+.btn.primary {
+  background: #07575B;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  display:inline-block;
+  transition: background 0.3s;
+}
+
+.btn.primary:hover,
+.btn.primary:focus {
+  background-color: #003B46;
+  outline: none;
+}
+
+@media (max-width:640px) {
+  .no-deals-card { padding: 24px 16px; }
+  .no-deals-title { font-size:18px; }
+  .no-deals-wrap { min-height: calc(100vh - 140px); }
+}
+
+
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  background-color: #003B46;
+  color: #C4DFE6;
+  padding: 3px 50px 15px;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+}
