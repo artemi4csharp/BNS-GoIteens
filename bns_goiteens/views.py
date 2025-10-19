@@ -234,7 +234,6 @@ def create_shared_order(request):
         messages.error(request, 'Ваш кошик порожній')
         return redirect('cart')
 
-    # Отримуємо товари з кошика
     items = []
     total_price = Decimal('0.00')
 
@@ -259,6 +258,7 @@ def create_shared_order(request):
             shared_order = form.save(commit=False)
             shared_order.creator = request.user
             shared_order.total_amount = total_price
+            shared_order.payment_method = 'balance'
             shared_order.save()
 
             for item in items:
@@ -273,9 +273,8 @@ def create_shared_order(request):
             request.session.modified = True
 
             messages.success(request, 'Спільне замовлення створено успішно!')
-            return redirect('bns:shared_order_detail', order_id=shared_order.id)
+            return render(request, 'shared_order/order_success.html', {'shared_order': shared_order})
     else:
-        # Заповнюємо телефон користувача за замовчуванням
         initial_data = {
             'phone': request.user.phone or ''
         }
@@ -330,40 +329,21 @@ def contribute_to_shared_order(request, order_id):
         form = SharedOrderContributionForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            payment_method = form.cleaned_data['payment_method']
 
             max_amount = shared_order.remaining_amount()
             if amount > max_amount:
                 amount = max_amount
                 messages.info(request, f'Ваш внесок було скорочено до {amount} грн, щоб не перевищити необхідну суму')
 
-            if payment_method == 'balance':
-                if request.user.balance >= amount:
-                    request.user.balance -= amount
-                    request.user.save()
+            if request.user.balance >= amount:
+                request.user.balance -= amount
+                request.user.save()
 
-                    from .models import SharedOrderContribution
-                    SharedOrderContribution.objects.create(
-                        shared_order=shared_order,
-                        user=request.user,
-                        amount=amount,
-                        payment_method='balance'
-                    )
-
-                    shared_order.collected_amount += amount
-                    shared_order.save()
-
-                    messages.success(request, f'Ваш внесок {amount} грн успішно зараховано!')
-                else:
-                    messages.error(request, 'Недостатньо коштів на балансі')
-            else:
-
-                from .models import SharedOrderContribution
                 SharedOrderContribution.objects.create(
                     shared_order=shared_order,
                     user=request.user,
                     amount=amount,
-                    payment_method='card'
+                    payment_method='balance'
                 )
 
                 shared_order.collected_amount += amount
@@ -371,13 +351,13 @@ def contribute_to_shared_order(request, order_id):
 
                 messages.success(request, f'Ваш внесок {amount} грн успішно зараховано!')
 
-            if shared_order.is_fully_paid():
-                shared_order.status = 'paid'
-                shared_order.save()
-                messages.success(request, 'Необхідна сума зібрана! Замовлення буде оброблено.')
+                if shared_order.is_fully_paid():
+                    messages.success(request, 'Необхідна сума зібрана! Тепер можна підтвердити оплату.')
+            else:
+                messages.error(request, 'Недостатньо коштів на балансі')
+                return redirect('bns:contribute_to_shared_order', order_id=shared_order.id)
 
             return redirect('bns:shared_order_detail', order_id=shared_order.id)
-
     else:
         initial_amount = min(
             Decimal('100'),
@@ -400,6 +380,7 @@ def finalize_shared_order(request, order_id):
     if shared_order.creator != request.user:
         messages.error(request, 'Тільки творець замовлення може його завершити')
         return redirect('bns:shared_order_detail', order_id=shared_order.id)
+
     if not shared_order.is_fully_paid():
         messages.error(request, 'Ще не зібрано повну суму для оформлення замовлення')
         return redirect('bns:shared_order_detail', order_id=shared_order.id)
@@ -410,7 +391,7 @@ def finalize_shared_order(request, order_id):
         status='paid',
         shipping_address=f"{shared_order.region}, м. {shared_order.city}, вул. {shared_order.street}, буд. {shared_order.building}",
         phone=shared_order.phone,
-        payment_method=shared_order.payment_method
+        payment_method='balance'  # Завжди баланс
     )
 
     for shared_item in shared_order.sharedorderitem_set.all():
@@ -427,8 +408,9 @@ def finalize_shared_order(request, order_id):
     shared_order.status = 'processing'
     shared_order.save()
 
-    messages.success(request, f'Замовлення #{order.id} успішно оформлено!')
+    messages.success(request, 'Замовлення успішно оформлено та оплачено!')
     return redirect('bns:shared_order_detail', order_id=shared_order.id)
+
 
 @login_required
 def cancel_shared_order(request, order_id):
@@ -441,10 +423,11 @@ def cancel_shared_order(request, order_id):
     if shared_order.status not in ['collecting', 'paid']:
         messages.error(request, 'Це замовлення вже не можна скасувати')
         return redirect('bns:shared_order_detail', order_id=shared_order.id)
+
     for contribution in shared_order.contributions.all():
-        if contribution.payment_method == 'balance':
-            contribution.user.balance += contribution.amount
-            contribution.user.save()
+        contribution.user.balance += contribution.amount
+        contribution.user.save()
+
     shared_order.status = 'cancelled'
     shared_order.save()
 
