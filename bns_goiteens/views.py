@@ -1,5 +1,5 @@
 from decimal import Decimal
-from .models import PromoCode, Item, User, SharedOrder, SharedOrderItem, Order, OrderItem, SharedOrderContribution
+from .models import PromoCode, Item, User, SharedOrder, SharedOrderItem, Order, OrderItem, SharedOrderContribution, DealHistory
 from .decorators import promo_admin_required
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm, SharedOrderForm, SharedOrderContributionForm
@@ -483,3 +483,8 @@ def rate_item(request, item_id, rating):
         return JsonResponse({'success': False, 'error': 'Товар не знайдено'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required
+def deal_history(request):
+    history = DealHistory.objects.filter(user=request.user).order_by('-timestamp')
+    return render(request, 'history.html', {'history': history})

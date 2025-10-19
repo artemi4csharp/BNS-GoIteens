@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 from decimal import Decimal
 from bns_goiteens.models import Order, OrderItem
+from bns_goiteens.models import DealHistory, Item
 
 
 @login_required
@@ -226,4 +227,12 @@ def checkout_view(request):
 @login_required
 def order_success_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    DealHistory.objects.create(
+    user=request.user,
+    product_name=order.name,
+    amount=order.total_amount,
+    total_price=order.total_amount,
+    )
+
     return render(request, 'order_success.html', {'order': order})

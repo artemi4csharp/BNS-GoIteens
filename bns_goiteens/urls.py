@@ -14,6 +14,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/history/', views.deal_history, name='history'),
 path("update-avatar/", views.update_avatar, name="update_avatar"),
 path("clear-avatar/", views.clear_avatar, name="clear_avatar"),
     path("shared_order/create/", views.create_shared_order, name="create_shared_order"),
