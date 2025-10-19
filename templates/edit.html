@@ -34,7 +34,16 @@
 
             <div class="form-group">
                 <label class="form-label">Місто, Регіон, Країна</label>
-                {{ form.location }}
+                <div class="location-input-container">
+                    {{ form.location }}
+                    <button type="button" class="add-location-btn" onclick="openLocationModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Додати локацію
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -64,6 +73,40 @@
         </form>
     </div>
 
+<!-- Модальне вікно для додавання локації -->
+<div id="locationModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Додати нову локацію</h3>
+            <button type="button" class="close-modal-btn" onclick="closeLocationModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="locationForm" class="location-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_city">Місто</label>
+                <input type="text" id="id_city" name="city" class="capitalize-first input1" placeholder="Введіть місто" required>
+            </div>
+            <div class="form-group">
+                <label for="id_region">Область</label>
+                <input type="text" id="id_region" name="region" class="capitalize-first input1" placeholder="Введіть область (необов'язково)">
+            </div>
+            <div class="form-group">
+                <label for="id_country">Країна</label>
+                <input type="text" id="id_country" name="country" class="capitalize-first input1" placeholder="Введіть країну" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeLocationModal()">Скасувати</button>
+                <button type="submit" class="btn-submit">Додати локацію</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const input = document.getElementById('id_image_input');
@@ -79,6 +122,70 @@
                 }
             });
         }
+
+        window.openLocationModal = function() {
+            document.getElementById('locationModal').style.display = 'flex';
+        };
+
+        window.closeLocationModal = function() {
+            document.getElementById('locationModal').style.display = 'none';
+            document.getElementById('locationForm').reset();
+        };
+
+        document.getElementById('locationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('.btn-submit');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Додавання...';
+            
+            try {
+                const response = await fetch("{% url 'item:create_location' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const locationSelect = document.getElementById('id_location');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.location_id;
+                    newOption.textContent = data.location_name;
+                    newOption.selected = true;
+                    locationSelect.appendChild(newOption);
+
+                    alert('Локацію успішно додано!');
+
+                    closeLocationModal();
+                } else {
+                    let errorMessage = 'Помилка при додаванні локації:\n';
+                    for (let field in data.errors) {
+                        errorMessage += `${field}: ${data.errors[field].join(', ')}\n`;
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Виникла помилка при додаванні локації. Спробуйте ще раз.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Закриття модального вікна при кліку поза ним
+        document.getElementById('locationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLocationModal();
+            }
+        });
     });
 </script>
 {% endblock %}

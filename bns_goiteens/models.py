@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -529,7 +528,7 @@ class UserComplaint(models.Model):
 
     def __str__(self):
         return f"Скарга від {self.author.username} на {self.user.username}"
-
+    
 
 class OwnerAnalytics(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -538,29 +537,29 @@ class OwnerAnalytics(models.Model):
     def total_views_services(self):
         services = Service.objects.filter(owner=self.owner)
         return sum(s.views for s in services)
-
-    @property
+    
+    @property 
     def total_views_items(self):
         items = Item.objects.filter(owner=self.owner)
         return sum(i.views for i in items)
+    
 
-
-    @property
+    @property 
     def average_product_rating(self):
         item = Item.objects.filter(owner = self.owner)
         rating = Rating.objects.filter(content_type = ContentType.objects.get_for_model(Item), object_id__in = [i.id for i in item])
         if rating.exists():
             return round(sum(r.value for r in rating)/ rating.count(), 1)
-        return 0
-
-    @property
+        return 0 
+    
+    @property 
     def total_item_complains(self):
         return ItemComplaint.objects.filter(owner=self.owner).count()
-
-    @property
+    
+    @property 
     def total_user_complains(self):
         return UserComplaint.objects.filter(user=self.owner).count()
-
+    
     @property
     def total_income(self):
         return self.owner.income
@@ -695,3 +694,15 @@ class DealHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.product_name} — {self.total_price} грн"
+
+
+class Map(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
+    city = models.ForeignKey(Location, max_length=100, on_delete=models.CASCADE)
+    lat = models.FloatField(default=50.4501)
+    lng = models.FloatField(default=30.5234)
+    created_at = models.DateField(auto_now_add=True)
+
+    @property
+    def city_name(self):
+        return self.city.city

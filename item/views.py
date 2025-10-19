@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required 
-from bns_goiteens.models import Item, Rating, Service, User, Message
+from bns_goiteens.models import Item, Rating, Service, User, Message, Location
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from .forms import CategoryRequestForm, CommentForm, ComplaintForm
+from .forms import CategoryRequestForm, CommentForm, ComplaintForm, LocationForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
@@ -14,6 +14,7 @@ from bns_goiteens.models import Category
 from django.db.models import F
 from django.db.models import Avg
 from django.db.models import Count
+from django.http import JsonResponse
 
 
 # def item_list(request):
@@ -142,6 +143,25 @@ def create_item(request):
     else: 
         form = ItemCreationForm()
     return render(request, 'create_item.html', {'form': form})
+
+
+@login_required
+def create_location(request):
+    if request.method == 'POST':
+        form = LocationForm(request.POST)
+        if form.is_valid():
+            location = form.save()
+            return JsonResponse({
+                'success': True,
+                'location_id': location.id,
+                'location_name': str(location)
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            }, status=400)
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
 @login_required
 def edit_item(request, pk):

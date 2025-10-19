@@ -33,6 +33,8 @@ urlpatterns = [
     path('saved/', include("saved_item.urls")),
     path('cart/', include('cart.urls')),
     path('services/', include('services.urls')),
+    path('saved/', include("saved_item.urls")),
+    path('map/', include("map.urls"))
 ]
 
 urlpatterns += i18n_patterns(

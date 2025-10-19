@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'user',
     'browse',
     'saved_item',
+    'map',
     'cart',
 ]
 
@@ -386,7 +387,7 @@ UNFOLD = {
                 {
                     "title": _("Users"),
                     "link": reverse_lazy("admin:bns_goiteens_user_changelist"),
-                    "permission": permission_callback,  # <- callable, без кавычек
+                    "permission": permission_callback
                 },
             ],
         },
