@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from bns_goiteens.models import Block
 from django.contrib.auth.decorators import login_required
 
-from blacklist.bns_goiteens.models import User
+from bns_goiteens.models import User
 
 
 @login_required

@@ -38,7 +38,7 @@ def home(request):
     elif sort == 'name':
         items = items.order_by('name')
 
-    return render(request, "base.html", {"item": item})
+    return render(request, "base.html", {"item": items})
 
 
 @login_required
