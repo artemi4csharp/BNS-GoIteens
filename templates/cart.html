@@ -465,6 +465,152 @@
 .fade-out {
     animation: fadeOut 0.3s ease-out forwards;
 }
+.promo-section {
+    margin-top: 25px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(196, 223, 230, 0.1), rgba(102, 165, 173, 0.05));
+    border-radius: 12px;
+    border: 2px dashed var(--secondary-light);
+}
+
+.promo-section h3 {
+    color: var(--primary-dark);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.promo-section h3::before {
+    font-size: 1.3rem;
+}
+
+.promo-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.promo-input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid var(--secondary-light);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.promo-input:focus {
+    outline: none;
+    border-color: var(--secondary-dark);
+    box-shadow: 0 0 0 3px rgba(7, 87, 91, 0.1);
+    transform: translateY(-1px);
+}
+
+.promo-input::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+    color: var(--text-light);
+}
+
+.promo-btn {
+    background: linear-gradient(135deg, var(--secondary-dark), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 28px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(7, 87, 91, 0.2);
+    white-space: nowrap;
+}
+
+.promo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(7, 87, 91, 0.3);
+}
+
+.promo-btn:active {
+    transform: translateY(0);
+}
+
+.promo-message {
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-top: 12px;
+    display: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.promo-message.success {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+    border: 2px solid var(--success);
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.promo-message.success::before {
+    content: "✓";
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.promo-message.error {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.05));
+    border: 2px solid var(--danger);
+    color: var(--danger);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.promo-message.error::before {
+    content: "✕";
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.discount-info {
+    background: rgba(102, 165, 173, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.discounted-price {
+    color: var(--success);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
 </style>
 {% endblock %}
 
@@ -500,7 +646,6 @@
                             <button class="quantity-btn decrease-btn" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">-</button>
                             <span class="quantity-value">{{ entry.quantity }}</span>
                             <button class="quantity-btn increase-btn" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">+</button>
-                            <!-- Змінено кнопку видалення - додано клас remove-all-btn -->
                             <button class="remove-btn remove-all-btn" title="Видалити всі товари" data-object-id="{{ entry.object.id }}" data-content-type="{{ entry.object.get_content_type_id }}" data-entry-index="{{ forloop.counter0 }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -514,6 +659,15 @@
                     </div>
                 </div>
             {% endfor %}
+
+            <div class="promo-section">
+                <h3>Промокод</h3>
+                <div class="promo-input-group">
+                    <input type="text" id="promo-code" class="promo-input" placeholder="Введіть промокод">
+                    <button id="apply-promo" class="promo-btn">Застосувати</button>
+                </div>
+                <div id="promo-message" class="promo-message"></div>
+            </div>
         </div>
 
         <div class="cart-summary">
@@ -527,9 +681,21 @@
                     <span class="summary-label">Кількість:</span>
                     <span class="summary-value">{{ total_quantity }}</span>
                 </div>
+
+                <div id="discount-info" class="discount-info" style="display: none;">
+                    <div class="summary-row">
+                        <span class="summary-label">Знижка:</span>
+                        <span id="discount-amount" class="summary-value">0.00 ₴</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label original-price">Початкова сума:</span>
+                        <span id="original-price" class="summary-value original-price">{{ total_price|floatformat:2 }} ₴</span>
+                    </div>
+                </div>
+
                 <div class="total-row">
                     <span class="total-label">До оплати:</span>
-                    <span class="total-value">{{ total_price|floatformat:2 }} ₴</span>
+                    <span id="final-price" class="total-value">{{ total_price|floatformat:2 }} ₴</span>
                 </div>
                 <a href="{% url 'checkout' %}" class="checkout-btn">Оформити замовлення</a>
                 <a href="{% url 'bns:create_shared_order' %}" class="shared-order-btn">Створити спільне замовлення</a>
@@ -716,6 +882,54 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+     const applyPromoBtn = document.getElementById('apply-promo');
+    if (applyPromoBtn) {
+        applyPromoBtn.addEventListener('click', function() {
+            const promoCode = document.getElementById('promo-code').value.trim();
+            if (!promoCode) {
+                showToast('Введіть промокод', 'warning');
+                return;
+            }
+
+            fetch('/cart/apply_promo/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({code: promoCode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.discount_amount > 0) {
+                        document.getElementById('discount-info').style.display = 'block';
+                        document.getElementById('discount-amount').textContent = data.discount_amount.toFixed(2) + ' ₴';
+                        document.getElementById('original-price').textContent = data.original_price.toFixed(2) + ' ₴';
+                        document.getElementById('final-price').textContent = data.final_price.toFixed(2) + ' ₴';
+
+                        const promoMessage = document.getElementById('promo-message');
+                        promoMessage.textContent = data.message;
+                        promoMessage.className = 'promo-message success';
+                        promoMessage.style.display = 'block';
+
+                        showToast(data.message, 'success');
+                    }
+                } else {
+                    const promoMessage = document.getElementById('promo-message');
+                    promoMessage.textContent = data.message;
+                    promoMessage.className = 'promo-message error';
+                    promoMessage.style.display = 'block';
+
+                    showToast(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Помилка при застосуванні промокоду', 'error');
+            });
+        });
+    }
 });
+
 </script>
 {% endblock %}

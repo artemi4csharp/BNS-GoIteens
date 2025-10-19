@@ -1,0 +1,608 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Замовлення оформлено{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-dark: #003B46;
+        --secondary-dark: #07575B;
+        --primary-light: #C4DFE6;
+        --secondary-light: #66A5AD;
+        --accent: #E8E8E8;
+        --white: #ffffff;
+        --gray: #F5F5F5;
+        --text-dark: #333333;
+        --text-light: #666666;
+        --success: #4CAF50;
+    }
+
+    .success-container {
+        max-width: 800px;
+        margin: 60px auto;
+        padding: 20px;
+    }
+
+    .success-card {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border: 3px solid var(--success);
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-header {
+        background: linear-gradient(135deg, var(--success), #2E7D32);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: scaleIn 0.5s ease-out 0.2s both;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    .success-icon svg {
+        color: var(--success);
+        animation: checkmark 0.8s ease-out 0.5s both;
+    }
+
+    @keyframes checkmark {
+        0% {
+            stroke-dashoffset: 100;
+        }
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    .success-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .success-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.95;
+    }
+
+    .success-body {
+        padding: 40px 30px;
+    }
+
+    .order-info-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: var(--primary-dark);
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--secondary-light);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        background: var(--gray);
+        border-radius: 10px;
+        border-left: 4px solid var(--secondary-light);
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .info-value {
+        font-weight: bold;
+        color: var(--secondary-dark);
+    }
+
+    .share-section {
+        background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+        border: 2px dashed var(--secondary-dark);
+    }
+
+    .share-title {
+        color: var(--primary-dark);
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .share-description {
+        color: var(--text-dark);
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .share-link-container {
+        background: var(--white);
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .share-link-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .share-link-input input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid var(--secondary-light);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        background: var(--white);
+    }
+
+    .copy-btn {
+        padding: 12px 24px;
+        background: var(--secondary-dark);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .copy-btn.copied {
+        background: var(--success);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-custom {
+        padding: 14px 24px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, var(--secondary-dark), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--gray);
+        color: var(--text-dark);
+        border: 2px solid var(--secondary-light);
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .progress-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        margin: 30px 0;
+        padding: 20px;
+        background: var(--gray);
+        border-radius: 12px;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+    }
+
+    .progress-step::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 100%;
+        width: 30px;
+        height: 3px;
+        background: var(--secondary-light);
+    }
+
+    .progress-step:last-child::after {
+        display: none;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--success);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .step-circle.pending {
+        background: var(--secondary-light);
+    }
+
+    .step-label {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .tips-section {
+        background: linear-gradient(135deg, #FFF9C4, #FFF59D);
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 30px;
+        border-left: 5px solid #FFC107;
+    }
+
+    .tips-title {
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .tips-list li {
+        padding: 10px 0;
+        color: var(--text-dark);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .tips-list li::before {
+        content: '✓';
+        color: var(--success);
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .success-container {
+            margin: 30px auto;
+        }
+
+        .success-header {
+            padding: 30px 20px;
+        }
+
+        .success-title {
+            font-size: 1.6rem;
+        }
+
+        .success-body {
+            padding: 25px 20px;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .progress-indicator {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .progress-step::after {
+            display: none;
+        }
+
+        .share-link-input {
+            flex-direction: column;
+        }
+
+        .copy-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .toast {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 400px;
+        backdrop-filter: blur(10px);
+    }
+
+    .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .toast.success { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray: 100; stroke-dashoffset: 100;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h1 class="success-title">Замовлення успішно оформлено!</h1>
+            <p class="success-subtitle">Спільне замовлення #{{ shared_order.id }} створено</p>
+        </div>
+
+        <div class="success-body">
+            <div class="progress-indicator">
+                <div class="progress-step">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Створено</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle pending">2</div>
+                    <div class="step-label">Збір коштів</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle pending">3</div>
+                    <div class="step-label">Оплата</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle pending">4</div>
+                    <div class="step-label">Доставка</div>
+                </div>
+            </div>
+
+            <div class="order-info-section">
+                <h2 class="section-title">Деталі замовлення</h2>
+                
+                <div class="info-row">
+                    <span class="info-label">Номер замовлення:</span>
+                    <span class="info-value">#{{ shared_order.id }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Загальна сума:</span>
+                    <span class="info-value">{{ shared_order.total_amount|floatformat:2 }} ₴</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Адреса доставки:</span>
+                    <span class="info-value">{{ shared_order.city }}, {{ shared_order.street }}, {{ shared_order.building }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Телефон:</span>
+                    <span class="info-value">{{ shared_order.phone }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Статус:</span>
+                    <span class="info-value">Збір коштів</span>
+                </div>
+            </div>
+
+            <div class="share-section">
+                <h3 class="share-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    Поділіться з друзями
+                </h3>
+                <p class="share-description">
+                    Надішліть це посилання друзям, щоб вони могли долучитися до спільного замовлення та зробити свій внесок.
+                </p>
+                <div class="share-link-container">
+                    <div class="share-link-input">
+                        <input type="text" id="shareLink" value="{{ request.scheme }}://{{ request.get_host }}{% url 'bns:contribute_to_shared_order' shared_order.id %}" readonly>
+                        <button class="copy-btn" onclick="copyShareLink()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Копіювати
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h3 class="tips-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10H12V2Z"></path>
+                        <path d="M12 12v10a10 10 0 0 0 10-10H12Z"></path>
+                    </svg>
+                    Що далі?
+                </h3>
+                <ul class="tips-list">
+                    <li>Надішліть посилання друзям для збору коштів</li>
+                    <li>Відстежуйте прогрес збору в особистому кабінеті</li>
+                    <li>Після збору всієї суми підтвердіть оплату</li>
+                    <li>Очікуйте на доставку вашого замовлення</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'bns:shared_order_detail' shared_order.id %}" class="btn-custom btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Переглянути замовлення
+                </a>
+{#                <a href="{% url 'bns:my_shared_orders' %}" class="btn-custom btn-secondary">#}
+{#                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">#}
+{#                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>#}
+{#                        <polyline points="9 22 9 12 15 12 15 22"></polyline>#}
+{#                    </svg>#}
+{#                    Мої замовлення#}
+{#                </a>#}
+{#            </div>#}
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyShareLink() {
+        const linkInput = document.getElementById('shareLink');
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999);
+        
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            showToast('Посилання скопійовано в буфер обміну!', 'success');
+            const btn = event.target.closest('.copy-btn');
+            btn.classList.add('copied');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Скопійовано!
+            `;
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = originalHTML;
+            }, 2000);
+        }).catch(() => {
+            showToast('Помилка копіювання', 'error');
+        });
+    }
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 400);
+        }, duration);
+    }
+
+    window.addEventListener('load', function() {
+        const checkmark = document.querySelector('.success-icon svg');
+        if (checkmark) {
+            setTimeout(() => {
+                checkmark.style.strokeDashoffset = '0';
+            }, 500);
+        }
+    });
+</script>
+{% endblock %}
