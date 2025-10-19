@@ -54,56 +54,61 @@
                                 </svg>
                             </div>
                         {% endif %}
-                       <!-- У секції "Раніше переглянуті" оновіть кнопку "обране" -->
-<button class="favorite-button" aria-label="Додати до обраного"
-        data-action="favorite"
-        data-item-id="{{ item.pk }}"
-        data-content-type-id="{{ item.get_content_type_id }}">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-</button>
 
+                        <button class="favorite-button" aria-label="Додати до обраного"
+                                data-action="favorite"
+                                data-item-id="{{ item.pk }}"
+                                data-content-type-id="{{ item.get_content_type_id }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+
+                        <div class="item-menu-container">
+                            <button class="item-menu-button" aria-label="Меню" data-item-id="{{ item.pk }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
+                                </svg>
+                            </button>
+                            <div class="item-menu-dropdown" data-menu-id="{{ item.pk }}">
+<a href="{% url 'chat:file_complaint_item' item.pk %}" class="menu-item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    Поскаржитись
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="saved-card-content">
-                                <h3 class="item-name">{{ item.name }}</h3>
+                        <h3 class="item-name">{{ item.name }}</h3>
 
-                                <div class="price-section">
-                                    <span class="price-amount">{{ item.price }}</span>
-                                    <span class="price-currency" style="margin-left: 0.25rem;">₴</span>
-                                </div>
+                        <div class="price-section">
+                            <span class="price-amount">{{ item.price }}</span>
+                            <span class="price-currency" style="margin-left: 0.25rem;">₴</span>
+                        </div>
 
-                                <div class="item-stats">
-                                    <div class="stat-item">
-                                        <img src="{% static 'icons/eye.svg' %}" alt="Перегляди"
-                                             style="width: 18px; height: 18px;">
-                                        <span>{{ item.views }}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <img src="{% static 'icons/comment.svg' %}" alt="Коментарі"
-                                             style="width: 18px; height: 18px;">
-                                        <span>{{ item.comments.count }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="card-actions">
-                                    <a href="{% url 'item:item_detail' item.pk %}"
-                                       class="btn-buy-card">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="9" cy="21" r="1"></circle>
-                                            <circle cx="20" cy="21" r="1"></circle>
-                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                        </svg>
-                                        Купити
-                                    </a>
-{#                                    <a href="{% url 'item:item_detail' item.pk %}"#}
-{#                                       class="btn-view-card">#}
-{#                                        Переглянути#}
-{#                                    </a>#}
-                                </div>
+                        <div class="item-stats">
+                            <div class="stat-item">
+                                <img src="{% static 'icons/eye.svg' %}" alt="Перегляди" style="width: 18px; height: 18px;">
+                                <span>{{ item.views }}</span>
                             </div>
+                            <div class="stat-item">
+                                <img src="{% static 'icons/comment.svg' %}" alt="Коментарі" style="width: 18px; height: 18px;">
+                                <span>{{ item.comments.count }}</span>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{% url 'item:item_detail' item.pk %}" class="btn-view-card">
+                                Переглянути
+                            </a>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -130,54 +135,60 @@
                                 </svg>
                             </div>
                         {% endif %}
+
                         <button class="favorite-button" aria-label="Додати до обраного"
-        data-action="favorite"
-        data-item-id="{{ item.pk }}"
-        data-content-type-id="{{ item.get_content_type_id }}">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-</button>
+                                data-action="favorite"
+                                data-item-id="{{ item.pk }}"
+                                data-content-type-id="{{ item.get_content_type_id }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <div class="item-menu-container">
+                            <button class="item-menu-button" aria-label="Меню" data-item-id="{{ item.pk }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
+                                </svg>
+                            </button>
+                            <div class="item-menu-dropdown" data-menu-id="{{ item.pk }}">
+                                <a href="{% url 'chat:file_complaint_item' item.pk %}" class="menu-item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    Поскаржитись
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="saved-card-content">
-                                <h3 class="item-name">{{ item.name }}</h3>
+                        <h3 class="item-name">{{ item.name }}</h3>
 
-                                <div class="price-section">
-                                    <span class="price-amount">{{ item.price }}</span>
-                                    <span class="price-currency" style="margin-left: 0.25rem;">₴</span>
-                                </div>
+                        <div class="price-section">
+                            <span class="price-amount">{{ item.price }}</span>
+                            <span class="price-currency" style="margin-left: 0.25rem;">₴</span>
+                        </div>
 
-                                <div class="item-stats">
-                                    <div class="stat-item">
-                                        <img src="{% static 'icons/eye.svg' %}" alt="Перегляди"
-                                             style="width: 18px; height: 18px;">
-                                        <span>{{ item.views }}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <img src="{% static 'icons/comment.svg' %}" alt="Коментарі"
-                                             style="width: 18px; height: 18px;">
-                                        <span>{{ item.comments.count }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="card-actions">
-{#                                    <a href="{% url 'item:item_detail' item.pk %}"#}
-{#                                       class="btn-buy-card">#}
-{#                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"#}
-{#                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"#}
-{#                                             stroke-linecap="round" stroke-linejoin="round">#}
-{#                                            <circle cx="9" cy="21" r="1"></circle>#}
-{#                                            <circle cx="20" cy="21" r="1"></circle>#}
-{#                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>#}
-{#                                        </svg>#}
-{#                                        Купити#}
-{#                                    </a>#}
-                                    <a href="{% url 'item:item_detail' item.pk %}"
-                                       class="btn-view-card">
-                                        Переглянути
-                                    </a>
-                                </div>
+                        <div class="item-stats">
+                            <div class="stat-item">
+                                <img src="{% static 'icons/eye.svg' %}" alt="Перегляди" style="width: 18px; height: 18px;">
+                                <span>{{ item.views }}</span>
                             </div>
+                            <div class="stat-item">
+                                <img src="{% static 'icons/comment.svg' %}" alt="Коментарі" style="width: 18px; height: 18px;">
+                                <span>{{ item.comments.count }}</span>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{% url 'item:item_detail' item.pk %}" class="btn-view-card">
+                                Переглянути
+                            </a>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -189,6 +200,7 @@
         {% endif %}
     </section>
 </main>
+
 <script>
 class NotificationManager {
     constructor(containerId) {
@@ -317,7 +329,6 @@ const notificationManager = new NotificationManager('notifications-container');
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.favorite-button').forEach(button => {
         button.addEventListener('click', function() {
-
             const itemId = this.dataset.itemId;
             const contentTypeId = this.dataset.contentTypeId;
 
@@ -359,35 +370,51 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-});
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-};
-
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.closest('form').submit();
-        }
-    });
-
-    document.querySelectorAll('.buy-button').forEach(button => {
+    document.querySelectorAll('.item-menu-button').forEach(button => {
         button.addEventListener('click', function(e) {
-            notificationManager.show('Товар додано до кошика!', 'success');
+            e.stopPropagation();
+            const itemId = this.dataset.itemId;
+            const dropdown = document.querySelector(`[data-menu-id="${itemId}"]`);
+
+            document.querySelectorAll('.item-menu-dropdown.show').forEach(menu => {
+                if (menu !== dropdown) {
+                    menu.classList.remove('show');
+                }
+            });
+            dropdown.classList.toggle('show');
         });
     });
 
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.item-menu-container')) {
+            document.querySelectorAll('.item-menu-dropdown.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        this.closest('form').submit();
+    }
+});
 </script>
 {% endblock %}
