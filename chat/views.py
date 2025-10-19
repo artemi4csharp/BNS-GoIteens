@@ -25,13 +25,22 @@ def create_support_session(request):
             session = form.save(commit=False)
             session.user = request.user
             session.save()
+
+            content = form.cleaned_data.get('content')
+            if content:
+                SupportMessage.objects.create(
+                    session=session,
+                    sender=request.user,
+                    content=content,
+                    is_agent_message=False
+                )
+
             messages.success(request, 'Ваше звернення створено. Очікуйте відповіді.')
             return redirect('chat:support_session_detail', session_id=session.id)
     else:
         form = SupportSessionForm()
 
     return render(request, 'chat/create_support_session.html', {'form': form})
-
 
 @login_required
 def user_support_sessions(request):
@@ -89,10 +98,17 @@ def agent_dashboard(request):
     pending_sessions = SupportSession.objects.filter(status='pending', agent=None)
     assigned_sessions = SupportSession.objects.filter(agent=request.user).exclude(status='closed')
 
-    return render(request, 'chat/agent_dashboard.html', {
+    pending_count = pending_sessions.count()
+    assigned_count = assigned_sessions.count()
+
+    context = {
         'pending_sessions': pending_sessions,
-        'assigned_sessions': assigned_sessions
-    })
+        'assigned_sessions': assigned_sessions,
+        'pending_count': pending_count,
+        'assigned_count': assigned_count,
+    }
+
+    return render(request, 'chat/agent_dashboard.html', context)
 
 
 @require_POST
@@ -131,18 +147,24 @@ def agent_session_detail(request, session_id):
                     messages.error(request, f"Помилка: {error}")
     else:
         form = SupportMessageForm()
+
     (SupportMessage.objects.filter(
         session=session,
         sender=session.user,
         is_read=False
     )
      .update(is_read=True))
+
     messages_list = session.messages.all()
-    return render(request, 'chat/agent_session_detail.html', {
+
+    context = {
         'session': session,
         'messages_list': messages_list,
-        'form': form
-    })
+        'form': form,
+        'now': timezone.now()
+    }
+
+    return render(request, 'chat/agent_session_detail.html', context)
 
 @require_POST
 @login_required

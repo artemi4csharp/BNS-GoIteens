@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-
 class SupportSession(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Очікує'),
@@ -13,9 +12,11 @@ class SupportSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support_sessions')
     agent = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_sessions')
     subject = models.CharField(max_length=200)
+    category = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(default=timezone.now)
     closed_at = models.DateTimeField(null=True, blank=True)
+    initial_message = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Сесія підтримки"
