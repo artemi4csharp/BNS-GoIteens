@@ -94,12 +94,34 @@
 
                 <div class="description-card">
                     <h3 class="description-title">Опис товару</h3>
-                    <p class="description-text" id="description-text">{{ item.description|linebreaksbr }}</p>
-                    <button id="toggle-description" class="toggle-description">Показати повний опис</button>
+                    <div class="description-wrapper">
+                        <p class="description-text" id="description-text">{{ item.description|linebreaksbr }}</p>
+                    </div>
+                    <button id="toggle-description" class="toggle-description" style="display: none;">
+                        Показати повний опис
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
                 </div>
 
+                {% if request.user.is_authenticated and request.user != item.owner %}
+                    <a href="{% url 'chat:chat_room' item.owner.id %}" class="btn-message-seller">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Написати продавцю
+                    </a>
+                {% endif %}
+
                 {% if request.user == item.owner %}
-                    <a href="{% url 'item:edit_item' item.pk %}" class="btn-edit">Редагувати товар</a>
+                    <a href="{% url 'item:edit_item' item.pk %}" class="btn-edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Редагувати товар
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -223,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     s.setAttribute('stroke', i < selected ? '#FFD700' : '#ddd');
                 });
 
-                // Відправляємо рейтинг на сервер
                 fetch(`/bns/rate_item/${itemId}/${selected}/`, {
                     method: 'POST',
                     headers: {
@@ -386,11 +407,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const descriptionText = document.getElementById("description-text");
 
     if (toggleDescription && descriptionText) {
+        const checkHeight = () => {
+            if (descriptionText.scrollHeight > 150) {
+                toggleDescription.style.display = 'flex';
+            } else {
+                toggleDescription.style.display = 'none';
+            }
+        };
+
+        checkHeight();
+
         toggleDescription.addEventListener("click", () => {
-            descriptionText.classList.toggle("expanded");
-            toggleDescription.textContent = descriptionText.classList.contains("expanded")
-                ? "Згорнути"
-                : "Показати повний опис";
+            const isExpanded = descriptionText.classList.contains("expanded");
+
+            if (isExpanded) {
+                descriptionText.classList.remove("expanded");
+                toggleDescription.innerHTML = `
+                    Показати повний опис
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                `;
+            } else {
+                descriptionText.classList.add("expanded");
+                toggleDescription.innerHTML = `
+                    Згорнути
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                `;
+            }
         });
     }
 
@@ -421,7 +467,6 @@ document.addEventListener("DOMContentLoaded", () => {
         {% endfor %}
     {% endif %}
 });
-
     </script>
 
     <style>
@@ -544,6 +589,145 @@ document.addEventListener("DOMContentLoaded", () => {
             background: rgba(0, 0, 0, 0.2);
         }
 
+        .btn-message-seller {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 24px;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #07575B 0%, #003B46 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(7, 87, 91, 0.4);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-message-seller::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 165, 173, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-message-seller:hover::before {
+            left: 100%;
+        }
+
+        .btn-message-seller:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(7, 87, 91, 0.5);
+            background: linear-gradient(135deg, #07575B 0%, #66A5AD 100%);
+        }
+
+        .btn-message-seller:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(7, 87, 91, 0.4);
+        }
+
+        .btn-message-seller svg {
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-message-seller:hover svg {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn-edit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 20px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #66A5AD 0%, #07575B 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 165, 173, 0.3);
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(102, 165, 173, 0.4);
+            background: linear-gradient(135deg, #66A5AD 0%, #003B46 100%);
+        }
+
+        .btn-edit svg {
+            flex-shrink: 0;
+        }
+
+        .description-wrapper {
+            position: relative;
+        }
+
+        .description-text {
+            max-width: 100%;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            color: #2c3e50;
+            font-size: 15px;
+            max-height: 150px;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .description-text.expanded {
+            max-height: 3000px;
+        }
+
+        .toggle-description {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 10px 16px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1976d2;
+            border: 2px solid #90caf9;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-description:hover {
+            background: linear-gradient(135deg, #bbdefb, #90caf9);
+            border-color: #64b5f6;
+            transform: translateY(-1px);
+        }
+
+        .toggle-description svg {
+            transition: transform 0.3s ease;
+        }
+
+        .description-text.expanded + .toggle-description svg {
+            transform: rotate(180deg);
+        }
+
         @media (max-width: 768px) {
             .toast-container {
                 top: 15px;
@@ -553,6 +737,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             .toast {
                 max-width: 100%;
+            }
+
+            .description-text {
+                font-size: 14px;
+                max-height: 120px;
+            }
+
+            .btn-message-seller {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+
+            .btn-edit {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-message-seller,
+            .btn-edit {
+                font-size: 14px;
+                padding: 12px 16px;
             }
         }
     </style>

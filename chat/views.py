@@ -10,6 +10,7 @@ from .utils import send_chat_closed_email, send_agent_reply_email
 from bns_goiteens.models import User, Message
 from bns_goiteens.forms import ComplaintForm
 from django.contrib.contenttypes.models import ContentType
+from bns_goiteens.models import User, Message, Item
 
 
 def is_support_agent(user):
@@ -233,3 +234,26 @@ def support_history(request):
     ).order_by('-created_at')
 
     return render(request, 'chat/support_history.html', {'sessions': sessions})
+
+
+@login_required
+def file_complaint_item(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+
+    if request.method == 'POST':
+        form = ComplaintForm(request.POST)
+        if form.is_valid():
+            complaint = form.save(commit=False)
+            complaint.author = request.user
+            complaint.content_object = item
+            complaint.save()
+            messages.success(request, 'Ви успішно надіслали скаргу!')
+            return redirect('item:item_list')
+    else:
+        form = ComplaintForm()
+
+    return render(request, 'complaint_form.html', {
+        'form': form,
+        'object': item,
+        'cancel_url': 'item:item_list',
+    })
